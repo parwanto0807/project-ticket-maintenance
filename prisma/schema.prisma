@@ -8,11 +8,11 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
- 
+
 generator client {
   provider = "prisma-client-js"
 }
- 
+
 enum UserRole {
   ADMIN
   USER
@@ -93,4 +93,229 @@ model AccountEmail {
   email     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Employee {
+  id          String  @id @default(uuid()) @map("_id")
+  name        String
+  email       String
+  address     String
+  picture     String
+  signInvoice Boolean @default(false)
+
+  userDept  String   @map("user_dept")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  asset      Asset[]    @relation("AssignAssets")
+  department Department @relation("EmployeeDept", fields: [userDept], references: [id])
+}
+
+model Department {
+  id        String     @id @default(uuid()) @map("_id")
+  dept_name String
+  note      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now()) @updatedAt
+  employee  Employee[] @relation("EmployeeDept")
+}
+
+//Product Tabel 
+model Product {
+  id                   String   @id @default(uuid()) @map("_id")
+  part_number          String
+  part_name            String
+  nick_name            String
+  satuan_pemasukan     String
+  satuan_penyimpanan   String
+  satuan_pengeluaran   String
+  conversi_pemasukan   Int
+  conversi_penyimpanan Int
+  conversi_pengeluaran Int
+  description          String?
+  minStock             Int
+  maxStock             Int
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @default(now()) @updatedAt
+
+  Harga Harga[] @relation("HargaJualProduct")
+
+  gudangId    String @map("gudang_id")
+  lokasiRakId String @map("lokasirak_id")
+  rakId       String @map("rak_id")
+  groupId     String @map("group_id")
+  brandId     String @map("brand_id")
+  kategoriId  String @map("kategori_id")
+  jenisId     String @map("jenisi_id")
+
+  jenisproduct    JenisProduct    @relation("JenisProducts", fields: [jenisId], references: [id])
+  kategoriproduct KategoriProduct @relation("KategoriProducts", fields: [kategoriId], references: [id])
+  brand           Brand           @relation("BrandProducts", fields: [brandId], references: [id])
+  group           Group           @relation("GroupProducts", fields: [groupId], references: [id])
+  rak             Rak             @relation("RakProducts", fields: [rakId], references: [id])
+  lokasiRak       LokasiRak       @relation("LokasiRakProducts", fields: [lokasiRakId], references: [id])
+  gudang          Gudang          @relation("GudangProducts", fields: [gudangId], references: [id])
+  assets          Asset[]         @relation("ProductAssets")
+}
+
+model Harga {
+  id        String   @id @default(uuid()) @map("_id")
+  idProduct String   @map("HargaJualProduct")
+  idMtUang  String   @map("Matauang")
+  hargaHpp  Decimal  @db.Decimal(15, 2)
+  hargaJual Decimal  @db.Decimal(15, 2)
+  default   Boolean  @default(false)
+  createdAt DateTime
+  updatedAt DateTime
+
+  part_number Product  @relation("HargaJualProduct", fields: [idProduct], references: [id])
+  mtUang      MataUang @relation("MataUang", fields: [idMtUang], references: [id])
+}
+
+model Group {
+  id        String   @id @default(uuid()) @map("_id")
+  note      String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  // Add this line to establish the reverse relation to Product
+  products Product[] @relation("GroupProducts")
+}
+
+model Unit {
+  id        String   @id @default(uuid()) @map("_id")
+  name      String
+  note      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Brand {
+  id        String   @id @default(uuid()) @map("_id")
+  name      String
+  note      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  products Product[] @relation("BrandProducts")
+}
+
+model Gudang {
+  id        String   @id @default(uuid()) @map("_id")
+  name      String
+  note      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  products Product[] @relation("GudangProducts")
+}
+
+model Rak {
+  id        String   @id @default(uuid()) @map("_id")
+  name      String
+  note      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  products Product[] @relation("RakProducts")
+}
+
+model LokasiRak {
+  id        String   @id @default(uuid()) @map("_id")
+  name      String
+  note      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  products Product[] @relation("LokasiRakProducts")
+}
+
+model MataUang {
+  id    String  @id @default(uuid()) @map("_id")
+  name  String
+  note  String
+  Harga Harga[] @relation("MataUang")
+}
+
+model JenisProduct {
+  id   String @id @default(uuid()) @map("_id")
+  name String
+  note String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  product   Product[] @relation("JenisProducts")
+}
+
+model KategoriProduct {
+  id        String   @id @default(uuid()) @map("_id")
+  name      String
+  note      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  product Product[] @relation("KategoriProducts")
+}
+
+model Asset {
+  id             Int            @id @default(autoincrement())
+  name           String // Nama aset (bisa diisi manual atau diambil dari nama Product)
+  description    String?
+  category       String
+  status         AssetStatus
+  location       String?
+  purchaseDate   DateTime?
+  purchaseCost   Float?
+  residualValue  Float? // Nilai sisa aset setelah penyusutan
+  usefulLife     Int? // Masa manfaat aset (dalam tahun)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  depreciations  Depreciation[] // Relasi ke tabel penyusutan
+  assetTypeId    Int // Relasi ke jenis aset
+  assetType      AssetType      @relation(fields: [assetTypeId], references: [id])
+
+  // Relasi ke Product (setiap Asset merujuk ke satu Product)
+  productId  String    @map("product_id") // Relasi ke Product
+  product    Product   @relation(fields: [productId], references: [id], name: "ProductAssets")
+  employee   Employee? @relation(fields: [employeeId], references: [id], name: "AssignAssets")
+  employeeId String?
+}
+
+model AssetType {
+  id          Int      @id @default(autoincrement())
+  name        String // Nama jenis aset (contoh: "Kendaraan", "Peralatan Elektronik")
+  description String? // Deskripsi jenis aset
+  assets      Asset[] // Relasi ke aset
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Depreciation {
+  id                 Int              @id @default(autoincrement())
+  assetId            Int // Relasi ke aset
+  asset              Asset            @relation(fields: [assetId], references: [id])
+  date               DateTime // Tanggal pencatatan penyusutan
+  amount             Float // Jumlah penyusutan pada periode ini
+  description        String? // Deskripsi (opsional)
+  depreciationTypeId Int // Relasi ke tipe depresiasi
+  depreciationType   DepreciationType @relation(fields: [depreciationTypeId], references: [id])
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+}
+
+model DepreciationType {
+  id            Int            @id @default(autoincrement())
+  name          String // Nama tipe depresiasi (contoh: "Straight-Line", "Double Declining Balance")
+  description   String? // Deskripsi tipe depresiasi
+  depreciations Depreciation[] // Relasi ke depresiasi
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+enum AssetStatus {
+  AVAILABLE
+  IN_USE
+  UNDER_MAINTENANCE
+  DECOMMISSIONED
 }

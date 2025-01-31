@@ -70,3 +70,131 @@ export const ResetSchema = z.object({
         message: "Email is required"
     }),
 });
+
+
+// PRODUCT SCHEMA 
+
+export const UnitSchema = z.object({
+    name: z.string().min(1, {
+        message: "Unit name is required"
+    }),
+    note: z.string().min(1, {
+        message: "Note is required"
+    })
+})
+
+export const TypeSchema = z.object({
+    name: z.string().min(1, {
+        message: "Type name is required"
+    }),
+    note: z.string().min(1, {
+        message: "Note is required"
+    })
+})
+
+export const CategorySchema = z.object({
+    name: z.string().min(1, {
+        message: "Type name is required"
+    }),
+    note: z.string().min(1, {
+        message: "Note is required"
+    })
+})
+export const GroupSchema = z.object({
+    name: z.string().min(1, {
+        message: "Type name is required"
+    }),
+    note: z.string().min(1, {
+        message: "Note is required"
+    })
+})
+export const BrandSchema = z.object({
+    name: z.string().min(1, {
+        message: "Type name is required"
+    }),
+    note: z.string().min(1, {
+        message: "Note is required"
+    })
+})
+export const GudangSchema = z.object({
+    name: z.string().min(1, {
+        message: "Type name is required"
+    }),
+    note: z.string().min(1, {
+        message: "Note is required"
+    })
+})
+export const LokasiRakSchema = z.object({
+    name: z.string().min(1, {
+        message: "Type name is required"
+    }),
+    note: z.string().min(1, {
+        message: "Note is required"
+    })
+})
+export const RakSchema = z.object({
+    name: z.string().min(1, {
+        message: "Type name is required"
+    }),
+    note: z.string().min(1, {
+        message: "Note is required"
+    })
+})
+
+export const ProductSchema = z.object({
+    part_number: z.string().min(1, {
+        message: "Part number is required"
+    }),
+    part_name: z.string().min(1, {
+        message: "Part name is required"
+    }),
+    nick_name: z.string().min(1, {
+        message: "Nick name is required"
+    }),
+    satuan_pemasukan: z.string().min(1, {
+        message: "Unit in is required"
+    }),
+    satuan_penyimpanan: z.string().min(1, {
+        message: "Unit stock is required"
+    }),
+    satuan_pengeluaran: z.string().min(1, {
+        message: "Unit out is required"
+    }),
+    conversi_pemasukan: z.coerce.number().min(1, {
+        message: "Conversi unit in is required"
+    }),
+    conversi_penyimpanan: z.coerce.number().min(1, {
+        message: "Conversi unit stock is required"
+    }),
+    conversi_pengeluaran: z.coerce.number().min(1, {
+        message: "Conversi unit out is required"
+    }),
+    description: z.string().min(5, {
+        message: "Minimum 5 character required"
+    }),
+    minStock: z.coerce.number().min(0),
+    maxStock: z.coerce.number().min(0),
+    groupId: z.string().min(1, {
+        message: "Group is required"
+    }),
+    brandId: z.string().min(3, {
+        message: "Brand is required"
+    }),
+    kategoriId: z.string().min(3, {
+        message: "Category is required"
+    }),
+    jenisId: z.string().min(3, {
+        message: "Type is required"
+    }),
+    gudangId: z.string().min(3, {
+        message: "Gudang is required"
+    }),
+    rakId: z.string().min(3, {
+        message: "Gudang is required"
+    }),
+    lokasiRakId: z.string().min(3, {
+        message: "Gudang is required"
+    }),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+})

@@ -1,10 +1,23 @@
 import {
   Settings,
-  Bookmark,
+  // Bookmark,
   SquarePen,
   LayoutGrid,
-  Boxes, 
-  Omega
+  Boxes,
+  // Omega,
+  HardDrive,
+  Wrench,
+  FileText,
+  BarChart,
+  // Scan,
+  // Bell,
+  // ClipboardList,
+  // Users,
+  // Tool,
+  // Calendar,
+  // Archive,
+  // Shield,
+  // Database,
 } from "lucide-react";
 import { IconType } from 'react-icons';
 
@@ -12,6 +25,7 @@ type Submenu = {
   href: string;
   label: string;
   active: boolean;
+  disabled?: boolean;
 };
 
 type Menu = {
@@ -19,9 +33,9 @@ type Menu = {
   label: string;
   active: boolean;
   icon: IconType;
-    submenus: Submenu[];
-    disabled?: boolean;
-  };
+  submenus: Submenu[];
+  disabled?: boolean;
+};
 
 type Group = {
   groupLabel: string;
@@ -29,7 +43,6 @@ type Group = {
 };
 
 export function getMenuList(pathname: string, role: string): Group[] {
-  // console.log("Role in getMenuList:", role);
   return [
     {
       groupLabel: "",
@@ -39,9 +52,9 @@ export function getMenuList(pathname: string, role: string): Group[] {
           label: "DASHBOARD",
           active: pathname.includes("/dashboard"),
           icon: LayoutGrid,
-          submenus: []
-        }
-      ]
+          submenus: [],
+        },
+      ],
     },
     {
       groupLabel: "MASTER DATA",
@@ -70,123 +83,162 @@ export function getMenuList(pathname: string, role: string): Group[] {
             {
               href: "/dashboard/master/supplier",
               label: "Suppliers",
-              active: pathname === "/dashboard/master/employees",
+              active: pathname === "/dashboard/master/supplier",
             },
             {
               href: "/dashboard/master/employees",
               label: "Employees",
               active: pathname === "/dashboard/master/employees",
             },
-          ].map(submenu => ({
+          ].map((submenu) => ({
             ...submenu,
             disabled: role !== "ADMIN", // Menambahkan disabled pada submenu
           })),
-        }
-      ].map(menu => {
-        const updatedMenu = {
-          ...menu,
-          disabled: role !== "ADMIN", // Menambahkan disabled pada menu utama
-        };
-        // console.log("Updated Menu:",role, updatedMenu); // Debugging disabled
-        return updatedMenu;
-      }),
-    },    
+        },
+      ].map((menu) => ({
+        ...menu,
+        disabled: role !== "ADMIN", // Menambahkan disabled pada menu utama
+      })),
+    },
+    {
+      groupLabel: "ASSET MANAGEMENT",
+      menus: [
+        {
+          href: "/dashboard/assets",
+          label: "ASSETS",
+          active: pathname.includes("/dashboard/assets"),
+          icon: HardDrive,
+          submenus: [
+            {
+              href: "/dashboard/assets/list",
+              label: "Asset List",
+              active: pathname === "/dashboard/assets/list",
+            },
+            {
+              href: "/dashboard/assets/register",
+              label: "Register Asset",
+              active: pathname === "/dashboard/assets/register",
+            },
+            {
+              href: "/dashboard/assets/tracking",
+              label: "Asset Tracking",
+              active: pathname === "/dashboard/assets/tracking",
+            },
+            {
+              href: "/dashboard/assets/depreciation",
+              label: "Depreciation",
+              active: pathname === "/dashboard/assets/depreciation",
+            },
+          ],
+        },
+        {
+          href: "/dashboard/assets/maintenance",
+          label: "MAINTENANCE",
+          active: pathname.includes("/dashboard/assets/maintenance"),
+          icon: Wrench,
+          submenus: [
+            {
+              href: "/dashboard/assets/maintenance/tickets",
+              label: "Maintenance Tickets",
+              active: pathname === "/dashboard/assets/maintenance/tickets",
+            },
+            {
+              href: "/dashboard/assets/maintenance/schedule",
+              label: "Maintenance Schedule",
+              active: pathname === "/dashboard/assets/maintenance/schedule",
+            },
+            {
+              href: "/dashboard/assets/maintenance/history",
+              label: "Maintenance History",
+              active: pathname === "/dashboard/assets/maintenance/history",
+            },
+          ],
+        },
+      ],
+    },
     {
       groupLabel: "TRANSACTION",
       menus: [
         {
-          href: "/dashboard/transactions/meter",
-          label: "METER SERVICES",
-          active: pathname.includes("/dashboard/transactions/meter"),
-          icon: SquarePen,
-          submenus: [
-            {
-              href: "/dashboard/transactions/meter/register",
-              label: "Saitec Meter",
-              active: pathname === "/dashboard/transactions/meter/register"
-            },
-            {
-              href: "/dashboard/transactions/meter/tenant",
-              label: "Saitec Tenants",
-              active: pathname === "/dashboard/transactions/meter/tenant"
-            },
-            {
-              href: "/dashboard/transactions/meter/enduser",
-              label: "Saitec Enduser",
-              active: pathname === "/dashboard/transactions/meter/enduser"
-            }
-          ]
-        },
-        {
-          href: "/dashboard/transactions/logistic/",
+          href: "/dashboard/transactions/logistic",
           label: "LOGISTIC",
-          active: pathname.includes("/dashboard/transactions/logistic/"),
+          active: pathname.includes("/dashboard/transactions/logistic"),
           icon: SquarePen,
           submenus: [
             {
               href: "/dashboard/transactions/logistic/whEntry",
               label: "Warehouse Entry",
-              active: pathname === "/dashboard/transactions/logistic/whEntry"
+              active: pathname === "/dashboard/transactions/logistic/whEntry",
             },
             {
               href: "/dashboard/transactions/logistic/stock",
               label: "Inventory Data Stock",
-              active: pathname === "/dashboard/transactions/logistic/stock"
+              active: pathname === "/dashboard/transactions/logistic/stock",
             },
             {
               href: "/dashboard/transactions/logistic/tera",
               label: "Inventory Data Tera",
-              active: pathname === "/dashboard/transactions/logistic/tera"
+              active: pathname === "/dashboard/transactions/logistic/tera",
             },
             {
               href: "/dashboard/logistic/outgoing",
               label: "Warehouse Outbound",
-              active: pathname === "/dashboard/logistic/outgoing"
-            }, 
+              active: pathname === "/dashboard/logistic/outgoing",
+            },
             {
               href: "/dashboard/logistic/do",
               label: "Delivery Order",
-              active: pathname === "/dashboard/logistic/do"
-            }
-          ]
+              active: pathname === "/dashboard/logistic/do",
+            },
+          ],
         },
+      ],
+    },
+    {
+      groupLabel: "REPORTS & ANALYTICS",
+      menus: [
         {
-          href: "/dashboard/logistic",
-          label: "ENGINEERING",
-          active: pathname.includes("/dashboard/logistic"),
-          icon: Omega,
+          href: "/dashboard/reports",
+          label: "REPORTS",
+          active: pathname.includes("/dashboard/reports"),
+          icon: FileText,
           submenus: [
             {
-              href: "/dashboard/logistic/comissioning",
-              label: "Commisioning",
-              active: pathname === "/dashboard/logistic/comissioning"
-            }
-          ]
+              href: "/dashboard/reports/assets",
+              label: "Asset Reports",
+              active: pathname === "/dashboard/reports/assets",
+            },
+            {
+              href: "/dashboard/reports/maintenance",
+              label: "Maintenance Reports",
+              active: pathname === "/dashboard/reports/maintenance",
+            },
+            {
+              href: "/dashboard/reports/finance",
+              label: "Financial Reports",
+              active: pathname === "/dashboard/reports/finance",
+            },
+          ],
         },
-        
         {
-          href: "/dashboard/finance",
-          label: "FINANCE",
-          active: pathname.includes("/dashboard/finance"),
-          icon: Bookmark,
+          href: "/dashboard/analytics",
+          label: "ANALYTICS",
+          active: pathname.includes("/dashboard/analytics"),
+          icon: BarChart,
           submenus: [
             {
-              href: "/dashboard/finance/invoice-do",
-              label: "Invoice DO",
-              active: pathname === "/dashboard/finance/invoice-do"
+              href: "/dashboard/analytics/assets",
+              label: "Asset Analytics",
+              active: pathname === "/dashboard/analytics/assets",
             },
             {
-              href: "/dashboard/finance/faktur-number",
-              label: "Register Invoice & Faktur Number",
-              active: pathname === "/dashboard/finance/faktur-number"
+              href: "/dashboard/analytics/maintenance",
+              label: "Maintenance Analytics",
+              active: pathname === "/dashboard/analytics/maintenance",
             },
-            {
-              href: "/dashboard/finance/invoice",
-              label: "Invoice",
-              active: pathname === "/dashboard/finance/invoice"
-            }]
-        }
-      ]
+          ],
+        },
+      ],
     },
     {
       groupLabel: "",
@@ -221,11 +273,10 @@ export function getMenuList(pathname: string, role: string): Group[] {
               href: "/dashboard/settings/account",
               label: "Account Setting",
               active: pathname.includes("/dashboard/settings/account"),
-            }
-          ]
-        }
-
-      ]
-    }
+            },
+          ],
+        },
+      ],
+    },
   ];
 }
