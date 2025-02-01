@@ -22,17 +22,17 @@ export function SheetMenu() {
           >
             <Link href="/dashboard" className="flex items-center gap-2">
               <Image
-                src="/Saitec.png"
-                alt="SAITEC Prima Mandiri"
+                src="/Ticket.png"
+                alt="Asset Management"
                 width={60}
                 height={40}
                 className="w-auto h-auto"
               />
             </Link>
           </Button>
-        <SheetTitle className="text-orange-600">SAITEC Prima Mandiri</SheetTitle>
+        <SheetTitle className="text-orange-600">Asset Management</SheetTitle>
           <SheetDescription>
-            To get more smart a meter
+            To get protect your assets
           </SheetDescription>
         </SheetHeader>
         <Menu isOpen role="ADMIN" />

@@ -198,3 +198,85 @@ export const ProductSchema = z.object({
     createdAt: z.date(),
     updatedAt: z.date(),
 })
+
+export const EmployeeSchema = z.object({
+    name: z.string().min(3),
+    email: z.string().min(5, {
+        message: "Email id required"
+    }),
+    address: z.string().min(5, {
+        message: "Address is required"
+    }),
+    picture: z.string().min(3),
+    userDept: z.string().min(3, {
+        message: "Depteartment is required"
+    }),
+})
+export const EmployeeSchemaCreate = z.object({
+    name: z.string().min(3),
+    email: z.string().min(5, {
+        message: "Email id required"
+    }),
+    address: z.string().min(5, {
+        message: "Address is required"
+    }),
+    userDept: z.string().min(3, {
+        message: "Depteartment is required"
+    }),
+})
+
+export const DeptSchema = z.object({
+    dept_name: z.string().min(1),
+    note: z.string().min(1)
+})
+
+// HARGA SCHEMA
+export const PriceSchema = z.object({
+    idProduct: z.string().min(3, {
+        message: "Product is required",
+    }),
+    hargaHpp: z
+        .union([z.string(), z.number()]) // Menerima string atau number
+        .refine((value) => typeof value === 'number' || !isNaN(Number(value)), {
+            message: "Harga harus berupa angka",
+        })
+        .transform((value) => typeof value === 'string' ? parseFloat(value) : value), // Hanya parse string, biarkan number
+    hargaJual: z
+        .union([z.string(), z.number()]) // Menerima string atau number
+        .refine((value) => typeof value === 'number' || !isNaN(Number(value)), {
+            message: "Harga harus berupa angka",
+        })
+        .transform((value) => typeof value === 'string' ? parseFloat(value) : value), // Hanya parse string, biarkan number
+    default: z.boolean(),
+    idMtUang: z.string().min(1, {
+        message: "Mata uang is required",
+    }),
+});
+
+export const MtUang_Schema = z.object({
+    name: z.string().min(1, {
+        message: "Name currency is required"
+    }),
+    note: z.string().min(1, {
+        message: "Note / KODE ISO currensi is required"
+    })
+})
+export const Bank_Schema = z.object({
+    name: z.string().min(1, {
+        message: "Bank name is required"
+    }),
+    account: z.string().min(5, {
+        message: "A/C bank is required"
+    }),
+    branch: z.string().min(1, {
+        message: "Branch bank is required"
+    }),
+    address: z.string().min(1, {
+        message: "Address is required"
+    })
+})
+
+export const Tax_Schema = z.object({
+    ppn: z.number(),
+    defaultAs: z.boolean(),
+})

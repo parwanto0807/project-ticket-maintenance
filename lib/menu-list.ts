@@ -75,16 +75,16 @@ export function getMenuList(pathname: string, role: string): Group[] {
               label: "Products Price",
               active: pathname === "/dashboard/master/price-product",
             },
-            {
-              href: "/dashboard/master/customers",
-              label: "Customers",
-              active: pathname === "/dashboard/master/customers",
-            },
-            {
-              href: "/dashboard/master/supplier",
-              label: "Suppliers",
-              active: pathname === "/dashboard/master/supplier",
-            },
+            // {
+            //   href: "/dashboard/master/customers",
+            //   label: "Customers",
+            //   active: pathname === "/dashboard/master/customers",
+            // },
+            // {
+            //   href: "/dashboard/master/supplier",
+            //   label: "Suppliers",
+            //   active: pathname === "/dashboard/master/supplier",
+            // },
             {
               href: "/dashboard/master/employees",
               label: "Employees",

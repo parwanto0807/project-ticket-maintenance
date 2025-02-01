@@ -11,9 +11,13 @@ import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import initials from "initials";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { useCurrentUser } from '@/hooks/use-current-user';
+import { useTheme } from "next-themes"; 
 
 export default function DashboardPage() {
   const user = useCurrentUser();
+  const { theme } = useTheme();
+  const barColor = theme === "dark" ? "#3870fc" : "#ff7700";
+
   return (
     <ScrollArea className="h-full w-full">
       <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
@@ -42,7 +46,7 @@ export default function DashboardPage() {
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Card className='bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-soft-light'>
+              <Card className='bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply'>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
                   <LucideBanknote className="size-4 text-muted-foreground" />
@@ -52,7 +56,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-muted-foreground">+20.1% from last month</p>
                 </CardContent>
               </Card>
-              <Card className='bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-soft-light'>
+              <Card className='bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply'>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Delivery Product</CardTitle>
                   <User className="size-4 text-muted-foreground" />
@@ -62,7 +66,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-muted-foreground">+180.1% from last month</p>
                 </CardContent>
               </Card>
-              <Card className='bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-soft-light'>
+              <Card className='bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply'>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Sales</CardTitle>
                   <CreditCard className="size-4 text-muted-foreground" />
@@ -72,7 +76,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-muted-foreground">+19% from last month</p>
                 </CardContent>
               </Card>
-              <Card className='bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-soft-light'>
+              <Card className='bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply'>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Active Client Now</CardTitle>
                   <Activity className="size-4 text-muted-foreground" />
@@ -84,7 +88,7 @@ export default function DashboardPage() {
               </Card>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <Card className="col-span-2 lg:col-span-4 bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-soft-light">
+              <Card className="col-span-2 lg:col-span-4 bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply">
                 <CardHeader>
                   <CardTitle>Overview</CardTitle>
                 </CardHeader>
@@ -99,12 +103,12 @@ export default function DashboardPage() {
                         axisLine={false}
                         tickFormatter={(value) => `Rp ${value}`}
                       />
-                      <Bar dataKey="total" fill="#ff7700" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="total" fill={barColor} radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
-              <Card className="col-span-2 lg:col-span-3 bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-soft-light">
+              <Card className="col-span-2 lg:col-span-3 bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply">
                 <CardHeader>
                   <CardTitle>Recent Sales</CardTitle>
                   <CardDescription>You made 265 sales this month.</CardDescription>

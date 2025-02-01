@@ -36,20 +36,20 @@ export function Sidebar() {
             {/* <PanelsTopLeft className="w-6 h-6 mr-1" /> */}
             <Image
               src="/Ticket.png"
-              alt="Ticket Maintenance"
+              alt="Asset Management"
               width={60}
               height={40}
               className="w-auto h-auto"
             />
             <span
               className={cn(
-                "text-sm text-yellow-400 whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300",
+                "text-sm text-blue-500 whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300 dark:text-white",
                 sidebar?.isOpen === false
                   ? "-translate-x-96 opacity-0 hidden"
                   : "translate-x-0 opacity-100"
               )}
             >
-              TICKET Maintenance
+              Asset Management
             </span>
           </Link>
         </Button>

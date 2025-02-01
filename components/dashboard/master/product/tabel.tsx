@@ -58,22 +58,22 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                     </div>
 
                     <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-900">
-                        <TableHeader className="rounded-lg text-[14px]">
+                        <TableHeader className="rounded-lg text-[12px]">
                             <TableRow>
-                                <TableHead className="py-8 items-center dark:text-white font-bold">No</TableHead>
-                                <TableHead className="items-center dark:text-white font-bold">Part Number</TableHead>
-                                <TableHead className="items-center dark:text-white font-bold">Part Name</TableHead>
-                                <TableHead className="items-center dark:text-white font-bold">Description</TableHead>
-                                <TableHead className="items-center dark:text-white font-bold">Entry Unit</TableHead>
-                                <TableHead className="items-center dark:text-white font-bold">Stock Unit</TableHead>
-                                <TableHead className="items-center dark:text-white font-bold">Out Unit</TableHead>
-                                <TableHead className="items-center dark:text-white font-bold">Min Stock</TableHead>
-                                <TableHead className="items-center dark:text-white font-bold">Max Stock</TableHead>
-                                <TableHead className="items-center dark:text-white font-bold">Type </TableHead>
-                                <TableHead className="items-center dark:text-white font-bold">Category</TableHead>
-                                <TableHead className="items-center dark:text-white font-bold">Group Product</TableHead>
-                                <TableHead className="items-center dark:text-white font-bold">Brand </TableHead>
-                                <TableHead className="items-center dark:text-white font-bold">Action</TableHead>
+                                <TableHead className="text-black py-8 items-center dark:text-white font-bold uppercase">No</TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Part Number</TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Part Name</TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Description</TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Entry Unit</TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Stock Unit</TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Out Unit</TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Min Stock</TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Max Stock</TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Type </TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Category</TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Group Product</TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Brand </TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody className="text-[12px] border-none">

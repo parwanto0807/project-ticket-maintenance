@@ -1,9 +1,13 @@
 "use client";
 
+import { Button } from '@/components/ui/button';
 import { PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { useRouter } from "next/navigation";
 
 export function CreateProduct() {
+
+
   return (
     <Link
       href="/dashboard/master/products/create" 
@@ -16,12 +20,19 @@ export function CreateProduct() {
 }
 
 export function UpdateProduct({ id }: { id: string }) {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push(`/dashboard/master/products/edit/${id}`);
+  };
+
   return (
-    <Link
-      href={`/dashboard/master/products/edit/${id}`}
-      className=" text-blue-600 rounded-md border p-2 hover:bg-gray-800 h-8 text-center justify-center"
+    <Button
+      onClick={handleClick}
+      variant='outline'
+      className="text-blue-600 rounded-md border p-2 hover:bg-blue-800 h-8 text-center hover:text-white flex justify-center items-center"
     >
       <PencilIcon className="w-4" />
-    </Link>
+    </Button>
   );
 }
