@@ -35,21 +35,21 @@ export function Sidebar() {
           <Link href="/dashboard" className="flex items-center gap-2">
             {/* <PanelsTopLeft className="w-6 h-6 mr-1" /> */}
             <Image
-              src="/Saitec.png"
-              alt="SAITEC Prima Mandiri"
+              src="/Ticket.png"
+              alt="Ticket Maintenance"
               width={60}
               height={40}
               className="w-auto h-auto"
             />
             <span
               className={cn(
-                "text-sm text-orange-600 whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300",
+                "text-sm text-yellow-400 whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300",
                 sidebar?.isOpen === false
                   ? "-translate-x-96 opacity-0 hidden"
                   : "translate-x-0 opacity-100"
               )}
             >
-              SAITEC Prima Mandiri
+              TICKET Maintenance
             </span>
           </Link>
         </Button>
