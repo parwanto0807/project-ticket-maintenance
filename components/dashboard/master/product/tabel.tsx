@@ -58,7 +58,7 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                     </div>
 
                     <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-900">
-                        <TableHeader className="rounded-lg text-[12px]">
+                        <TableHeader>
                             <TableRow>
                                 <TableHead className="text-black py-8 items-center dark:text-white font-bold uppercase">No</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Part Number</TableHead>

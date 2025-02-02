@@ -84,7 +84,7 @@ const PriceTable = async ({ query, currentPage }: { query: string; currentPage: 
                                 <TableHead className="px-2 py-4 font-medium text-center items-center uppercase">ACTION</TableHead>
                             </TableRow>
                         </TableHeader>
-                        <TableBody className="text-[10px] border">
+                        <TableBody className="rounded-lg text-[12px]">
                             {price.map((data, index) => (
                                 <TableRow key={data.id}>
                                     <TableCell className="text-center">{offset + index + 1}</TableCell>

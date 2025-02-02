@@ -78,7 +78,7 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                                 <TableHead scope="col" className="relative py-3 pl-6 pr-3 font-medium uppercase"> Action </TableHead>
                             </TableRow>
                         </TableHeader>
-                        <TableBody>
+                        <TableBody className="rounded-lg text-[12px]">
                             {Array.isArray(employees) && employees.map((employees, index) => (
                                 <TableRow key={employees.id}>
                                     <TableCell className="whitespace-nowrap px-3 py-2">{offset + index + 1}</TableCell>
