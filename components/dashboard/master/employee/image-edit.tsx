@@ -20,40 +20,37 @@ const ImageEdit: React.FC<ImageUploadProps> = ({ setImageUrlEdit }) => {
   
     const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
-      const selectedFile = e.target.files?.[0];
- 
-
+  
       if (file) {
           const imageName = file.name;
-          const imageUrl  = `/uploads/${imageName}`
+          const imageUrl = `/uploads/${imageName}`;
           setFileImage(imageUrl);
           setImageUrlEdit(imageUrl);
-          
+  
           const reader = new FileReader();
-          reader.onloadend= () => {
-            setPreviewImage(reader.result as string);
+          reader.onloadend = () => {
+              setPreviewImage(reader.result as string);
           };
           reader.readAsDataURL(file);
-        
+  
           // Mengirim file gambar ke server
-           const formDataImage = new FormData();
-           formDataImage.append('image', file);
-           //setFormDataImage(formDataImage); // Menyimpan formDataImage ke state di komponen utama
-
-           try {
-            //await axios.post('/api/upload', formData);
-            const res = await fetch('/api/upload', {
-              method: 'POST',
-              body: formDataImage    
-            })
-            console.log("Unggah File Berhasil")
-            if (!res.ok) throw new Error(await res.text())
-
-      } catch (error) {
-          console.error('Error uploading image:', error);
-      } 
+          const formDataImage = new FormData();
+          formDataImage.append('image', file);
+  
+          try {
+              const res = await fetch('/api/upload', {
+                  method: 'POST',
+                  body: formDataImage    
+              });
+  
+              console.log("Unggah File Berhasil");
+              if (!res.ok) throw new Error(await res.text());
+          } catch (error) {
+              console.error('Error uploading image:', error);
+          } 
       }
-    };
+  };
+  
   
     const handleCancelImage = () => {
       setImageUrlEdit("");

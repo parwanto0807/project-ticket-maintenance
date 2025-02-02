@@ -9,14 +9,14 @@ import { getDeptById } from "@/data/master/employee";
 
 export const deleteEmployee = async(id: string)=> {
     try {
-       const deleteEmployee = await db.employee.delete({
+        await db.employee.delete({
             where:{
                 id
             }
         });
         revalidatePath('/dahsboard/master/employees')
         return {success:"Deleted employee successfull"}
-    } catch (error) {
+    } catch {
         return { error:"Filed deleted employee"}
     }
 }
@@ -49,7 +49,7 @@ export const updateEmployee = async (id: string, values: z.infer<typeof Employee
 
         revalidatePath("/dashboard/master/employees")
         return { success: "Succescfully updated employee data" }
-    } catch (error) {
+    } catch {
         return { error: " Filed updated employee data" }
     }
 };
@@ -81,7 +81,7 @@ export const createEmployee = async (values: z.infer<typeof EmployeeSchema>) => 
         });
         revalidatePath("/dashboard/master/employees")
         return { success: "Succescfully created employee data" }
-    } catch (error) {
+    } catch {
         return { error: " Filed created employee data" }
     }
 };
@@ -99,7 +99,6 @@ export const createDept = async (values: z.infer<typeof DeptSchema>) => {
 
     const {
         dept_name,
-        note
     } = validatedFieldDept.data;
 
     const existingDept = await getDeptById(dept_name);
@@ -118,7 +117,7 @@ export const createDept = async (values: z.infer<typeof DeptSchema>) => {
         })
         revalidatePath('/dashboard/master/employees/create')
         return { success: "Succesfully created department" };
-    } catch (error) {
+    } catch {
         return { error: "Filed created department" }
     }
 }
@@ -130,7 +129,7 @@ export const deleteDept = async (id: string) => {
                 id: (id)
             }
         })
-    } catch (error) {
+    } catch {
         return { error: "Filed deleted department" }
     }
 }

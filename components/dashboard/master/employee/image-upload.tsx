@@ -20,7 +20,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ setImageUrl }) => {
   
     const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
-      const selectedFile = e.target.files?.[0];
+      // const selectedFile = e.target.files?.[0];
       if (file) {
           const imageName = file.name;
           const imageUrl  = `/uploads/${imageName}`

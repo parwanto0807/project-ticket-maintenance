@@ -31,7 +31,7 @@ export const createPrice = async (values: z.infer<typeof PriceSchema>) => {
         })
         revalidatePath("/dashboard/master/price-product")
         return { success: "Succesfull created price product" }
-    } catch (error) {
+    } catch  {
         return { error: "Filed created price product" }
     }
 }
@@ -63,7 +63,7 @@ export const updatePrice = async (id: string, values: z.infer<typeof PriceSchema
         })
         revalidatePath("/dashboard/master/price-product")
         return { success: "Succesfull updated price product" }
-    } catch (error) {
+    } catch  {
         return { error: "Filed updated price product" }
     }
 }
@@ -77,14 +77,13 @@ export const deletePrice = async (id: string) => {
         });
         revalidatePath("/dashboard/master/price-product")
         return {success: "Delete price product successfull"}
-    } catch (error) {
+    } catch  {
         return {error: "Delete price product Filed!"}        
     }
 }
 
 export const createMtUang = async (values: z.infer<typeof MtUang_Schema>) => {
     const validatedFields = MtUang_Schema.safeParse(values)
-    const now = new Date();
 
     if (!validatedFields.success) {
         const errors = validatedFields.error.flatten().fieldErrors
@@ -101,7 +100,7 @@ export const createMtUang = async (values: z.infer<typeof MtUang_Schema>) => {
         });
         revalidatePath('/dahsboard/master/price-product')
         return { success: "Succesfull created currency" }
-    } catch (error) {
+    } catch  {
         return { error: "Filed create currency" }
     }
 }
@@ -115,7 +114,7 @@ export const deleteMtuang = async (id: string) => {
         });
         revalidatePath('/dashboard/master/price-product')
         return { success: "Successfull delete currency" }
-    } catch (error) {
+    } catch  {
         return { error: "Filed delete currency" }
     }
 }

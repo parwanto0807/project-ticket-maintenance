@@ -28,7 +28,7 @@ const PriceTable = async ({ query, currentPage }: { query: string; currentPage: 
     return (
         <div className="mt-6 flow-root">
             <div className="inline-block min-w-full align-middle">
-                <div className="rounded-lg p-2 md:pt-0">
+                <div className="rounded-lg p-2 md:pt-0 md:table  bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-900">
                     <div className="md:hidden">
                         {price.map((data) => (
                             <div
@@ -55,8 +55,8 @@ const PriceTable = async ({ query, currentPage }: { query: string; currentPage: 
                                     </div>
                                     <div className="flex-1 w-full items-center justify-between pt-4">
                                         <div className="flex justify-end gap-2">
-                                            {/* <UpdateProduct id={products.id} />
-                                            <DeleteAlertProduct id={products.id} /> */}
+                                            <UpdatePrice id={data.id} />
+                                            <DeleteAlertPrice id={data.id} />
                                         </div>
                                     </div>
                                 </div>
@@ -71,16 +71,17 @@ const PriceTable = async ({ query, currentPage }: { query: string; currentPage: 
                         </div>
                     </div>
 
-                    <Table className="hidden min-w-full md:table">
+                    <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-900">
                         <TableHeader className="border text-[12px]">
                             <TableRow>
-                                <TableHead className="px-4 py-4 font-medium items-center">No</TableHead>
-                                <TableHead className="px-2 font-medium ">Part Number</TableHead>
-                                <TableHead className="px-2 font-medium ">Group Name</TableHead>
-                                <TableHead className="px-2 font-medium text-center">HPP Price</TableHead>
-                                <TableHead className="px-2 py-4 font-medium text-center items-center">Selling Price</TableHead>
-                                <TableHead className="px-2 py-4 font-medium text-center items-center">Created</TableHead>
-                                <TableHead className="px-2 py-4 font-medium text-center items-center">Updated</TableHead>
+                                <TableHead className="px-4 py-4 font-medium items-center uppercase">No</TableHead>
+                                <TableHead className="px-2 font-medium uppercase">Part Number</TableHead>
+                                <TableHead className="px-2 font-medium uppercase">Group Name</TableHead>
+                                <TableHead className="px-2 font-medium text-center uppercase">HPP Price</TableHead>
+                                <TableHead className="px-2 py-4 font-medium text-center items-center uppercase">Selling Price</TableHead>
+                                <TableHead className="px-2 py-4 font-medium text-center items-center uppercase">Created</TableHead>
+                                <TableHead className="px-2 py-4 font-medium text-center items-center uppercase">Updated</TableHead>
+                                <TableHead className="px-2 py-4 font-medium text-center items-center uppercase">ACTION</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody className="text-[10px] border">
@@ -95,7 +96,7 @@ const PriceTable = async ({ query, currentPage }: { query: string; currentPage: 
                                     <TableCell className='text-right items-center'>{formatCurrency(Number(data.hargaJual), data.mtUang.note)}</TableCell>
                                     <TableCell className="text-center">{formatDate(data.createdAt.toString())}</TableCell>
                                     <TableCell className="text-center">{formatDate(data.updatedAt.toString())}</TableCell>
-                                    <TableCell className="flex items-center justify-center object-center pt-1 pb-1 gap-2">
+                                    <TableCell className="flex items-center justify-center gap-2">
                                         <UpdatePrice id={data.id} />
                                         <DeleteAlertPrice id={data.id}/>
                                     </TableCell>

@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Decimal } from "decimal.js";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import { fetchPriceById } from "@/data/master/price";
 import { fetchMtUang } from "@/data/master/price";
@@ -12,6 +13,7 @@ import {
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 import UpdatePriceForm from "@/components/dashboard/master/product-price/update-price-form";
+
 
 const UpdatePrice = async ({
     searchParams, params
@@ -32,8 +34,17 @@ const UpdatePrice = async ({
 
     const productFind = await fetchProductsByName(query, currentPage) || [];
     const validProductFind = Array.isArray(productFind) ? productFind : [];
-    const priceFindById = await fetchPriceById(id) || [];
-    //const validPriceFind = Array.isArray(priceFindById) ? priceFindById : [];
+    const priceFindById = await fetchPriceById(id);
+    const validPriceFind = priceFindById ? {
+        default: priceFindById.default,
+        id: priceFindById.id,
+        createdAt: new Date(priceFindById.createdAt),
+        updatedAt: new Date(priceFindById.updatedAt),
+        idProduct: priceFindById.part_number.id,
+        idMtUang: priceFindById.idMtUang,
+        hargaHpp: new Decimal(priceFindById.hargaHpp),
+        hargaJual: new Decimal(priceFindById.hargaJual),
+    } : null;
     const mtUangFind = await fetchMtUang() || [];
     const validMtUangFind = Array.isArray(mtUangFind) ? mtUangFind : [];
 
@@ -58,8 +69,8 @@ const UpdatePrice = async ({
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
                             <Link href="/dashboard/master/price-product">Price</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
+                    </BreadcrumbLink>
+                </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbPage>Update</BreadcrumbPage>
@@ -69,7 +80,7 @@ const UpdatePrice = async ({
             <UpdatePriceForm
                 totalPages={totalPages}
                 productFind={validProductFind}
-                priceFindById={priceFindById as any}
+                priceFindById={validPriceFind!}
                 mtUangFind={validMtUangFind}
                 productFindById={validProductFindById}
             />

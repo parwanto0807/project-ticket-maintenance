@@ -23,14 +23,12 @@ const CreatePrice = async ({
   }) => { // Menangani kasus error
     const query = searchParams?.query || "";
     const currentPage = Number(searchParams?.page) || 1;
-    // const currentPage= 1
     const totalPages = await fetchProductBynamePages(query);
 
     const productFind = await fetchProductsByName(query, currentPage) || [];
     const validProductFind = Array.isArray(productFind) ? productFind : [];
     const mtUangFind = await fetchMtUang() || [];
     const validMtUangFind = Array.isArray(mtUangFind) ? mtUangFind : [];
-
 
     return (
         <ContentLayout title="Create Product">

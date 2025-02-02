@@ -2,7 +2,6 @@ import Link from "next/link"
 import CreateEmployeeForm from "@/components/dashboard/master/employee/create-from";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import { 
-    getEmployeesFindAll,
     getDeptFindAll
  } from "@/data/master/employee";
 import {

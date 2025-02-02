@@ -33,7 +33,7 @@ import { toast } from "sonner";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 
 const CreateEmployeeForm = ({ deptFind }: { deptFind: Department[] }) => {
-  const [isPending, startTransition] = useTransition();
+  const [isPending] = useTransition();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>("/noavatar.png");
   const router = useRouter();

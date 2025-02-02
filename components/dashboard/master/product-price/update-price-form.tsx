@@ -3,7 +3,7 @@
 import * as z from "zod";
 import * as React from "react";
 import { useState, useTransition, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PriceSchema } from "@/schemas";
@@ -32,7 +32,6 @@ import {
     Command,
     CommandEmpty,
     CommandGroup,
-    CommandInput,
     CommandItem,
     CommandList,
 } from "@/components/ui/command";
@@ -43,7 +42,6 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import Link from "next/link";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { Switch } from "@/components/ui/switch";
 import Search from "@/components/ui/search";
@@ -75,7 +73,7 @@ const UpdatePriceForm = ({
     const [success, setSuccess] = useState<string | undefined>("");
     const [isPending, startTransition] = useTransition();
     const [loading, setLoading] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
+    const [searchQuery] = useState("");
     const [open, setOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<ProductNameOnly>();
     const router = useRouter();
@@ -124,9 +122,9 @@ const UpdatePriceForm = ({
         });
     };
 
-    const handleSearchChange = (search: string) => {
-        setSearchQuery(search);
-    };
+    // const handleSearchChange = (search: string) => {
+    //     setSearchQuery(search);
+    // };
 
     const filteredProducts = productFind.filter((product) =>
         product.part_name.toLowerCase().includes(searchQuery.toLowerCase()) ||

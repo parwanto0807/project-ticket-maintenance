@@ -37,7 +37,7 @@ export default function DeleteAlertPrice({ id }: { id: string }) {
     <div>
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="outline" className="h-8 text-red-500 rounded-md border p-2 hover:bg-gray-800 text-center justify-center" >
+          <Button variant="outline" className="h-8 text-red-500 rounded-md border p-2 hover:bg-red-800 hover:text-white text-center justify-center" >
             <span className="sr-only">Delete</span>
             <TrashIcon className="w-4" />
           </Button>

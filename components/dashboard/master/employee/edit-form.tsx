@@ -20,7 +20,7 @@ import {
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from "react";
-import { useFormState } from 'react-dom';
+// import { useFormState } from 'react-dom';
 import { ArrowLeftStartOnRectangleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -30,7 +30,7 @@ import Image from 'next/image';
 import ImageEdit from './image-edit';
 import { Input } from "@/components/ui/input";
 import CreateDeptForm from './create-dept-form';
-import { EmployeeSchema, EmployeeSchemaCreate } from "@/schemas";
+import { EmployeeSchemaCreate } from "@/schemas";
 import { toast } from "sonner";
 
 
@@ -40,7 +40,7 @@ function EditForm({
   employee: Employee;
   deptFind: Department[];
 }) {
-  const [isPending, startTransition] = useTransition();
+  const [isPending] = useTransition();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
