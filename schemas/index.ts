@@ -236,22 +236,43 @@ export const PriceSchema = z.object({
         message: "Product is required",
     }),
     hargaHpp: z
-        .union([z.string(), z.number()]) // Menerima string atau number
-        .refine((value) => typeof value === 'number' || !isNaN(Number(value)), {
+        .union([z.string(), z.number(), z.any()]) // Tambahkan `z.any()` untuk menangani Decimal
+        .refine((value) => {
+            if (typeof value === 'object' && value !== null && 'toNumber' in value) {
+                return true; // Jika Decimal, biarkan lolos
+            }
+            return typeof value === 'number' || !isNaN(Number(value));
+        }, {
             message: "Harga harus berupa angka",
         })
-        .transform((value) => typeof value === 'string' ? parseFloat(value) : value), // Hanya parse string, biarkan number
+        .transform((value) => {
+            if (typeof value === 'object' && value !== null && 'toNumber' in value) {
+                return value.toNumber(); // Konversi Decimal ke number
+            }
+            return typeof value === 'string' ? parseFloat(value) : value;
+        }),
     hargaJual: z
-        .union([z.string(), z.number()]) // Menerima string atau number
-        .refine((value) => typeof value === 'number' || !isNaN(Number(value)), {
+        .union([z.string(), z.number(), z.any()]) // Tambahkan `z.any()` untuk menangani Decimal
+        .refine((value) => {
+            if (typeof value === 'object' && value !== null && 'toNumber' in value) {
+                return true;
+            }
+            return typeof value === 'number' || !isNaN(Number(value));
+        }, {
             message: "Harga harus berupa angka",
         })
-        .transform((value) => typeof value === 'string' ? parseFloat(value) : value), // Hanya parse string, biarkan number
+        .transform((value) => {
+            if (typeof value === 'object' && value !== null && 'toNumber' in value) {
+                return value.toNumber();
+            }
+            return typeof value === 'string' ? parseFloat(value) : value;
+        }),
     default: z.boolean(),
     idMtUang: z.string().min(1, {
         message: "Mata uang is required",
     }),
 });
+
 
 export const MtUang_Schema = z.object({
     name: z.string().min(1, {

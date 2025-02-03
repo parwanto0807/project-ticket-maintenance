@@ -44,13 +44,13 @@ export default auth(async (req: CustomNextRequest) => {
 
   if (isLoggedIn) {
      const userRole = token?.role;
-     console.log("Login Sebagai", userRole);
+    //  console.log("Login Sebagai", userRole);
 
     if (userRole === 'USER' && nextUrl.pathname.startsWith('/dashboard')) {
-      console.log("LOGIN SEBAGAI USER",  token?.email);
+      // console.log("LOGIN SEBAGAI USER",  token?.email);
     }
     else if (userRole === 'ADMIN' && nextUrl.pathname.startsWith('/dashboard')) {
-      console.log("LOGIN SEBAGAI ADMIN", token?.email);
+      // console.log("LOGIN SEBAGAI ADMIN", token?.email);
     }
    }
 

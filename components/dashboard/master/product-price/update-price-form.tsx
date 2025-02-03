@@ -2,15 +2,12 @@
 
 import * as z from "zod";
 import * as React from "react";
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PriceSchema } from "@/schemas";
 import { updatePrice } from "@/action/master/price";
-import { Check, ChevronsUpDown } from "lucide-react";
-import Pagination from "@/components/ui/pagination";
-import { cn } from "@/lib/utils";
 import {
     Form,
     FormControl,
@@ -28,87 +25,55 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandItem,
-    CommandList,
-} from "@/components/ui/command";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { Switch } from "@/components/ui/switch";
-import Search from "@/components/ui/search";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
-import { Harga, MataUang } from "@prisma/client";
+import { MataUang } from "@prisma/client";
 import MtUangForm from "./mtUang-form";
+import { formatCurrencyInvoice } from "@/lib/utils";
 
-type ProductNameOnly = {
+type PriceWithPartNumber = {
     id: string;
-    part_name: string;
-    part_number: string;
+    idProduct: string;
+    idMtUang: string;
+    hargaHpp: number;
+    hargaJual: number;
+    default: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    part_number?: {
+        part_name: string;
+    };
 };
 
 const UpdatePriceForm = ({
-    productFindById,
     priceFindById,
-    productFind,
-    totalPages,
     mtUangFind
 }: {
-    productFindById: ProductNameOnly[],
-    priceFindById: Harga,
-    productFind: ProductNameOnly[],
-    totalPages: number,
+    priceFindById: PriceWithPartNumber,
     mtUangFind: MataUang[],
 }) => {
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
     const [isPending, startTransition] = useTransition();
     const [loading, setLoading] = useState(false);
-    const [searchQuery] = useState("");
-    const [open, setOpen] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<ProductNameOnly>();
     const router = useRouter();
-
-    const convertDecimal = (decimalValue: { toNumber?: () => number }) => {
-        if (decimalValue && typeof decimalValue.toNumber === 'function') {
-            return decimalValue.toNumber();
-        }
-        return 0; // default if it's not a Decimal object
-    };
+    const mtUangFindName = mtUangFind.find((mtUangFind) => mtUangFind.id === priceFindById.idMtUang);
+    console.log(mtUangFindName)
 
     const form = useForm<z.infer<typeof PriceSchema>>({
         resolver: zodResolver(PriceSchema),
         defaultValues: {
             idProduct: priceFindById.idProduct || '',
-            idMtUang: priceFindById.idMtUang || 'IDR',
-            hargaHpp: convertDecimal(priceFindById.hargaHpp), // Make sure to convert to a number
+            idMtUang: priceFindById.idMtUang || 'Rp',
+            hargaHpp: priceFindById.hargaHpp,
             default: priceFindById.default || false,
-            hargaJual: convertDecimal(priceFindById.hargaJual),
+            hargaJual: priceFindById.hargaJual,
         },
     });
-
-    useEffect(() => {
-        // Set default value when form loads
-        const defaultProduct = productFindById.find(product => product.id === priceFindById.idProduct);
-        console.log(defaultProduct)
-
-        if (defaultProduct) {
-            setSelectedProduct(defaultProduct);
-            form.setValue('idProduct', defaultProduct.id);
-        } else {
-            console.warn(`Product with ID ${priceFindById.idProduct} not found in productFindById`);
-        }
-    }, [form, priceFindById, productFindById]);
-
 
     const onSubmit = (values: z.infer<typeof PriceSchema>) => {
         setLoading(true);
@@ -130,21 +95,6 @@ const UpdatePriceForm = ({
         });
     };
 
-    // const handleSearchChange = (search: string) => {
-    //     setSearchQuery(search);
-    // };
-
-    const filteredProducts = productFind.filter((product) =>
-        product.part_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.part_number.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    const handleSelectProduct = (product: ProductNameOnly) => {
-        setSelectedProduct(product);
-        form.setValue("idProduct", product.id); // Set the product ID in the form
-        setOpen(false);
-    };
-
     return (
         <Form {...form}>
             <div className='mt-6 grid grid-cols-1 sm:grid-cols-4 items-center justify-center space-between'>
@@ -159,14 +109,35 @@ const UpdatePriceForm = ({
             <div className="w-full rounded-lg border px-4 shadow-lg mt-4">
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-4 mb-12">
                     <div className="mt-1 grid grid-cols-1 gap-4 gap-y-1 sm:grid-cols-1 items-center justify-center space-between">
-                        <div className="mt-1 grid grid-cols-2 gap-4 gap-y-4 sm:grid-cols-8 items-center justify-center space-between mb-4">
+                        <div className='w-full md:w-1/3 space-y-6 items-center justify-center'>
+                            <FormField
+                                control={form.control}
+                                name='idProduct'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="uppercase">Part Name</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                {...field}
+                                                type="text"
+                                                disabled={isPending}
+                                                value={priceFindById.part_number?.part_name || ''}
+                                                placeholder="Part Name"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className="flex w-full gap-x-2 mt-4 md:w-1/2 items-center justify-center space-between mb-4">
                             <div className="w-full col-span-2 space-y-6 items-center justify-center">
                                 <FormField
                                     control={form.control}
                                     name="idMtUang"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Currency</FormLabel>
+                                            <FormLabel className="uppercase">Currency</FormLabel>
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value}
@@ -190,66 +161,8 @@ const UpdatePriceForm = ({
                                 />
                             </div>
                             <div className="w-full space-y-6 mt-8">
-                                    <MtUangForm mtUangFind={mtUangFind} />
-                                </div>
-                        </div>
-                        <div className="text-xs">Part Name</div>
-                        <div className='w-full space-y-6 items-center justify-center'>
-                            <Popover open={open} onOpenChange={setOpen}>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        role="combobox"
-                                        aria-expanded={open}
-                                        className="w-full md:w-1/2 justify-between"
-                                    >
-                                        {selectedProduct
-                                            ? selectedProduct.part_name
-                                            : "Select part name ..."}
-                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-full p-0 max-w-xl">
-                                    <Command>
-                                        <div className="flex flex-col w-full">
-                                            {/* Ensure the Search component takes full width */}
-                                            <div className="flex space-y-1 p-2">
-                                                <Search placeholder="Search product price..." />
-                                            </div>
-                                            <CommandList className="flex-1">
-                                                {filteredProducts.length === 0 ? (
-                                                    <CommandEmpty>No part name found.</CommandEmpty>
-                                                ) : (
-                                                    <CommandGroup>
-                                                        {filteredProducts.map((product) => (
-                                                            <CommandItem
-                                                                key={product.id}
-                                                                onSelect={() => handleSelectProduct(product)}
-                                                                disabled={isPending}
-                                                            >
-                                                                <Check
-                                                                    className={cn(
-                                                                        "mr-2 h-4 w-4",
-                                                                        selectedProduct?.id === product.id ? "opacity-100" : "opacity-0"
-                                                                    )}
-                                                                />
-                                                                <div className="flex flex-col">
-                                                                    <span>{product.part_name}</span>
-                                                                    <span className="text-xs text-gray-500">{product.part_number}</span>
-                                                                </div>
-                                                            </CommandItem>
-                                                        ))}
-                                                    </CommandGroup>
-                                                )}
-                                            </CommandList>
-
-                                            <div className="flex justify-center mt-4">
-                                                <Pagination totalPages={totalPages} />
-                                            </div>
-                                        </div>
-                                    </Command>
-                                </PopoverContent>
-                            </Popover>
+                                <MtUangForm mtUangFind={mtUangFind} />
+                            </div>
                         </div>
 
                         <div className='w-full md:w-1/4 space-y-6 items-center justify-center'>
@@ -258,7 +171,7 @@ const UpdatePriceForm = ({
                                 name='hargaHpp'
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Harga HPP</FormLabel>
+                                        <FormLabel >COST OF PURCHASE: {mtUangFindName ? formatCurrencyInvoice(Number(field.value), mtUangFindName.note) : 'N/A'}</FormLabel>
                                         <FormControl>
                                             <Input
                                                 {...field}
@@ -279,7 +192,7 @@ const UpdatePriceForm = ({
                                 name='hargaJual'
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Harga Jual</FormLabel>
+                                        <FormLabel>SALES PRICE: {mtUangFindName ? formatCurrencyInvoice(Number(field.value), mtUangFindName.note) : 'N/A'}</FormLabel>
                                         <FormControl>
                                             <Input
                                                 {...field}
