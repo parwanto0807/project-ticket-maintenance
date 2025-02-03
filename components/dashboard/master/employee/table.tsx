@@ -86,7 +86,7 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                                         <div className="flex item-center gap-2">
                                             <Image
                                                 src={employees.picture || "/noavatar.png"}
-                                                alt={`${employees.name}'s profile picture`}
+                                                alt={`${employees.name}'profile picture`}
                                                 width={50}
                                                 height={30}
                                                 className="rounded-lg mr-2"
