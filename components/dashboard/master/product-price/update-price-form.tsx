@@ -78,20 +78,28 @@ const UpdatePriceForm = ({
     const [selectedProduct, setSelectedProduct] = useState<ProductNameOnly>();
     const router = useRouter();
 
+    const convertDecimal = (decimalValue: { toNumber?: () => number }) => {
+        if (decimalValue && typeof decimalValue.toNumber === 'function') {
+            return decimalValue.toNumber();
+        }
+        return 0; // default if it's not a Decimal object
+    };
+
     const form = useForm<z.infer<typeof PriceSchema>>({
         resolver: zodResolver(PriceSchema),
         defaultValues: {
-            // idProduct: priceFindById.idProduct || '',
+            idProduct: priceFindById.idProduct || '',
             idMtUang: priceFindById.idMtUang || 'IDR',
-            hargaHpp: Number(priceFindById.hargaHpp) || 0,
+            hargaHpp: convertDecimal(priceFindById.hargaHpp), // Make sure to convert to a number
             default: priceFindById.default || false,
-            hargaJual: Number(priceFindById.hargaJual) || 0,
+            hargaJual: convertDecimal(priceFindById.hargaJual),
         },
     });
 
     useEffect(() => {
         // Set default value when form loads
         const defaultProduct = productFindById.find(product => product.id === priceFindById.idProduct);
+        console.log(defaultProduct)
 
         if (defaultProduct) {
             setSelectedProduct(defaultProduct);

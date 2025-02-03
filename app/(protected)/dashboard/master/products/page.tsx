@@ -25,7 +25,6 @@ const ProductsPage = async ({
   }
 }) => {
   const { query = "", page } = await searchParams || { query: "", page: "1" };
-
   const currentPage = Number(page) || 1;
   const totalPages = await fetchProductPages(query || "");
 

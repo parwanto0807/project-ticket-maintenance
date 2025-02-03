@@ -1,3 +1,5 @@
+"use server";
+
 import Link from "next/link"
 import { Decimal } from "decimal.js";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
@@ -13,7 +15,7 @@ import {
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 import UpdatePriceForm from "@/components/dashboard/master/product-price/update-price-form";
-
+// import { PriceSchema } from "@/schemas/index";
 
 const UpdatePrice = async ({
     searchParams, params
@@ -24,10 +26,11 @@ const UpdatePrice = async ({
     };
     params: { id: string };
 }) => {
-    const id = params.id
-    const query = searchParams?.query || "";
-    const currentPage = Number(searchParams?.page) || 1;
-    const totalPages = await fetchProductBynamePages(query);
+    // const id = params.id
+    const { id ="" } = await params || {id: ""}
+    const { query = "", page } = await searchParams || { query: "", page: "1" };
+    const currentPage = Number(page) || 1;
+    const totalPages = await fetchProductBynamePages(query || "");
 
     const productFindById = await fetchProductsByNameNoLimit(query) || [];
     const validProductFindById = Array.isArray(productFindById) ? productFindById : [];
@@ -35,19 +38,21 @@ const UpdatePrice = async ({
     const productFind = await fetchProductsByName(query, currentPage) || [];
     const validProductFind = Array.isArray(productFind) ? productFind : [];
     const priceFindById = await fetchPriceById(id);
-    const validPriceFind = priceFindById ? {
-        default: priceFindById.default,
-        id: priceFindById.id,
-        createdAt: new Date(priceFindById.createdAt),
-        updatedAt: new Date(priceFindById.updatedAt),
-        idProduct: priceFindById.part_number.id,
-        idMtUang: priceFindById.idMtUang,
-        hargaHpp: new Decimal(priceFindById.hargaHpp),
-        hargaJual: new Decimal(priceFindById.hargaJual),
-    } : null;
+    const validPriceFind = Array.isArray(priceFindById) && priceFindById.length > 0 ? priceFindById[0] : { 
+        id: "", 
+        default: false, 
+        createdAt: new Date(), 
+        updatedAt: new Date(), 
+        idProduct: "", 
+        idMtUang: "", 
+        hargaHpp: Decimal.toString(), 
+        hargaJual: Decimal.toString() 
+    };
     const mtUangFind = await fetchMtUang() || [];
     const validMtUangFind = Array.isArray(mtUangFind) ? mtUangFind : [];
 
+    // console.log(validProductFind)
+    // console.log(validPriceFind)
 
 
     return (
@@ -80,7 +85,7 @@ const UpdatePrice = async ({
             <UpdatePriceForm
                 totalPages={totalPages}
                 productFind={validProductFind}
-                priceFindById={validPriceFind!}
+                priceFindById={validPriceFind}
                 mtUangFind={validMtUangFind}
                 productFindById={validProductFindById}
             />

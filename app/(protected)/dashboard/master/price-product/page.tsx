@@ -24,9 +24,9 @@ const PricePage = async ({
     page?: string;
   }
 }) => {
-  const query = searchParams?.query || "";
-  const currentPage = Number(searchParams?.page) || 1;
-  const totalPages = await FetchPriceAllPages(query);
+  const { query = "", page } = await searchParams || { query: "", page: "1" };
+  const currentPage = Number(page) || 1;
+  const totalPages = await FetchPriceAllPages(query || "");
   return (
     <ContentLayout title="Product Price">
       <Breadcrumb>
