@@ -259,21 +259,22 @@ model KategoriProduct {
 }
 
 model Asset {
-  id             Int            @id @default(autoincrement())
-  name           String // Nama aset (bisa diisi manual atau diambil dari nama Product)
-  description    String?
-  category       String
-  status         AssetStatus
-  location       String?
-  purchaseDate   DateTime?
-  purchaseCost   Float?
-  residualValue  Float? // Nilai sisa aset setelah penyusutan
-  usefulLife     Int? // Masa manfaat aset (dalam tahun)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  depreciations  Depreciation[] // Relasi ke tabel penyusutan
-  assetTypeId    Int // Relasi ke jenis aset
-  assetType      AssetType      @relation(fields: [assetTypeId], references: [id])
+  id            String         @id @default(uuid()) @map("_id")
+  assetNumber   String
+  name          String // Nama aset (bisa diisi manual atau diambil dari nama Product)
+  description   String?
+  category      String
+  status        AssetStatus
+  location      String?
+  purchaseDate  DateTime?
+  purchaseCost  Float?
+  residualValue Float? // Nilai sisa aset setelah penyusutan
+  usefulLife    Int? // Masa manfaat aset (dalam tahun)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  depreciations Depreciation[] // Relasi ke tabel penyusutan
+  assetTypeId   String // Relasi ke jenis aset
+  assetType     AssetType      @relation(fields: [assetTypeId], references: [id])
 
   // Relasi ke Product (setiap Asset merujuk ke satu Product)
   productId  String    @map("product_id") // Relasi ke Product
@@ -283,29 +284,30 @@ model Asset {
 }
 
 model AssetType {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid()) @map("_id")
   name        String // Nama jenis aset (contoh: "Kendaraan", "Peralatan Elektronik")
   description String? // Deskripsi jenis aset
   assets      Asset[] // Relasi ke aset
+  kode        String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model Depreciation {
-  id                 Int              @id @default(autoincrement())
-  assetId            Int // Relasi ke aset
+  id                 String           @id @default(uuid()) @map("_id")
+  assetId            String // Relasi ke aset
   asset              Asset            @relation(fields: [assetId], references: [id])
   date               DateTime // Tanggal pencatatan penyusutan
   amount             Float // Jumlah penyusutan pada periode ini
   description        String? // Deskripsi (opsional)
-  depreciationTypeId Int // Relasi ke tipe depresiasi
+  depreciationTypeId String // Relasi ke tipe depresiasi
   depreciationType   DepreciationType @relation(fields: [depreciationTypeId], references: [id])
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 }
 
 model DepreciationType {
-  id            Int            @id @default(autoincrement())
+  id            String         @id @default(uuid()) @map("_id")
   name          String // Nama tipe depresiasi (contoh: "Straight-Line", "Double Declining Balance")
   description   String? // Deskripsi tipe depresiasi
   depreciations Depreciation[] // Relasi ke depresiasi

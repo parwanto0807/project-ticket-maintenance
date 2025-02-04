@@ -110,15 +110,15 @@ export function getMenuList(pathname: string, role: string): Group[] {
           icon: HardDrive,
           submenus: [
             {
-              href: "/dashboard/assets/list",
+              href: "/dashboard/asset/asset-list",
               label: "Asset List",
-              active: pathname === "/dashboard/assets/list",
+              active: pathname === "/dashboard/asset/asset-list",
             },
-            {
-              href: "/dashboard/assets/register",
-              label: "Register Asset",
-              active: pathname === "/dashboard/assets/register",
-            },
+            // {
+            //   href: "/dashboard/assets/register",
+            //   label: "Register Asset",
+            //   active: pathname === "/dashboard/assets/register",
+            // },
             {
               href: "/dashboard/assets/tracking",
               label: "Asset Tracking",
