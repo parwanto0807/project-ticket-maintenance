@@ -1,4 +1,4 @@
-import {  UserRole } from "@prisma/client";
+import { UserRole, AssetStatus } from "@prisma/client";
 import * as z from "zod";
 
 export const SettingSchema = z.object({
@@ -283,21 +283,31 @@ export const MtUang_Schema = z.object({
     })
 })
 export const Bank_Schema = z.object({
-    name: z.string().min(1, {
-        message: "Bank name is required"
-    }),
-    account: z.string().min(5, {
-        message: "A/C bank is required"
-    }),
-    branch: z.string().min(1, {
-        message: "Branch bank is required"
-    }),
-    address: z.string().min(1, {
-        message: "Address is required"
-    })
+    name: z.string().min(1, {message: "Bank name is required"}),
+    account: z.string().min(5, {message: "A/C bank is required"}),
+    branch: z.string().min(1, {message: "Branch bank is required"}),
+    address: z.string().min(1, {message: "Address is required"})
 })
 
 export const Tax_Schema = z.object({
     ppn: z.number(),
     defaultAs: z.boolean(),
 })
+
+export const AssetSchema = z.object({
+    assetNumber: z.string().nonempty({ message: "Asset number cannot be empty" }),
+    name: z.string().nonempty({ message: "Name cannot be empty" }),
+    description: z.string().nullable().optional().or(z.literal("")).refine(desc => desc === null || desc === undefined || desc.length <= 500, { message: "Description must be 500 characters or less" }),
+    category: z.string().nonempty({ message: "Category cannot be empty" }),
+    status: z.nativeEnum(AssetStatus, { message: "Invalid status" }),
+    location: z.string().nullable().optional().or(z.literal("")).refine(loc => loc === null || loc === undefined || loc.length <= 5, { message: "Location must be 5 characters or less" }),
+    purchaseDate: z.date().optional().refine(date => date !== undefined && !isNaN(date.getTime()), { message: "Invalid purchase date" }),
+    purchaseCost: z.number().nonnegative({ message: "Purchase cost must be a non-negative number" }).optional(),
+    residualValue: z.number().nonnegative({ message: "Residual value must be a non-negative number" }).optional(),
+    usefulLife: z.number().int().nonnegative({ message: "Useful life must be a non-negative integer" }).optional(),
+    createdAt: z.date().default(() => new Date()),
+    updatedAt: z.date().default(() => new Date()).refine(date => date <= new Date(), { message: "UpdatedAt can't be in the future" }),
+    assetTypeId: z.string().nonempty({ message: "Asset type ID cannot be empty" }),
+    productId: z.string().nonempty({ message: "Product ID cannot be empty" }),
+    employeeId: z.string().nullable().optional().or(z.literal("")),
+});

@@ -3,7 +3,6 @@ import Link from "next/link"
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import Search from "@/components/ui/search";
 import Pagination from "@/components/ui/pagination";
-import { CreateProduct } from "@/components/dashboard/master/product/buttons";
 
 import {
   Breadcrumb,
@@ -15,6 +14,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { fetchAssetListPages } from "@/data/asset/asset";
 import AssetTable from "@/components/asset-management/asset/tabel";
+import { CreateAssetButton } from "@/components/asset-management/asset/buttons";
 
 const AssetList = async ({
   searchParams
@@ -53,7 +53,7 @@ const AssetList = async ({
         <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
           <div className="flex items-center justify-between gap-2">
             <Search placeholder="Search Product..." />
-            <CreateProduct />
+            <CreateAssetButton />
           </div>
 
           <div className="w-full">

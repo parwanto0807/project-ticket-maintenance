@@ -1,5 +1,4 @@
 import Link from "next/link"
-import CreateProductForm from "@/components/dashboard/master/product/create-product-form";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import { fetchAssetType } from "@/data/asset/asset";
 import {
@@ -10,13 +9,14 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
+import CreateAssetForm from "@/components/asset-management/asset/create-asset-form";
 
 const RegisterAsset = async () => {
     const assetType = await fetchAssetType() || [];
     const validAssetType = Array.isArray(assetType) ? assetType : [];  // Menangani
 
     return (
-        <ContentLayout title="Create Product">
+        <ContentLayout title="Register Asset">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -42,8 +42,8 @@ const RegisterAsset = async () => {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <CreateProductForm
-                typeFind={validAssetType}
+            <CreateAssetForm
+                assetTypeFind={validAssetType}
             />
         </ContentLayout>
     );
