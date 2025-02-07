@@ -10,10 +10,31 @@ import {
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 import CreateAssetForm from "@/components/asset-management/asset/create-asset-form";
+import { fetchProductBynamePages, fetchProductsByName } from "@/data/master/products";
+import { getEmployeesFindData } from "@/data/master/employee";
 
-const RegisterAsset = async () => {
+const RegisterAsset = async ({
+    searchParams,
+  }: {
+    searchParams?: {
+      query?: string;
+      page?: string;
+    }
+  }) => {
+
+    const { query = "", page } = await searchParams || { query: "", page: "1" };
+
+    const currentPage = Number(page) || 1;
+    const totalPages = await fetchProductBynamePages(query || "");
+
     const assetType = await fetchAssetType() || [];
     const validAssetType = Array.isArray(assetType) ? assetType : [];  // Menangani
+
+    const productFind = await fetchProductsByName(query, currentPage) || [];
+    const validProduct = Array.isArray(productFind) ? productFind : [];
+
+    const employeeFind = await getEmployeesFindData() || [];
+    const validEmployeeFind = Array.isArray(employeeFind) ? employeeFind : [];
 
     return (
         <ContentLayout title="Register Asset">
@@ -44,6 +65,9 @@ const RegisterAsset = async () => {
             </Breadcrumb>
             <CreateAssetForm
                 assetTypeFind={validAssetType}
+                productDataFind={validProduct}
+                employeeDataFind={validEmployeeFind}
+                totalPages={totalPages}
             />
         </ContentLayout>
     );

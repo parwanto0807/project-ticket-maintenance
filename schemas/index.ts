@@ -283,10 +283,10 @@ export const MtUang_Schema = z.object({
     })
 })
 export const Bank_Schema = z.object({
-    name: z.string().min(1, {message: "Bank name is required"}),
-    account: z.string().min(5, {message: "A/C bank is required"}),
-    branch: z.string().min(1, {message: "Branch bank is required"}),
-    address: z.string().min(1, {message: "Address is required"})
+    name: z.string().min(1, { message: "Bank name is required" }),
+    account: z.string().min(5, { message: "A/C bank is required" }),
+    branch: z.string().min(1, { message: "Branch bank is required" }),
+    address: z.string().min(1, { message: "Address is required" })
 })
 
 export const Tax_Schema = z.object({
@@ -296,9 +296,6 @@ export const Tax_Schema = z.object({
 
 export const AssetSchema = z.object({
     assetNumber: z.string().nonempty({ message: "Asset number cannot be empty" }),
-    name: z.string().nonempty({ message: "Name cannot be empty" }),
-    description: z.string().nullable().optional().or(z.literal("")).refine(desc => desc === null || desc === undefined || desc.length <= 500, { message: "Description must be 500 characters or less" }),
-    category: z.string().nonempty({ message: "Category cannot be empty" }),
     status: z.nativeEnum(AssetStatus, { message: "Invalid status" }),
     location: z.string().nullable().optional().or(z.literal("")).refine(loc => loc === null || loc === undefined || loc.length <= 5, { message: "Location must be 5 characters or less" }),
     purchaseDate: z.date().optional().refine(date => date !== undefined && !isNaN(date.getTime()), { message: "Invalid purchase date" }),
@@ -309,5 +306,14 @@ export const AssetSchema = z.object({
     updatedAt: z.date().default(() => new Date()).refine(date => date <= new Date(), { message: "UpdatedAt can't be in the future" }),
     assetTypeId: z.string().nonempty({ message: "Asset type ID cannot be empty" }),
     productId: z.string().nonempty({ message: "Product ID cannot be empty" }),
+    departmentId: z.string().nonempty({ message: "Department ID cannot be empty" }),
     employeeId: z.string().nullable().optional().or(z.literal("")),
+});
+
+export const AssetTypeSchema = z.object({
+    name: z.string().min(1, "Nama jenis aset harus diisi"), // Nama aset tidak boleh kosong
+    description: z.string().optional().nullable(), // Deskripsi bisa kosong
+    kode: z.string().min(1, "Kode aset harus diisi"), // Kode wajib diisi
+    createdAt: z.date().optional(), // Nilai default dari database
+    updatedAt: z.date().optional(), // Nilai akan diperbarui otomatis
 });

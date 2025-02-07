@@ -118,6 +118,7 @@ model Department {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @default(now()) @updatedAt
   employee  Employee[] @relation("EmployeeDept")
+  asset     Asset[] @relation("DepartmentAsset")
 }
 
 //Product Tabel 
@@ -261,9 +262,6 @@ model KategoriProduct {
 model Asset {
   id            String         @id @default(uuid()) @map("_id")
   assetNumber   String
-  name          String // Nama aset (bisa diisi manual atau diambil dari nama Product)
-  description   String?
-  category      String
   status        AssetStatus
   location      String?
   purchaseDate  DateTime?
@@ -272,14 +270,16 @@ model Asset {
   usefulLife    Int? // Masa manfaat aset (dalam tahun)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  depreciations Depreciation[] // Relasi ke tabel penyusutan
-  assetTypeId   String // Relasi ke jenis aset
+  depreciations Depreciation[] 
+  assetTypeId   String 
   assetType     AssetType      @relation(fields: [assetTypeId], references: [id])
+  departmentId  String 
 
   // Relasi ke Product (setiap Asset merujuk ke satu Product)
   productId  String    @map("product_id") // Relasi ke Product
   product    Product   @relation(fields: [productId], references: [id], name: "ProductAssets")
   employee   Employee? @relation(fields: [employeeId], references: [id], name: "AssignAssets")
+  department Department? @relation(fields: [departmentId], references: [id], name: "DepartmentAsset")
   employeeId String?
 }
 

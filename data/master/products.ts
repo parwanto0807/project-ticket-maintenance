@@ -329,11 +329,6 @@ export async function fetchProductsByName(query: string, currentPage: number) {
                 satuan_pengeluaran: true,
             },
             where: {
-                // jenisproduct: {
-                //     name: {
-                //         equals: "Finished Goods",
-                //     },
-                // },
                 OR: [
                     { part_name: { contains: query, mode: 'insensitive' } },
                     { part_number: { contains: query, mode: 'insensitive' } },

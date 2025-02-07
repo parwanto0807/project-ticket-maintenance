@@ -1,12 +1,12 @@
 "use client"
 
 import * as z from "zod";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AssetSchema } from "@/schemas";
-// import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 import {
     Form,
     FormControl,
@@ -32,20 +32,52 @@ import {
 // import { format } from 'date-fns';
 import { Button } from "@/components/ui/button"
 import { AssetType } from "@prisma/client";
+
+type Employee = {
+    id: string;
+    name: string;
+    email: string;
+    address: string;
+    picture: string;
+    signInvoice: boolean;
+    userDept: string;
+    createdAt: Date;
+    updatedAt: Date;
+    department?: {
+        id: string;
+        dept_name: string;
+    };
+};
 import { toast } from "sonner";
 import Link from "next/link";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { createAsset } from "@/action/asset/asset";
 import { AssetStatus } from "@prisma/client";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
+import Search from "@/components/ui/search";
+import Pagination from "@/components/ui/pagination";
+import TypeAssetForm from "./type-asset-form";
 // import { Calendar } from "@/components/ui/calendar";
 
 
-
+type ProductNameOnly = {
+    id: string;
+    part_name: string;
+    part_number: string;
+};
 
 const CreateAssetForm = ({
-    assetTypeFind
+    assetTypeFind,
+    productDataFind,
+    totalPages,
+    employeeDataFind,
 }: {
     assetTypeFind: AssetType[];
+    totalPages: number,
+    productDataFind: ProductNameOnly[];
+    employeeDataFind: Employee[];
 }) => {
 
     const [isPending] = useTransition();
@@ -53,14 +85,26 @@ const CreateAssetForm = ({
     const [inputValue, setInputValue] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const [searchQuery] = useState("");
+    const [open, setOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<ProductNameOnly | null>(null);
+    const [selectedDepartmentId, setSelectedDepartmentId] = useState<{ id: string } | null>(null);
+    const [selectedDepartmentName, setSelectedDepartmentName] = useState<{ dept_name: string } | null>(null);
+
+    console.log(selectedDepartmentId);
+    console.log(selectedDepartmentName);
+
+    useEffect(() => {
+        if (date) {
+            console.log('Tanggal yang dipilih:', date);
+        }
+    }, [date]);
+
 
     const form = useForm<z.infer<typeof AssetSchema>>({
         resolver: zodResolver(AssetSchema),
         defaultValues: {
             assetNumber: "",
-            name: "",
-            description: "",
-            category: "",
             status: "AVAILABLE",
             location: "",
             purchaseDate: new Date,
@@ -72,9 +116,10 @@ const CreateAssetForm = ({
             assetTypeId: "",
             productId: "",
             employeeId: "",
+            departmentId: "",
         }
     });
-    // console.log('Default Value:', form.control._formValues);
+    console.log('Default Value:', form.control._formValues);
 
     const onSubmit = (values: z.infer<typeof AssetSchema>) => {
         // console.log('Form Value:', values);
@@ -112,24 +157,33 @@ const CreateAssetForm = ({
                 form.setValue('purchaseDate', parsedDate);
             }
         }
+    };
 
-        // Parse input value to date
-        const parsedDate = new Date(value);
-        if (!isNaN(parsedDate.getTime())) {
-            setDate(parsedDate);
-            form.setValue('purchaseDate', parsedDate); // Update form value
+    const filteredProducts = productDataFind.filter((product) =>
+        product.part_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.part_number.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const handleSelectProduct = (product: ProductNameOnly) => {
+        setSelectedProduct(product);
+        form.setValue("productId", product.id); // Set the product ID in the form
+        setOpen(false);
+    };
+
+    const handleSelectEmployee = (employeeId: string) => {
+        form.setValue("employeeId", employeeId);
+        const selectedEmployee = employeeDataFind?.find(emp => emp.id === employeeId);
+        if (selectedEmployee && selectedEmployee.department) {
+            setSelectedDepartmentId({
+                id: selectedEmployee.department.id,
+            });
+            setSelectedDepartmentName({
+                dept_name: selectedEmployee.department.dept_name
+            });
+            form.setValue("departmentId", selectedEmployee.department.id);
         }
     };
-    // Handler untuk perubahan datepicker (kalender)
-    
-    // const handleDatePickerChange = (newDate: Date | undefined) => {
-    //     if (newDate) {
-    //         setDate(newDate); // Update state `date`
-    //         setInputValue(format(newDate, 'yyyy-MM-dd')); // Update input manual
-    //         form.setValue('purchaseDate', newDate); // Update nilai form
-    //     }
-    // };
-console.log(date);
+
 
     return (
         <Form {...form}>
@@ -137,58 +191,53 @@ console.log(date);
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-6 p-4 mb-12 ">
-                    <div className="mt-1 grid grid-cols-1 gap-4 gap-y-4 sm:grid-cols-3 items-center justify-center space-between ">
-                        <div className="w-full space-y-6 items-center justify-center">
+                    <div className="flex-initial grid grid-cols-1 gap-4 sm:grid-cols-2 sm:justify-between uppercase">
+                        <div className="flex w-full gap-x-2 items-center justify-center">
+                            <div className="flex-initial w-full">
+                                <FormField
+                                    control={form.control}
+                                    name="assetTypeId"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Asset Type</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select type asset" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {assetTypeFind?.map(assetTypeFind => (
+                                                        <SelectItem key={assetTypeFind.id} value={assetTypeFind.id}>
+                                                            {assetTypeFind.name} {assetTypeFind.kode}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                            <div className="flex-initial md:flex-none mt-8">
+                                <TypeAssetForm assetTypeFind={assetTypeFind} />
+                            </div>
+                        </div>
+                        <div className="flex w-full md:w-1/2 md:justify-end sm:ml-auto">
                             <FormField
                                 control={form.control}
                                 name="assetNumber"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className="text-blue-700 gap-x-2 uppercase">
                                         <FormLabel>Asset Number</FormLabel>
                                         <FormControl>
                                             <Input
                                                 {...field}
+                                                className="text-blue-700 font-bold text-lg uppercase"
                                                 disabled={isPending}
                                                 placeholder="Asset Number"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div className="w-full space-y-6">
-                            <FormField
-                                control={form.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Asset Name</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                disabled={isPending}
-                                                placeholder="Asset Name"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div className="w-full space-y-6">
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Asset Description</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                value={field.value ?? ""}
-                                                disabled={isPending}
-                                                placeholder="Nick Name Product"
+                                                readOnly
+                                                
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -198,7 +247,136 @@ console.log(date);
                         </div>
                     </div>
 
-                    <div className="flex w-full gap-2">
+                    <div className="mt-1 grid grid-cols-1 gap-4 gap-y-4 sm:grid-cols-1 items-center justify-center space-between uppercase">
+                        <div className='grid grid-cols-1 w-full space-y-2 items-center justify-center'>
+                            <FormField
+                                control={form.control}
+                                name="productId" // Sesuaikan dengan nama field di schema
+                                render={() => (
+                                    <FormItem className="flex flex-col space-y-2">
+                                        <FormLabel>Asset Name</FormLabel>
+                                        <Popover open={open} onOpenChange={setOpen}>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    role="combobox"
+                                                    aria-expanded={open}
+                                                    className="w-full md:w-1/2 justify-between"
+                                                >
+                                                    {selectedProduct ? selectedProduct.part_name : "Select part name ..."}
+                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-full p-0 max-w-xl">
+                                                <Command>
+                                                    <div className="flex flex-col w-full">
+                                                        {/* Search Input */}
+                                                        <div className="flex space-y-1 p-2">
+                                                            <Search placeholder="Search product price..." />
+                                                        </div>
+                                                        <CommandList className="flex-1">
+                                                            {filteredProducts.length === 0 ? (
+                                                                <CommandEmpty>No part name found.</CommandEmpty>
+                                                            ) : (
+                                                                <CommandGroup>
+                                                                    {filteredProducts.map((product) => (
+                                                                        <CommandItem
+                                                                            key={product.id}
+                                                                            onSelect={() => {
+                                                                                handleSelectProduct(product);
+                                                                                form.setValue("productId", product.id); // Simpan nilai ke form
+                                                                                setOpen(false);
+                                                                            }}
+                                                                            disabled={isPending}
+                                                                        >
+                                                                            <Check
+                                                                                className={cn(
+                                                                                    "mr-2 h-4 w-4",
+                                                                                    selectedProduct?.id === product.id ? "opacity-100" : "opacity-0"
+                                                                                )}
+                                                                            />
+                                                                            <div className="flex flex-col">
+                                                                                <span className="text-wrap">{product.part_name}</span>
+                                                                                <span className="text-xs text-gray-500 text-wrap">{product.part_number}</span>
+                                                                            </div>
+                                                                        </CommandItem>
+                                                                    ))}
+                                                                </CommandGroup>
+                                                            )}
+                                                        </CommandList>
+
+                                                        <div className="flex justify-center mt-4">
+                                                            <Pagination totalPages={totalPages} />
+                                                        </div>
+                                                    </div>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                        </div>
+                    </div>
+                    <div className="flex w-full gap-x-2 uppercase">
+                        <div className="flex-initial w-full">
+                            <FormField
+                                control={form.control}
+                                name="employeeId"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>User Asset</FormLabel>
+                                        <Select
+                                            onValueChange={handleSelectEmployee}
+                                            defaultValue={field.value ?? ""}
+                                            disabled={isPending}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select user asset" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {employeeDataFind?.map(data => (
+                                                    <SelectItem key={data.id} value={data.id}>
+                                                        {data.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className="w-full">
+                            <FormField
+                                control={form.control}
+                                name="departmentId"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <Input
+                                                {...field}
+                                                value={selectedDepartmentId?.id ?? ""}
+                                                disabled={isPending}
+                                                type="hidden"
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormItem>
+                                <FormLabel>Department Name</FormLabel>
+                                <FormControl>
+                                    <Input value={selectedDepartmentName?.dept_name ?? ""} readOnly />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        </div>
+                    </div>
+
+                    <div className="flex w-full gap-2 uppercase">
                         <div className="w-full">
                             <FormField
                                 control={form.control}
@@ -211,7 +389,7 @@ console.log(date);
                                                 {...field}
                                                 value={field.value ?? ''}
                                                 disabled={isPending}
-                                                type="number"
+                                                type="text"
                                                 min="1"
                                             />
                                         </FormControl>
@@ -250,9 +428,7 @@ console.log(date);
                             />
                         </div>
                     </div>
-
-
-                    <div className="grid grid-cols-1 mt-0 sm:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-1 mt-0 sm:grid-cols-4 gap-2 uppercase">
                         <div className="w-full">
                             <FormField
                                 control={form.control}
@@ -271,30 +447,6 @@ console.log(date);
                                                     placeholder="YYYY-MM-DD"
                                                     className="w-[280px] p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 />
-
-                                                {/* Datepicker (kalender)
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            className={cn(
-                                                                "w-[280px] justify-start text-left font-normal",
-                                                                !date && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            <CalendarIcon className="mr-2 h-4 w-4" />
-                                                            {date ? format(date, 'yyyy-MM-dd') : <span>Pick a date</span>}
-                                                        </Button>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-auto p-0">
-                                                        <Calendar
-                                                            mode="single"
-                                                            selected={date ?? undefined}
-                                                            onSelect={handleDatePickerChange}
-                                                            initialFocus={false}
-                                                        />
-                                                    </PopoverContent>
-                                                </Popover> */}
                                             </div>
                                         </FormControl>
                                         <FormMessage />
@@ -364,99 +516,6 @@ console.log(date);
                                     </FormItem>
                                 )}
                             />
-                        </div>
-                    </div>
-
-                    <div className="flex-initial grid grid-cols-1 mt-0 gap-4 sm:grid-cols-4">
-                        <div className="flex w-full gap-x-2">
-                            <div className="flex-initial w-full">
-                                <FormField
-                                    control={form.control}
-                                    name="assetTypeId"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Asset Type</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select type product" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {assetTypeFind?.map(assetTypeFind => (
-                                                        <SelectItem key={assetTypeFind.id} value={assetTypeFind.id}>
-                                                            {assetTypeFind.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            <div className="flex-initial mt-6 ">
-                                {/* <TypeForm typeFind={typeFind} /> */}
-                            </div>
-                        </div>
-                        <div className="flex w-full gap-x-2">
-                            <div className="flex-initial w-full">
-                                <FormField
-                                    control={form.control}
-                                    name="productId"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Asset Name</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select Asset Product" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {/* {categoryFind?.map(categoryFind => (
-                                                            <SelectItem key={categoryFind.id} value={categoryFind.id}>
-                                                                {categoryFind.name}
-                                                            </SelectItem>
-                                                        ))} */}
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                        </div>
-                        <div className="flex w-full gap-x-2">
-                            <div className="flex-initial w-full">
-                                <FormField
-                                    control={form.control}
-                                    name="employeeId"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>User Asset</FormLabel>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value ?? ""}
-                                                disabled={isPending}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select group product" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {/* {groupFind?.map(groupFind => (
-                                                            <SelectItem key={groupFind.id} value={groupFind.id}>
-                                                                {groupFind.name}
-                                                            </SelectItem>
-                                                        ))} */}
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
                         </div>
                     </div>
 
