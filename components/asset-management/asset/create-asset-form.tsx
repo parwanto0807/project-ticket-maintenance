@@ -23,15 +23,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-// import {
-//     Popover,
-//     PopoverContent,
-//     PopoverTrigger,
-// } from "@/components/ui/popover"
-// import { Calendar as CalendarIcon } from "lucide-react"
-// import { format } from 'date-fns';
 import { Button } from "@/components/ui/button"
 import { AssetType } from "@prisma/client";
+import { QRCodeCanvas } from "qrcode.react";
+import Image from "next/image";
 
 type Employee = {
     id: string;
@@ -59,8 +54,6 @@ import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@
 import Search from "@/components/ui/search";
 import Pagination from "@/components/ui/pagination";
 import TypeAssetForm from "./type-asset-form";
-// import { Calendar } from "@/components/ui/calendar";
-
 
 type ProductNameOnly = {
     id: string;
@@ -91,16 +84,6 @@ const CreateAssetForm = ({
     const [selectedDepartmentId, setSelectedDepartmentId] = useState<{ id: string } | null>(null);
     const [selectedDepartmentName, setSelectedDepartmentName] = useState<{ dept_name: string } | null>(null);
 
-    console.log(selectedDepartmentId);
-    console.log(selectedDepartmentName);
-
-    useEffect(() => {
-        if (date) {
-            console.log('Tanggal yang dipilih:', date);
-        }
-    }, [date]);
-
-
     const form = useForm<z.infer<typeof AssetSchema>>({
         resolver: zodResolver(AssetSchema),
         defaultValues: {
@@ -117,8 +100,23 @@ const CreateAssetForm = ({
             productId: "",
             employeeId: "",
             departmentId: "",
+            assetImage1: "/public/noImage.jpg",
+            assetImage2: "/public/noImage.jpg",
+            assetImage3: "/public/noImage.jpg",
         }
     });
+
+    const { setValue } = form;
+
+    console.log(selectedDepartmentId);
+    console.log(selectedDepartmentName);
+
+    useEffect(() => {
+        if (date) {
+            console.log('Tanggal yang dipilih:', date);
+        }
+    }, [date]);
+
     console.log('Default Value:', form.control._formValues);
 
     const onSubmit = (values: z.infer<typeof AssetSchema>) => {
@@ -184,6 +182,25 @@ const CreateAssetForm = ({
         }
     };
 
+    const handleSelectAssetType = async (value: string) => {
+        setValue("assetTypeId", value); // Set nilai AssetType di form
+        setLoading(true);
+
+        try {
+            const response = await fetch(`/api/generateAssetNumber?assetTypeId=${value}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                setValue("assetNumber", data.assetNumber); // Set nilai AssetNumber di form
+            } else {
+                console.error("Error fetching asset number:", data.error);
+            }
+        } catch (error) {
+            console.error("Request failed:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <Form {...form}>
@@ -200,7 +217,7 @@ const CreateAssetForm = ({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Asset Type</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
+                                            <Select onValueChange={handleSelectAssetType} defaultValue={field.value} disabled={isPending}>
                                                 <FormControl>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select type asset" />
@@ -223,23 +240,31 @@ const CreateAssetForm = ({
                                 <TypeAssetForm assetTypeFind={assetTypeFind} />
                             </div>
                         </div>
-                        <div className="flex w-full md:w-1/2 md:justify-end sm:ml-auto">
+                        <div className="flex w-full md:justify-end sm:ml-auto">
                             <FormField
                                 control={form.control}
                                 name="assetNumber"
                                 render={({ field }) => (
-                                    <FormItem className="text-blue-700 gap-x-2 uppercase">
+                                    <FormItem className="text-blue-700 gap-x-2 text-center uppercase">
                                         <FormLabel>Asset Number</FormLabel>
                                         <FormControl>
                                             <Input
                                                 {...field}
-                                                className="text-blue-700 font-bold text-lg uppercase"
+                                                className="text-blue-700 font-bold text-lg text-center uppercase"
                                                 disabled={isPending}
                                                 placeholder="Asset Number"
                                                 readOnly
-                                                
+
                                             />
                                         </FormControl>
+                                        {field.value && (
+                                            <div className="mt-4 flex justify-center">
+                                                <div className="p-4 border-4 border-gray-400 rounded-lg shadow-md bg-white">
+                                                    <QRCodeCanvas value={field.value} size={128} />
+                                                </div>
+                                            </div>
+                                        )}
+
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -254,7 +279,7 @@ const CreateAssetForm = ({
                                 name="productId" // Sesuaikan dengan nama field di schema
                                 render={() => (
                                     <FormItem className="flex flex-col space-y-2">
-                                        <FormLabel>Asset Name</FormLabel>
+                                        <FormLabel htmlFor="productId">Asset Name</FormLabel>
                                         <Popover open={open} onOpenChange={setOpen}>
                                             <PopoverTrigger asChild>
                                                 <Button
@@ -435,7 +460,7 @@ const CreateAssetForm = ({
                                 name="purchaseDate"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Purchase Date</FormLabel>
+                                        <FormLabel htmlFor="purchaseDate">Purchase Date</FormLabel>
                                         <FormControl>
                                             <div className="flex flex-col space-y-2">
                                                 {/* Input manual */}
@@ -467,6 +492,7 @@ const CreateAssetForm = ({
                                                 disabled={isPending}
                                                 type="price"
                                                 min="1"
+                                                onChange={(e) => field.onChange(Number(e.target.value))}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -489,6 +515,7 @@ const CreateAssetForm = ({
                                                 disabled={isPending}
                                                 type="price"
                                                 min="1"
+                                                onChange={(e) => field.onChange(Number(e.target.value))}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -510,12 +537,147 @@ const CreateAssetForm = ({
                                                 disabled={isPending}
                                                 type="number"
                                                 min="1"
+                                                onChange={(e) => field.onChange(Number(e.target.value))}
                                             />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
+                        </div>
+                    </div>
+                    <div className="flex flex-row items-center justify-center gap-x-8">
+                        <div className="flex flex-col items-center justify-center">
+                            <FormField
+                                control={form.control}
+                                name="assetImage1"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Upload Asset Image 1</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        field.onChange(file);
+                                                    }
+                                                }}
+                                            />
+                                        </FormControl>
+
+                                        {field.value && (
+                                            <div className="mt-4 flex justify-center">
+                                                <div className="relative w-32 h-32 rounded-md overflow-hidden shadow-md border">
+                                                    <Image
+                                                        src={
+                                                            typeof field.value === 'object' && 'size' in field.value
+                                                                ? URL.createObjectURL(field.value as Blob)
+                                                                : typeof field.value === 'string' && field.value.trim() !== ''
+                                                                    ? field.value
+                                                                    : '/noImage.jpg'
+                                                        }
+                                                        alt="Preview"
+                                                        layout="fill"
+                                                        objectFit="cover"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />;
+                        </div>
+                        <div className="flex flex-col items-center justify-center">
+                            <FormField
+                                control={form.control}
+                                name="assetImage2"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Upload Asset Image 2</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        field.onChange(file);
+                                                    }
+                                                }}
+                                            />
+                                        </FormControl>
+
+                                        {field.value && (
+                                            <div className="mt-4 flex justify-center">
+                                                <div className="relative w-32 h-32 rounded-md overflow-hidden shadow-md border">
+                                                    <Image
+                                                        src={
+                                                            typeof field.value === 'object' && 'size' in field.value
+                                                                ? URL.createObjectURL(field.value as Blob)
+                                                                : typeof field.value === 'string' && field.value.trim() !== ''
+                                                                    ? field.value
+                                                                    : '/noImage.jpg'
+                                                        }
+                                                        alt="Preview"
+                                                        layout="fill"
+                                                        objectFit="cover"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />;
+                        </div>
+                        <div className="flex flex-col items-center justify-center">
+                            <FormField
+                                control={form.control}
+                                name="assetImage3"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Upload Asset Image 3</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        field.onChange(file);
+                                                    }
+                                                }}
+                                            />
+                                        </FormControl>
+
+                                        {field.value && (
+                                            <div className="mt-4 flex justify-center">
+                                                <div className="relative w-32 h-32 rounded-md overflow-hidden shadow-md border">
+                                                    <Image
+                                                        src={
+                                                            typeof field.value === 'object' && 'size' in field.value
+                                                                ? URL.createObjectURL(field.value as Blob)
+                                                                : typeof field.value === 'string' && field.value.trim() !== ''
+                                                                    ? field.value
+                                                                    : '/noImage.jpg'
+                                                        }
+                                                        alt="Preview"
+                                                        layout="fill"
+                                                        objectFit="cover"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />;
                         </div>
                     </div>
 

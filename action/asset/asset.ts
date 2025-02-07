@@ -26,6 +26,9 @@ export const createAsset = async ( values: z.infer<typeof AssetSchema> ) => {
                 productId: validateFieldAsset.data.productId,
                 employeeId: validateFieldAsset.data.employeeId,
                 departmentId: validateFieldAsset.data.departmentId,
+                assetImage1: validateFieldAsset.data.assetImage1,
+                assetImage2: validateFieldAsset.data.assetImage2,
+                assetImage3: validateFieldAsset.data.assetImage3,
             }
         })
         revalidatePath("/dashboard/asset/asset-list")

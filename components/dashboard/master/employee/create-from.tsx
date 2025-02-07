@@ -24,7 +24,7 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
 import { createEmployee } from "@/action/master/employees";
-import ImageUpload from './image-upload';
+import ImageUpload from '../../../image-upload';
 import { Input } from "@/components/ui/input";
 import { Department } from "@prisma/client";
 import { EmployeeSchemaCreate } from "@/schemas";

@@ -17,15 +17,15 @@ export async function generateAssetNumber(id: string) {
 
         // Ambil assetNumber terakhir dari tabel Asset
         const lastAsset = await db.asset.findFirst({
-            where: { id }, // Ambil hanya yang sesuai dengan tipe aset
-            orderBy: { id: 'desc' },
+            where: { assetTypeId: id },
+            orderBy: { createdAt: 'desc' },
             select: { assetNumber: true },
         });
 
         // Generate ID baru
         let newIdNumber = 1;
         if (lastAsset?.assetNumber) {
-            const lastIdNumber = parseInt(lastAsset.assetNumber.split('-')[1], 10);
+            const lastIdNumber = parseInt(lastAsset?.assetNumber?.split('-').pop() || '0', 10);
             newIdNumber = lastIdNumber + 1;
         }
 
@@ -56,8 +56,6 @@ const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET;
             },
             where: {
                 OR: [
-                    // { description : { contains: query, mode: 'insensitive' } },
-                    // { name : { contains: query, mode: 'insensitive' } },
                     { location: { contains: query, mode: 'insensitive' } },
                 ]
             }

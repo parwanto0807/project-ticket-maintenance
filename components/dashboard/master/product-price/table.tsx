@@ -28,7 +28,7 @@ const PriceTable = async ({ query, currentPage }: { query: string; currentPage: 
     return (
         <div className="mt-6 flow-root">
             <div className="inline-block min-w-full align-middle">
-                <div className="rounded-lg p-2 md:pt-0 md:table  bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-900">
+                <div className="rounded-lg p-2 md:pt-0 md:table  bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                     <div className="md:hidden">
                         {price.map((data) => (
                             <div
@@ -71,7 +71,7 @@ const PriceTable = async ({ query, currentPage }: { query: string; currentPage: 
                         </div>
                     </div>
 
-                    <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-900">
+                    <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                         <TableHeader className="border text-[12px]">
                             <TableRow>
                                 <TableHead className="px-4 py-4 font-medium items-center uppercase">No</TableHead>

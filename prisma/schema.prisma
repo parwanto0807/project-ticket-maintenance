@@ -118,7 +118,7 @@ model Department {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @default(now()) @updatedAt
   employee  Employee[] @relation("EmployeeDept")
-  asset     Asset[] @relation("DepartmentAsset")
+  asset     Asset[]    @relation("DepartmentAsset")
 }
 
 //Product Tabel 
@@ -270,15 +270,18 @@ model Asset {
   usefulLife    Int? // Masa manfaat aset (dalam tahun)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  depreciations Depreciation[] 
-  assetTypeId   String 
+  depreciations Depreciation[]
+  assetTypeId   String
   assetType     AssetType      @relation(fields: [assetTypeId], references: [id])
-  departmentId  String 
+  departmentId  String
+  assetImage1        String?        @default("/public/noImage.jpg")
+  assetImage2        String?        @default("/public/noImage.jpg")
+  assetImage3        String?        @default("/public/noImage.jpg")
 
   // Relasi ke Product (setiap Asset merujuk ke satu Product)
-  productId  String    @map("product_id") // Relasi ke Product
-  product    Product   @relation(fields: [productId], references: [id], name: "ProductAssets")
-  employee   Employee? @relation(fields: [employeeId], references: [id], name: "AssignAssets")
+  productId  String      @map("product_id") // Relasi ke Product
+  product    Product     @relation(fields: [productId], references: [id], name: "ProductAssets")
+  employee   Employee?   @relation(fields: [employeeId], references: [id], name: "AssignAssets")
   department Department? @relation(fields: [departmentId], references: [id], name: "DepartmentAsset")
   employeeId String?
 }

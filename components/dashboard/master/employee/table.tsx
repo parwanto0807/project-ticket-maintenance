@@ -20,7 +20,7 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
     return (
         <div className="mt-6 flow-root">
             <div className="inline-block min-w-full align-middle">
-                <div className="rounded-lg p-2 md:pt-0 md:table  bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-900">
+                <div className="rounded-lg p-2 md:pt-0 md:table  bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                     <div className="md:hidden">
                         {Array.isArray(employees) && employees.map((employees) => (
                             <div
@@ -67,7 +67,7 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                         </div>
                     </div>
                     
-                    <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-900">
+                    <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                         <TableHeader className="rounded-lg text-left text-sm font-normal">
                             <TableRow>
                                 <TableHead scope="col" className="px-3 py-5 font-medium uppercase">No</TableHead>

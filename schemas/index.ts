@@ -297,7 +297,7 @@ export const Tax_Schema = z.object({
 export const AssetSchema = z.object({
     assetNumber: z.string().nonempty({ message: "Asset number cannot be empty" }),
     status: z.nativeEnum(AssetStatus, { message: "Invalid status" }),
-    location: z.string().nullable().optional().or(z.literal("")).refine(loc => loc === null || loc === undefined || loc.length <= 5, { message: "Location must be 5 characters or less" }),
+    location: z.string().nullable().optional(),
     purchaseDate: z.date().optional().refine(date => date !== undefined && !isNaN(date.getTime()), { message: "Invalid purchase date" }),
     purchaseCost: z.number().nonnegative({ message: "Purchase cost must be a non-negative number" }).optional(),
     residualValue: z.number().nonnegative({ message: "Residual value must be a non-negative number" }).optional(),
@@ -308,6 +308,9 @@ export const AssetSchema = z.object({
     productId: z.string().nonempty({ message: "Product ID cannot be empty" }),
     departmentId: z.string().nonempty({ message: "Department ID cannot be empty" }),
     employeeId: z.string().nullable().optional().or(z.literal("")),
+    assetImage1:z.string().nullable().optional().or(z.literal("")),
+    assetImage2:z.string().nullable().optional().or(z.literal("")),
+    assetImage3:z.string().nullable().optional().or(z.literal("")),
 });
 
 export const AssetTypeSchema = z.object({
