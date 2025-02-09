@@ -8,6 +8,14 @@ const nextConfig = {
     // !! WARN !!
     ignoreBuildErrors: false,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "2pwk5zmnkgubtogq.public.blob.vercel-storage.com",
+      },
+    ],
+  },
 }
 
 export default nextConfig

@@ -4,6 +4,7 @@ import * as z from "zod"
 import { db } from "@/lib/db";
 import { AssetSchema, AssetTypeSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
+import { put } from "@vercel/blob";
 
 
 export const createAsset = async ( values: z.infer<typeof AssetSchema> ) => {
@@ -12,6 +13,13 @@ export const createAsset = async ( values: z.infer<typeof AssetSchema> ) => {
     if (!validateFieldAsset.success) {
         return {error: "Invalid Fields"}
     }
+
+    const {assetImage1} = validateFieldAsset.data;
+    const {url} = await put(assetImage1.name, assetImage1, { 
+        access: "public",
+        multipart: true
+    });
+    
     try {
         await db.asset.create({
             data: {
@@ -26,9 +34,7 @@ export const createAsset = async ( values: z.infer<typeof AssetSchema> ) => {
                 productId: validateFieldAsset.data.productId,
                 employeeId: validateFieldAsset.data.employeeId,
                 departmentId: validateFieldAsset.data.departmentId,
-                assetImage1: validateFieldAsset.data.assetImage1,
-                assetImage2: validateFieldAsset.data.assetImage2,
-                assetImage3: validateFieldAsset.data.assetImage3,
+                assetImage1: url,
             }
         })
         revalidatePath("/dashboard/asset/asset-list")

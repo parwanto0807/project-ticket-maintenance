@@ -274,9 +274,7 @@ model Asset {
   assetTypeId   String
   assetType     AssetType      @relation(fields: [assetTypeId], references: [id])
   departmentId  String
-  assetImage1        String?        @default("/public/noImage.jpg")
-  assetImage2        String?        @default("/public/noImage.jpg")
-  assetImage3        String?        @default("/public/noImage.jpg")
+  assetImage1   String?        @default("/public/noImage.jpg")
 
   // Relasi ke Product (setiap Asset merujuk ke satu Product)
   productId  String      @map("product_id") // Relasi ke Product

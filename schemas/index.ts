@@ -308,9 +308,7 @@ export const AssetSchema = z.object({
     productId: z.string().nonempty({ message: "Product ID cannot be empty" }),
     departmentId: z.string().nonempty({ message: "Department ID cannot be empty" }),
     employeeId: z.string().nullable().optional().or(z.literal("")),
-    assetImage1:z.string().nullable().optional().or(z.literal("")),
-    assetImage2:z.string().nullable().optional().or(z.literal("")),
-    assetImage3:z.string().nullable().optional().or(z.literal("")),
+    assetImage1: z.instanceof(File).refine((file) => file.size > 0, { message: "Asset image is requires" }).refine((file) => file.size ===0 || file.type.startsWith("image/"), { message: "Only Images Allowed", }).refine((file) => file.size < 4000000, { message: "Asset image size is too large" }),
 });
 
 export const AssetTypeSchema = z.object({

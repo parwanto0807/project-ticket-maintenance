@@ -11,14 +11,13 @@ import {
 } from "@/components/ui/table"
 import { fetchAssetList } from "@/data/asset/asset";
 import { formatCurrencyQtt } from "@/lib/utils";
-
+import ImageDialog from "./imageDialog";
 
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
 export default async function AssetTable({ query, currentPage }: { query: string; currentPage: number; }) {
     const data = await fetchAssetList(query, currentPage);
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_PRODUCT;
-    //console.log(data)
     return (
         <div className="mt-6 flow-root">
             <div className="inline-block min-w-full align-middle">
@@ -34,19 +33,25 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                         <div className="mb-2 flex items-center font-bold text-black dark:text-white">
                                             <p>{data.assetNumber}</p>
                                         </div>
+                                        <div className="flex items-center gap-2">
+                                            <ImageDialog
+                                                src={data.assetImage1 || "/noImage.jpg"}
+                                                alt={`${data.assetNumber} Asset Image`}
+                                            />
+                                        </div>
                                         <div>
                                             <p className="text-sm pt-1">
                                                 {data.product.part_name}  &nbsp;
                                             </p>
                                         </div>
-                                        <div>
-                                            <p className="text-sm pb-2">
-                                                {data.location}
-                                            </p>
+                                        <div className="flex items-center gap-2">
+                                            <p className="flex-none text-sm pb-2"> {data.location}</p>  &nbsp;
+                                            <p className="flex-none text-sm font-bold text-gray-500">{data.assetType.name}</p>
                                         </div>
-                                        <p className="text-sm font-bold text-gray-500">{data.assetType.name}</p>
-                                        <p className="text-sm font-bold text-gray-500">{data.employee?.name}</p>
-                                        <p className="text-sm text-gray-500">{data.status}</p>
+                                        <div className="flex flex-row items-center gap-2">
+                                            <p className="flex-none text-sm font-bold text-gray-500">{data.employee?.name}</p> &nbsp;
+                                            <p className="flex-nonetext-sm text-gray-500">{data.status}</p>
+                                        </div>
                                     </div>
                                     <div className="flex-1 w-full items-center justify-between pt-4">
                                         <div className="flex justify-end gap-2">
@@ -73,6 +78,7 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Cost Purchase </TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Date Purchase</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Status</TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Asset Image</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Action</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -90,6 +96,14 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                     <TableCell >{formatCurrencyQtt(Number(data.purchaseCost?.toString()))}</TableCell>
                                     <TableCell >{data.purchaseDate?.toDateString()}</TableCell>
                                     <TableCell >{data.status}</TableCell>
+                                    <TableCell className="whitespace-nowrap px-3 py-2">
+                                        <div className="flex items-center gap-2">
+                                            <ImageDialog
+                                                src={data.assetImage1 || "/noImage.jpg"}
+                                                alt={`${data.assetNumber} Asset Image`}
+                                            />
+                                        </div>
+                                    </TableCell>
                                     <TableCell className="flex items-center justify-center object-center gap-2">
                                         <UpdateProduct id={data.id} />
                                         <DeleteAlertProduct id={data.id} />

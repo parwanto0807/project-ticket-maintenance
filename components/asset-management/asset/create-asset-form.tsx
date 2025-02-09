@@ -26,7 +26,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { AssetType } from "@prisma/client";
 import { QRCodeCanvas } from "qrcode.react";
-import Image from "next/image";
 
 type Employee = {
     id: string;
@@ -54,6 +53,7 @@ import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@
 import Search from "@/components/ui/search";
 import Pagination from "@/components/ui/pagination";
 import TypeAssetForm from "./type-asset-form";
+import { Card } from "@/components/ui/card";
 
 type ProductNameOnly = {
     id: string;
@@ -100,9 +100,7 @@ const CreateAssetForm = ({
             productId: "",
             employeeId: "",
             departmentId: "",
-            assetImage1: "/public/noImage.jpg",
-            assetImage2: "/public/noImage.jpg",
-            assetImage3: "/public/noImage.jpg",
+            assetImage1: undefined,
         }
     });
 
@@ -201,6 +199,13 @@ const CreateAssetForm = ({
             setLoading(false);
         }
     };
+
+    // const handleUpload = (event: React.MouseEvent<HTMLButtonElement>) => {
+    //     event.preventDefault(); // Mencegah submit form
+    //     console.log("Upload button clicked"); 
+    //     // Tambahkan logika upload di sini
+    // };
+
 
     return (
         <Form {...form}>
@@ -546,141 +551,41 @@ const CreateAssetForm = ({
                             />
                         </div>
                     </div>
-                    <div className="flex flex-row items-center justify-center gap-x-8">
-                        <div className="flex flex-col items-center justify-center">
-                            <FormField
-                                control={form.control}
-                                name="assetImage1"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Upload Asset Image 1</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) => {
-                                                    const file = e.target.files?.[0];
-                                                    if (file) {
-                                                        field.onChange(file);
-                                                    }
-                                                }}
-                                            />
-                                        </FormControl>
 
-                                        {field.value && (
-                                            <div className="mt-4 flex justify-center">
-                                                <div className="relative w-32 h-32 rounded-md overflow-hidden shadow-md border">
-                                                    <Image
-                                                        src={
-                                                            typeof field.value === 'object' && 'size' in field.value
-                                                                ? URL.createObjectURL(field.value as Blob)
-                                                                : typeof field.value === 'string' && field.value.trim() !== ''
-                                                                    ? field.value
-                                                                    : '/noImage.jpg'
-                                                        }
-                                                        alt="Preview"
-                                                        layout="fill"
-                                                        objectFit="cover"
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />;
-                        </div>
-                        <div className="flex flex-col items-center justify-center">
-                            <FormField
-                                control={form.control}
-                                name="assetImage2"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Upload Asset Image 2</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) => {
-                                                    const file = e.target.files?.[0];
-                                                    if (file) {
-                                                        field.onChange(file);
-                                                    }
-                                                }}
-                                            />
-                                        </FormControl>
-
-                                        {field.value && (
-                                            <div className="mt-4 flex justify-center">
-                                                <div className="relative w-32 h-32 rounded-md overflow-hidden shadow-md border">
-                                                    <Image
-                                                        src={
-                                                            typeof field.value === 'object' && 'size' in field.value
-                                                                ? URL.createObjectURL(field.value as Blob)
-                                                                : typeof field.value === 'string' && field.value.trim() !== ''
-                                                                    ? field.value
-                                                                    : '/noImage.jpg'
-                                                        }
-                                                        alt="Preview"
-                                                        layout="fill"
-                                                        objectFit="cover"
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />;
-                        </div>
-                        <div className="flex flex-col items-center justify-center">
-                            <FormField
-                                control={form.control}
-                                name="assetImage3"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Upload Asset Image 3</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) => {
-                                                    const file = e.target.files?.[0];
-                                                    if (file) {
-                                                        field.onChange(file);
-                                                    }
-                                                }}
-                                            />
-                                        </FormControl>
-
-                                        {field.value && (
-                                            <div className="mt-4 flex justify-center">
-                                                <div className="relative w-32 h-32 rounded-md overflow-hidden shadow-md border">
-                                                    <Image
-                                                        src={
-                                                            typeof field.value === 'object' && 'size' in field.value
-                                                                ? URL.createObjectURL(field.value as Blob)
-                                                                : typeof field.value === 'string' && field.value.trim() !== ''
-                                                                    ? field.value
-                                                                    : '/noImage.jpg'
-                                                        }
-                                                        alt="Preview"
-                                                        layout="fill"
-                                                        objectFit="cover"
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />;
-                        </div>
+                    <div className="w-full md:w-1/4 items-center justify-center">
+                        <Card className="w-full py-2 px-2 border-2 mt-4 rounded-sm items-center justify-center">
+                            <h3 className="w-full font-bold items-center justify-center text-center">Upload Images</h3>
+                            {/* <div className="mb-2 pt-2">
+                                <Input
+                                    type="text"
+                                    name="title"
+                                    className="py-2 px-2 rounded-sm border border-gra-400 w-full"
+                                    placeholder="Enter title"
+                                />
+                            </div> */}
+                            <div className="mb-2 pt-2">
+                                <Input
+                                    type="file"
+                                    name="assetImage1"
+                                    className="file:h-full file:mr-4 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-gray-300 file:cursor-pointer border border-gray-400 w-full"
+                                    accept="image/*" // Opsional: Batasi hanya untuk gambar
+                                    onChange={(event) => {
+                                        const file = event.target.files?.[0];
+                                        if (file) {
+                                            setValue("assetImage1", file); // Simpan file ke form
+                                        }
+                                    }}
+                                />
+                            </div>
+                            {/* <div className="mb-4 pt-2">
+                                <Button
+                                    className="bg-blue-700 text-white w-full font-medium py-2.5 px-6 text-base rounded-sm hover:bg-blue-600" 
+                                    type="button"
+                                    onClick={handleUpload}
+                                > Upload </Button>
+                            </div> */}
+                        </Card>
                     </div>
-
                     <div className="relative ">
                         <Button className={`w-24 h-9 rounded-lg absolute right-0 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white font-semibold py-2 px-4 rounded-lg`} type="submit">{loading ? 'Load Save...' : 'Save'}</Button>
                     </div>
