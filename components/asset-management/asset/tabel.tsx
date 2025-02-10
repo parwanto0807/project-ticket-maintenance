@@ -86,7 +86,7 @@ export default async function AssetTable({ query, currentPage }: { query: string
                             {Array.isArray(data) && data.map((data, index) => (
                                 <TableRow key={data.id}>
                                     <TableCell className="text-center">{offset + index + 1}</TableCell>
-                                    <TableCell className="text-center font-bold">{data.assetNumber}</TableCell>
+                                    <TableCell className="text-center font-bold text-nowrap">{data.assetNumber}</TableCell>
                                     <TableCell>{data.product.part_number}</TableCell>
                                     <TableCell>{data.product.part_name}</TableCell>
                                     <TableCell className="text-center">{data.assetType.name}</TableCell>

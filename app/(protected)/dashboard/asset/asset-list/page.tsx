@@ -1,3 +1,4 @@
+
 import Link from "next/link"
 //import PageProduct from "@/components/demo/products-content";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
@@ -24,7 +25,7 @@ const AssetList = async ({
     page?: string;
   }
 }) => {
-  const { query = "", page } = await searchParams || { query: "", page: "1" };
+  const { query = "", page } =  searchParams || { query: "", page: "1" };
   const currentPage = Number(page) || 1;
   const totalPages = await fetchAssetListPages(query || "");
 
@@ -52,7 +53,7 @@ const AssetList = async ({
       <div className="h-full w-full">
         <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
           <div className="flex items-center justify-between gap-2">
-            <Search placeholder="Search Product..." />
+            <Search placeholder="Search Asset..." />
             <CreateAssetButton />
           </div>
 

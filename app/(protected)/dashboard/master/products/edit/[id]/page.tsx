@@ -26,7 +26,6 @@ import { PageProps } from "@/types";
 
 const UpdateProduct = async ({ params }: PageProps) => {
     const { id } = await params; // Await the params to access id
-    console.log(id);
 
     const productFindById = await getProductById(id);
 

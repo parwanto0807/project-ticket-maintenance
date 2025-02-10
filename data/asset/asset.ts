@@ -57,6 +57,11 @@ const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET;
             where: {
                 OR: [
                     { location: { contains: query, mode: 'insensitive' } },
+                    { assetNumber: { contains: query, mode: 'insensitive' } },
+                    { product : { part_name: { contains: query, mode: 'insensitive' } } },
+                    { product : { part_number: { contains: query, mode: 'insensitive' } } },
+                    { assetType : { name : { contains: query, mode: 'insensitive' } } },
+                    { employee : { name: { contains: query, mode: 'insensitive' } } },
                 ]
             }
         })

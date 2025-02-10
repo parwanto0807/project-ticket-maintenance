@@ -6,8 +6,6 @@ import { MtUang_Schema } from "@/schemas";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -43,7 +41,6 @@ const MtUangForm = ({ mtUangFind }: { mtUangFind: MataUang[] }) => {
   const deleteWithId = (id: string) => deleteMtuang(id);
   const [showMessageDelete, setShowMessageDelete] = useState<{ message: string; visible: boolean }>({ message: "", visible: false });
   const [showMessage, setShowMessage] = useState(false)
-  const [prevLength, setPrevLength] = useState(mtUangFind.length);
   const [inputName, setInputName] = useState('');
   const [inputNote, setInputNote] = useState('');
 
@@ -152,6 +149,7 @@ const MtUangForm = ({ mtUangFind }: { mtUangFind: MataUang[] }) => {
                           <Input
                             {...field}
                             disabled={isPending}
+                            value={inputName}
                             placeholder="Unit Name"
                           />
                         </FormControl>
@@ -171,6 +169,7 @@ const MtUangForm = ({ mtUangFind }: { mtUangFind: MataUang[] }) => {
                         <FormControl>
                           <Input
                             {...field}
+                            value={inputNote}
                             disabled={isPending}
                             placeholder="Unit Note"
                           />
@@ -179,10 +178,17 @@ const MtUangForm = ({ mtUangFind }: { mtUangFind: MataUang[] }) => {
                       </FormItem>
                     )}
                   />
+
+                  {/* Menampilkan pesan kesalahan penghapusan jika ada */}
+                  {showMessageDelete.visible && (
+                    <div className="text-red-500 mt-2">{showMessageDelete.message}</div>
+                  )}
                 </div>
                 <FormError message={error} />
                 <FormSuccess message={success} />
-
+                {showMessage && (
+                  <div className="text-green-500 mt-2">Data berhasil dihapus</div>
+                )}
                 <ScrollArea className="[&>div>div[style]]:!block border">
                   <div className="max-h-[270px] mt-2">
                     <table className="min-w-full mt-0">

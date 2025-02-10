@@ -1,8 +1,6 @@
-"Use Client";
-
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { DeptSchema } from "@/schemas";
 import {
     Dialog,
@@ -11,7 +9,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
     Form,
     FormControl,
@@ -19,37 +17,35 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
-    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 import React, { useEffect, useTransition, useState } from "react";
 import { Department } from "@prisma/client";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { createDept, deleteDept } from "@/action/master/employees";
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline"
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
     const [isPending, startTransition] = useTransition();
-    const [selectedRow, setSelectedRow] = useState<string>('');
+    const [selectedRow, setSelectedRow] = useState<string>("");
     const deleteWithId = (id: string) => deleteDept(id);
     const [showMessageDelete, setShowMessageDelete] = useState<{ message: string; visible: boolean }>({ message: "", visible: false });
-    const [showMessage, setShowMessage] = useState(false)
-    const [inputName, setInputName] = useState('');
-    const [inputNote, setInputNote] = useState('');
+    const [showMessage, setShowMessage] = useState(false);
+    const [inputName, setInputName] = useState("");
+    const [inputNote, setInputNote] = useState("");
 
     // 1. Define your form.
     const form = useForm<z.infer<typeof DeptSchema>>({
@@ -57,7 +53,7 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
         defaultValues: {
             dept_name: "",
             note: "",
-        }
+        },
     });
 
     const onSubmit = (values: z.infer<typeof DeptSchema>) => {
@@ -70,7 +66,7 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
                     if (data?.error) {
                         setError(data.error);
                         setTimeout(() => {
-                            setError('');
+                            setError("");
                         }, 2000);
                         setTimeout(() => {
                             form.reset();
@@ -80,14 +76,14 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
                         setSuccess(data.success);
                         // onSave();
                         setTimeout(() => {
-                            setSuccess('');
+                            setSuccess("");
                         }, 2000);
                         setTimeout(() => {
                             form.reset();
                         }, 2000);
                     }
-                })
-        })
+                });
+        });
     };
 
     const handleRowClick = (id: string, dept_name: string, note: string) => {
@@ -98,9 +94,9 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
 
     useEffect(() => {
         // Cek apakah ada baris yang dipilih saat komponen pertama kali dirender
-        if (selectedRow !== '') {
+        if (selectedRow !== "") {
             // Jika ada baris yang dipilih, atur nilai inputName dan inputNote
-            const unit = deptFind.find(category => category.id === selectedRow);
+            const unit = deptFind.find((category) => category.id === selectedRow);
             if (unit) {
                 setInputName(unit.dept_name);
                 setInputNote(unit.note);
@@ -116,7 +112,7 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
             // Setel pesan kesalahan ke state jika diperlukan
             setShowMessageDelete({ message: errorMessage.error, visible: true });
             setTimeout(() => {
-                setShowMessageDelete(prevState => ({ ...prevState, visible: false }));
+                setShowMessageDelete((prevState) => ({ ...prevState, visible: false }));
             }, 3000);
         } else {
             // Tidak ada pesan kesalahan, penghapusan berhasil
@@ -134,7 +130,7 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline" size="sm"  >
+                <Button variant="outline" size="sm">
                     <PlusIcon className="h-4 md:ml-0 text-center" />
                 </Button>
             </DialogTrigger>
@@ -143,10 +139,11 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
                     <DialogTitle>Add new department.</DialogTitle>
                     <FormError message={error} />
                     <FormSuccess message={success} />
+                    {showMessage && (
+                        <div className="text-green-500 mt-2">Data berhasil dihapus</div>
+                    )}
                     <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="space-y-4 p-4">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-4">
                             <FormField
                                 control={form.control}
                                 name="dept_name"
@@ -156,6 +153,7 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
                                         <FormControl>
                                             <Input
                                                 {...field}
+                                                value={inputName}
                                                 disabled={isPending}
                                                 placeholder="Department Name"
                                             />
@@ -173,6 +171,7 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
                                         <FormControl>
                                             <Input
                                                 {...field}
+                                                value={inputNote}
                                                 disabled={isPending}
                                                 placeholder="Note"
                                             />
@@ -181,6 +180,11 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Menampilkan pesan kesalahan penghapusan jika ada */}
+                            {showMessageDelete.visible && (
+                                <div className="text-red-500 mt-2">{showMessageDelete.message}</div>
+                            )}
 
                             <div className="max-h-[270px] mt-2 overflow-y-scroll">
                                 <Table className="min-w-full mt-2">
@@ -194,10 +198,11 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
                                     </TableHeader>
                                     <TableBody>
                                         {deptFind?.map((data, index) => (
-                                            <TableRow key={data.id}
+                                            <TableRow
+                                                key={data.id}
                                                 style={{
-                                                    backgroundColor: selectedRow === data.id ? 'rgba(11, 98, 157, 0.8)' : 'transparent',
-                                                    cursor: 'pointer',
+                                                    backgroundColor: selectedRow === data.id ? "rgba(11, 98, 157, 0.8)" : "transparent",
+                                                    cursor: "pointer",
                                                 }}
                                                 onClick={() => handleRowClick(data.id, data.dept_name, data.note)}
                                                 className="mt-2 w-full border py-3 text-xs first:rounded-tl-lg first:rounded-tr-lg last:rounded-bl-lg last:rounded-br-lg"
@@ -205,10 +210,11 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
                                                 <TableCell className=" whitespace-nowrap px-3 py-3">{index + 1}</TableCell>
                                                 <TableCell className=" whitespace-nowrap px-3 py-3">{data.dept_name}</TableCell>
                                                 <TableCell className=" whitespace-nowrap px-3 py-3">{data.note}</TableCell>
-                                                <TableCell className=" whitespace-nowrap px-3 py-3"><TrashIcon onClick={() => handleDelete(data.id)} className="text-red-500 w-8 rounded-md border p-2 hover:bg-gray-100" /></TableCell>
+                                                <TableCell className=" whitespace-nowrap px-3 py-3">
+                                                    <TrashIcon onClick={() => handleDelete(data.id)} className="text-red-500 w-8 rounded-md border p-2 hover:bg-gray-100" />
+                                                </TableCell>
                                             </TableRow>
                                         ))}
-
                                     </TableBody>
                                 </Table>
                             </div>
@@ -218,10 +224,10 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
                         </form>
                     </Form>
                 </DialogHeader>
-                <DialogFooter>
-                </DialogFooter>
+                <DialogFooter></DialogFooter>
             </DialogContent>
         </Dialog>
-    )
-}
- export default CreateDeptForm;
+    );
+};
+
+export default CreateDeptForm;

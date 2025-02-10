@@ -1,4 +1,3 @@
-
 "use client";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,12 +19,11 @@ import {
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from "react";
-// import { useFormState } from 'react-dom';
 import { ArrowLeftStartOnRectangleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { updateEmployee } from '@/action/master/employees';
-import type { Employee, Department } from '@prisma/client';
+import type { Department } from '@prisma/client';
 import Image from 'next/image';
 import ImageEdit from './image-edit';
 import { Input } from "@/components/ui/input";
@@ -33,18 +31,28 @@ import CreateDeptForm from './create-dept-form';
 import { EmployeeSchemaCreate } from "@/schemas";
 import { toast } from "sonner";
 
+type Employee = {
+  id: string;
+  name: string;
+  email: string;
+  address: string;
+  userDept: string;
+  picture: string | null; // Picture bisa null
+};
+
+type EmployeeProp = Employee | null;
 
 function EditForm({
   employee, deptFind,
 }: {
-  employee: Employee;
+  employee: EmployeeProp;
   deptFind: Department[];
 }) {
   const [isPending] = useTransition();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const Def = employee.picture
+  const Def = employee?.picture ?? '';
   const [imageUrl, setImageUrlEdit] = useState<string>(Def);
   const imageUrlOrDefault = imageUrl || '';
   const [isImageVisible, setIsImageVisible] = useState(true);
@@ -55,42 +63,40 @@ function EditForm({
   const form = useForm<z.infer<typeof EmployeeSchemaCreate>>({
     resolver: zodResolver(EmployeeSchemaCreate),
     defaultValues: {
-      name: employee.name || '',
-      email: employee.email || "",
-      address: employee.address || "",
-      userDept: employee.userDept || "",
-
+      name: employee?.name || '',
+      email: employee?.email || "",
+      address: employee?.address || "",
+      userDept: employee?.userDept || "",
     }
   });
+
   const onSubmit = (values: z.infer<typeof EmployeeSchemaCreate>) => {
-    setLoading(true)
+    setLoading(true);
     // Gabungkan imageUrl ke dalam form values
     const updatedValues = { ...values, picture: imageUrl };
     console.log("Form Values:", updatedValues); // Check form values before submission
 
-    updateEmployee(employee.id, updatedValues)
+    updateEmployee(employee?.id ?? "", updatedValues)
       .then((data) => {
+        setLoading(false);
         if (data?.error) {
-          setLoading(false);
           toast.error(data.error);
           setTimeout(() => {
             form.reset();
           }, 2000);
         }
         if (data?.success) {
-          setLoading(false);
           toast.success(data.success);
           setTimeout(() => {
             form.reset();
           }, 2000);
           router.push('/dashboard/master/employees');
         }
-      })
+      });
   };
 
   const handleCancelImage = () => {
     setImageUrlEdit("");
-    employee.picture = "";
     setIsImageVisible(!isImageVisible);
     setIsButtonVisible(!isButtonVisible);
     setIsImageEditVisible(isButtonVisible);
@@ -99,10 +105,9 @@ function EditForm({
 
   return (
     <Form {...form}>
-
       <div className='mt-6 grid grid-cols-1 sm:grid-cols-4 items-center justify-center space-between '>
         <div className="flex pt-2 pb-0 gap-4">
-          <div className="flex-initial w-96 text-xs  text-blue-700 italic md:text-nowrap">
+          <div className="flex-initial w-96 text-xs text-blue-700 italic md:text-nowrap">
             <span>Input data master Employee ini dengan lengkap dan dapat di pertanggungjawabkan</span>
           </div>
         </div>
@@ -110,7 +115,8 @@ function EditForm({
       <div className="w-full rounded-lg border px-4 shadow-lg mt-4">
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 p-4 mb-12 ">
+          className="space-y-6 p-4 mb-12 "
+        >
           <div className="mt-1 grid grid-cols-1 gap-4 gap-y-1 sm:grid-cols-2 items-center justify-center space-between">
             <div className='w-full space-y-6 items-center justify-center'>
               <FormField
@@ -182,9 +188,10 @@ function EditForm({
                       <FormItem>
                         <FormLabel>Entry Unit</FormLabel>
                         <Select
+                          value={field.value} // Gunakan value, bukan defaultValue
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          disabled={isPending}>
+                          disabled={isPending}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select a Department " />
@@ -209,12 +216,14 @@ function EditForm({
               </div>
             </div>
           </div>
+
           <div className='mb-4'>
             {isImageEditVisible && (
               <ImageEdit setImageUrlEdit={setImageUrlEdit} />
             )}
           </div>
-          <div className=' mt-8'>
+
+          <div className='mt-8'>
             {imageUrl && (
               <div className='mt-2'>
                 {isImageUrlVisible && (
@@ -226,19 +235,21 @@ function EditForm({
                   type="text"
                   id="picture"
                   name="picture"
-                  defaultValue={imageUrlOrDefault} // Menampilkan URL gambar
+                  // defaultValue={imageUrlOrDefault} // Menampilkan URL gambar
                   value={imageUrlOrDefault}
                   readOnly // Membuat input hanya untuk baca saja
-                  className={`text-black  text-sm font-medium py-0.5 w-64 border border-gray-200`}
+                  className={`text-black text-sm font-medium py-0.5 w-64 border border-gray-200`}
                   required
                   hidden
                 />
               </div>
             )}
+
             <div className='flex items-center gap-2 mt-2'>
               {isImageVisible && (
-                <Image className='border p-2 backdrop-blur-sm bg-white/30'
-                  src={employee.picture}
+                <Image
+                  className='border p-2 backdrop-blur-sm bg-white/30'
+                  src={employee?.picture ?? ''}
                   alt="Preview"
                   width={150}
                   height={150}
@@ -256,10 +267,16 @@ function EditForm({
             </div>
           </div>
 
-          <div className="relative ">
-            <Button className={`w-24 h-9 rounded-lg absolute right-0 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white font-semibold py-2 px-4 rounded-lg`} type="submit">{loading ? 'Load Update...' : 'Update'}</Button>
+          <div className="relative">
+            <Button
+              className={`w-24 h-9 rounded-lg absolute right-0 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white font-semibold py-2 px-4 rounded-lg`}
+              type="submit"
+            >
+              {loading ? 'Load Update...' : 'Update'}
+            </Button>
           </div>
         </form>
+
         <div className="flex items-center justify-end border p-2 pr-3 rounded-md shadow-sm mb-4">
           <Link
             href="/dashboard/master/employees"
@@ -270,7 +287,7 @@ function EditForm({
           </Link>
         </div>
       </div>
-    </Form >
+    </Form>
   );
 }
 

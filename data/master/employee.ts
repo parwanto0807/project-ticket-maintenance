@@ -8,14 +8,19 @@ export async function getEmployeesFindWithId (id: string) {
     no_store()
     try {
         const employeesFindWithID = await db.employee.findUnique({
-            // include: {
-            //     department: true
-            // },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                address: true,
+                picture: true,
+                userDept:true,
+            }, 
             where: { id }
         });
         return employeesFindWithID;
-    } catch  {
-        return { error: "Filed get data Employee" }
+    } catch (error) {
+        return { message: "Filed get data Employee", error }
     }
 };
 
