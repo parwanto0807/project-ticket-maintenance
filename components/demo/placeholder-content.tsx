@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDateRangePicker } from '@/components/date-range-picker';
+// import { CalendarDateRangePicker } from '@/components/date-range-picker';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +27,7 @@ export default function DashboardPage() {
             <p>Hi, Welcome back {user?.name}👋</p>
           </h2>
           <div className="hidden items-center space-x-2 md:flex">
-            <CalendarDateRangePicker />
+            {/* <CalendarDateRangePicker /> */}
             <Button className="bg-orange-500 text-white hover:bg-orange-600 focus:ring-2 focus:ring-orange-400 dark:bg-orange-500 dark:hover:bg-orange-600">
               Download
             </Button>
