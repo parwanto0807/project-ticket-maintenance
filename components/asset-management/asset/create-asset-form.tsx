@@ -141,15 +141,18 @@ const CreateAssetForm = ({
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        console.log("file....", file)
+        console.log("file....", file);
+
         if (file && file.size > 0) {
             const imageUrl = URL.createObjectURL(file);
             setPreviewImage(imageUrl);
-            setValue("assetImage1", file); // Simpan file ke form
+            setValue("assetImage1", file);
         } else {
             setPreviewImage(null);
         }
     };
+
+
 
     const filteredProducts = productDataFind.filter((product) =>
         product.part_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -198,7 +201,7 @@ const CreateAssetForm = ({
 
     console.log('Default Value:', form.control._formValues);
 
-       const onSubmit = (values: z.infer<typeof AssetSchema>) => {
+    const onSubmit = (values: z.infer<typeof AssetSchema>) => {
         setLoading(true)
 
         createAsset(values)
