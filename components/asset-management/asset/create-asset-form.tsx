@@ -1,7 +1,7 @@
 "use client"
 
 import * as z from "zod";
-import { useState, useTransition, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,6 +42,7 @@ type Employee = {
         dept_name: string;
     };
 };
+
 import { toast } from "sonner";
 import Link from "next/link";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
@@ -55,13 +56,13 @@ import Pagination from "@/components/ui/pagination";
 import TypeAssetForm from "./type-asset-form";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
+import { useTransition } from "react";
 
 type ProductNameOnly = {
     id: string;
     part_name: string;
     part_number: string;
 };
-
 
 const CreateAssetForm = ({
     assetTypeFind,
@@ -75,7 +76,7 @@ const CreateAssetForm = ({
     employeeDataFind: Employee[];
 }) => {
 
-    const [isPending] = useTransition();
+    const [isPending, startTransition] = useTransition();
     const [date, setDate] = useState<Date | null>(null);
     const [inputValue, setInputValue] = useState('');
     const [loading, setLoading] = useState(false);
@@ -111,7 +112,7 @@ const CreateAssetForm = ({
 
     useEffect(() => {
         if (date) {
-            console.log('Tanggal yang dipilih:', date);
+            console.log('Selected date:', date);
         }
     }, [date]);
 
@@ -123,12 +124,9 @@ const CreateAssetForm = ({
         };
     }, [previewImage]);
 
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setInputValue(value);
-
-        // Validasi format tanggal
         const regex = /^\d{4}-\d{2}-\d{2}$/;
         if (regex.test(value)) {
             const parsedDate = new Date(value);
@@ -141,8 +139,6 @@ const CreateAssetForm = ({
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        console.log("file....", file);
-
         if (file && file.size > 0) {
             const imageUrl = URL.createObjectURL(file);
             setPreviewImage(imageUrl);
@@ -152,8 +148,6 @@ const CreateAssetForm = ({
         }
     };
 
-
-
     const filteredProducts = productDataFind.filter((product) =>
         product.part_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.part_number.toLowerCase().includes(searchQuery.toLowerCase())
@@ -161,20 +155,16 @@ const CreateAssetForm = ({
 
     const handleSelectProduct = (product: ProductNameOnly) => {
         setSelectedProduct(product);
-        form.setValue("productId", product.id); // Set the product ID in the form
+        form.setValue("productId", product.id);
         setOpen(false);
     };
 
     const handleSelectEmployee = (employeeId: string) => {
         form.setValue("employeeId", employeeId);
         const selectedEmployee = employeeDataFind?.find(emp => emp.id === employeeId);
-        if (selectedEmployee && selectedEmployee.department) {
-            setSelectedDepartmentId({
-                id: selectedEmployee.department.id,
-            });
-            setSelectedDepartmentName({
-                dept_name: selectedEmployee.department.dept_name
-            });
+        if (selectedEmployee?.department) {
+            setSelectedDepartmentId({ id: selectedEmployee.department.id });
+            setSelectedDepartmentName({ dept_name: selectedEmployee.department.dept_name });
             form.setValue("departmentId", selectedEmployee.department.id);
         }
     };
@@ -182,46 +172,61 @@ const CreateAssetForm = ({
     const handleSelectAssetType = async (value: string) => {
         setValue("assetTypeId", value);
         setLoading(true);
-
         try {
             const response = await fetch(`/api/generateAssetNumber?assetTypeId=${value}`);
             const data = await response.json();
-
             if (response.ok) {
                 setValue("assetNumber", data.assetNumber);
-            } else {
-                console.error("Error fetching asset number:", data.error);
             }
         } catch (error) {
-            console.error("Request failed:", error);
+            console.error("Error generating asset number:", error);
         } finally {
             setLoading(false);
         }
     };
 
-    console.log('Default Value:', form.control._formValues);
 
     const onSubmit = (values: z.infer<typeof AssetSchema>) => {
-        setLoading(true)
+        setLoading(true);
 
-        createAsset(values)
-            .then((data) => {
-                if (data?.error) {
-                    setLoading(false);
-                    toast.error(data.error);
-                    setTimeout(() => {
-                        form.reset();
-                    }, 2000);
-                }
-                if (data?.success) {
-                    setLoading(false);
-                    toast.success(data.success);
-                    setTimeout(() => {
-                        form.reset();
-                    }, 2000);
-                    router.push('/dashboard/asset/asset-list');
-                }
-            })
+        const formData = new FormData();
+        console.log(formData);
+
+        // Tambahkan field secara eksplisit
+        formData.append('assetNumber', values.assetNumber);
+        formData.append('status', values.status);
+        formData.append('location', values.location || '');
+        formData.append('purchaseDate', values.purchaseDate?.toISOString()?.split('T')[0] || '');
+        formData.append('purchaseCost', (values.purchaseCost ?? 0).toString());
+        formData.append('residualValue', (values.residualValue ?? 0).toString());
+        formData.append('usefulLife', (values.usefulLife ?? 0).toString())
+        formData.append('assetTypeId', values.assetTypeId);
+        formData.append('productId', values.productId);
+
+        if (values.employeeId) formData.append('employeeId', values.employeeId);
+        if (values.departmentId) formData.append('departmentId', values.departmentId);
+
+        if (values.assetImage1 instanceof File) {
+            formData.append('assetImage1', values.assetImage1);
+        }
+
+        // Tambahkan timestamp
+        formData.append('createdAt', new Date().toISOString());
+        formData.append('updatedAt', new Date().toISOString());
+
+        startTransition(() => {
+            createAsset(formData)
+                .then((data) => {
+                    if (data?.error) {
+                        toast.error(data.error);
+                    }
+                    if (data?.success) {
+                        toast.success(data.success);
+                        router.push('/dashboard/asset/asset-list');
+                    }
+                })
+                .finally(() => setLoading(false));
+        });
     };
 
     return (
@@ -229,7 +234,9 @@ const CreateAssetForm = ({
             <div className="w-full rounded-lg border p-4 shadow-lg mt-4 dark:bg-gray-950">
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-6 p-4 mb-12 ">
+                    className="space-y-6 p-4 mb-12"
+                    encType="multipart/form-data"
+                >
                     <div className="flex-initial grid grid-cols-1 gap-4 sm:grid-cols-2 sm:justify-between uppercase">
                         <div className="flex w-full gap-x-2 items-center justify-center">
                             <div className="flex-initial w-full">
@@ -596,8 +603,16 @@ const CreateAssetForm = ({
                             </div>
                         </Card>
                     </div>
+
                     <div className="relative ">
-                        <Button className={`w-24 h-9 rounded-lg absolute right-0 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white font-semibold py-2 px-4 rounded-lg`} type="submit">{loading ? 'Load Save...' : 'Save'}</Button>
+                        <Button
+                            className={`w-24 h-9 rounded-lg absolute right-0 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                                } text-white font-semibold py-2 px-4 rounded-lg`}
+                            type="submit"
+                            disabled={loading}
+                        >
+                            {loading ? 'Menyimpan...' : 'Simpan'}
+                        </Button>
                     </div>
                 </form>
                 <div className="flex items-center justify-end border p-2 pr-3 rounded-md shadow-sm">
@@ -605,14 +620,13 @@ const CreateAssetForm = ({
                         href="/dashboard/asset/asset-list"
                         className="flex h-9 w-24 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                     >
-                        <span>Exit</span>{' '}
+                        <span>Exit</span>
                         <ArrowLeftStartOnRectangleIcon className="h-5 md:ml-4" />
                     </Link>
                 </div>
             </div>
         </Form>
     )
-
 }
 
 export default CreateAssetForm;
