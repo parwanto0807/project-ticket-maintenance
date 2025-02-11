@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { put } from "@vercel/blob";
 
 
-export const createAsset = async ( values: z.infer<typeof AssetSchema> ) => {
+export const createAsset = async (values: z.infer<typeof AssetSchema> ) => {
     const validateFieldAsset = AssetSchema.safeParse(values)
 
     if (!validateFieldAsset.success) {

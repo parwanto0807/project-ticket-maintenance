@@ -1,7 +1,7 @@
 "use client"
 
 import * as z from "zod";
-import { useState, useTransition, useEffect, useRef } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,7 +62,6 @@ type ProductNameOnly = {
     part_number: string;
 };
 
-type UploadMethod = "file" | "camera";
 
 const CreateAssetForm = ({
     assetTypeFind,
@@ -87,12 +86,6 @@ const CreateAssetForm = ({
     const [selectedDepartmentId, setSelectedDepartmentId] = useState<{ id: string } | null>(null);
     const [selectedDepartmentName, setSelectedDepartmentName] = useState<{ dept_name: string } | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
-    const [uploadMethod, setUploadMethod] = useState<UploadMethod>("file");
-
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [imageSrc, setImageSrc] = useState<string | null>(null);
-    const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
 
     const form = useForm<z.infer<typeof AssetSchema>>({
         resolver: zodResolver(AssetSchema),
@@ -100,7 +93,7 @@ const CreateAssetForm = ({
             assetNumber: "",
             status: "AVAILABLE",
             location: "",
-            purchaseDate: new Date,
+            purchaseDate: new Date(),
             purchaseCost: 0,
             residualValue: 0,
             usefulLife: 0,
@@ -116,9 +109,6 @@ const CreateAssetForm = ({
 
     const { setValue } = form;
 
-    // console.log(selectedDepartmentId);
-    // console.log(selectedDepartmentName);
-
     useEffect(() => {
         if (date) {
             console.log('Tanggal yang dipilih:', date);
@@ -133,30 +123,6 @@ const CreateAssetForm = ({
         };
     }, [previewImage]);
 
-    // console.log('Default Value:', form.control._formValues);
-
-    const onSubmit = (values: z.infer<typeof AssetSchema>) => {
-        // console.log('Form Value:', values);
-        setLoading(true)
-        createAsset(values)
-            .then((data) => {
-                if (data?.error) {
-                    setLoading(false);
-                    toast.error(data.error);
-                    setTimeout(() => {
-                        form.reset();
-                    }, 2000);
-                }
-                if (data?.success) {
-                    setLoading(false);
-                    toast.success(data.success);
-                    setTimeout(() => {
-                        form.reset();
-                    }, 2000);
-                    router.push('/dashboard/asset/asset-list');
-                }
-            })
-    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -170,6 +136,18 @@ const CreateAssetForm = ({
                 setDate(parsedDate);
                 form.setValue('purchaseDate', parsedDate);
             }
+        }
+    };
+
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        console.log("file....", file)
+        if (file && file.size > 0) {
+            const imageUrl = URL.createObjectURL(file);
+            setPreviewImage(imageUrl);
+            setValue("assetImage1", file); // Simpan file ke form
+        } else {
+            setPreviewImage(null);
         }
     };
 
@@ -199,7 +177,7 @@ const CreateAssetForm = ({
     };
 
     const handleSelectAssetType = async (value: string) => {
-        setValue("assetTypeId", value); // Set nilai AssetType di form
+        setValue("assetTypeId", value);
         setLoading(true);
 
         try {
@@ -207,7 +185,7 @@ const CreateAssetForm = ({
             const data = await response.json();
 
             if (response.ok) {
-                setValue("assetNumber", data.assetNumber); // Set nilai AssetNumber di form
+                setValue("assetNumber", data.assetNumber);
             } else {
                 console.error("Error fetching asset number:", data.error);
             }
@@ -218,90 +196,30 @@ const CreateAssetForm = ({
         }
     };
 
-    // const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     const file = event.target.files?.[0];
-    //     if (file) {
-    //         const imageUrl = URL.createObjectURL(file);
-    //         setPreviewImage(imageUrl);
-    //         // Simpan file ke form
-    //         setValue("assetImage1", file);
-    //     } else {
-    //         setPreviewImage(null);
-    //     }
-    // };
-    // Handler untuk perubahan file atau capture
+    console.log('Default Value:', form.control._formValues);
 
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreviewImage(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
+       const onSubmit = (values: z.infer<typeof AssetSchema>) => {
+        setLoading(true)
+
+        createAsset(values)
+            .then((data) => {
+                if (data?.error) {
+                    setLoading(false);
+                    toast.error(data.error);
+                    setTimeout(() => {
+                        form.reset();
+                    }, 2000);
+                }
+                if (data?.success) {
+                    setLoading(false);
+                    toast.success(data.success);
+                    setTimeout(() => {
+                        form.reset();
+                    }, 2000);
+                    router.push('/dashboard/asset/asset-list');
+                }
+            })
     };
-    const handleUploadMethodChange = (method: UploadMethod) => {
-        setUploadMethod(method);
-        if (method === "file" && isCameraActive) {
-            stopCamera(); // Stop the camera when switching to "file"
-        }
-    };
-
-    // Memulai kamera
-    const startCamera = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            console.log("Camera stream received:", stream); // Log stream
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-                setIsCameraActive(true);
-            }
-        } catch (error) {
-            console.error("Error accessing camera:", error);
-            alert("Unable to access camera. Please ensure you have granted permission.");
-        }
-    };
-
-    // Menghentikan kamera
-    const stopCamera = () => {
-        if (videoRef.current && videoRef.current.srcObject) {
-            const stream = videoRef.current.srcObject as MediaStream;
-            stream.getTracks().forEach((track) => track.stop());
-            setIsCameraActive(false);
-        }
-    };
-
-    // Menangkap gambar dari kamera
-    const captureImage = () => {
-        if (videoRef.current && canvasRef.current) {
-            const video = videoRef.current;
-            const canvas = canvasRef.current;
-            const context = canvas.getContext("2d");
-
-            // Atur ukuran canvas sesuai dengan video
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-
-            // Gambar frame video ke canvas
-            context?.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Konversi gambar ke data URL (base64)
-            const imageDataUrl = canvas.toDataURL("image/png");
-            setImageSrc(imageDataUrl);
-        }
-    };
-    // Membersihkan stream saat komponen di-unmount
-    useEffect(() => {
-        const videoElement = videoRef.current; // Salin ke variabel lokal
-
-        return () => {
-            if (videoElement && videoElement.srcObject) {
-                const stream = videoElement.srcObject as MediaStream;
-                stream.getTracks().forEach((track) => track.stop());
-            }
-        };
-    }, []); // Hanya dipanggil sekali saat unmount
 
     return (
         <Form {...form}>
@@ -648,7 +566,7 @@ const CreateAssetForm = ({
                         </div>
                     </div>
 
-                    {/* <div className="w-full md:w-1/4 items-center justify-center">
+                    <div className="w-full md:w-1/4 items-center justify-center">
                         <Card className="w-full py-2 px-2 border-2 mt-4 rounded-sm items-center justify-center">
                             <h3 className="w-full font-bold items-center justify-center text-center">Upload Images</h3>
                             <div className="mb-2 pt-2">
@@ -656,69 +574,10 @@ const CreateAssetForm = ({
                                     type="file"
                                     name="assetImage1"
                                     className="file:h-full file:mr-4 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-gray-300 file:cursor-pointer border border-gray-400 w-full"
-                                    accept="image/*" // Opsional: Batasi hanya untuk gambar
+                                    accept="image/*"
                                     onChange={handleImageChange}
                                 />
-                                {previewImage && (
-                                    <div className="mt-4">
-                                        <Image
-                                            src={previewImage}
-                                            alt="Preview"
-                                            width={400} // Set the desired width
-                                            height={200} // Set the desired height
-                                            className="rounded-lg shadow-sm items-center justify-center object-center"
-                                            style={{ maxWidth: '100%', height: 'auto' }} // Ensure responsiveness
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        </Card>
-                    </div> */}
 
-                    <div className="w-full md:w-1/4 items-center justify-center">
-                        <Card className="w-full py-2 px-2 border-2 mt-4 rounded-sm items-center justify-center">
-                            <h3 className="w-full font-bold items-center justify-center text-center">
-                                Upload Images
-                            </h3>
-
-                            {/* Pilihan Upload Method */}
-                            <div className="flex gap-6 justify-center mt-4 mb-8">
-                                <label className="flex items-center space-x-2 text-lg font-medium">
-                                    <input
-                                        type="radio"
-                                        name="uploadMethod"
-                                        value="file"
-                                        checked={uploadMethod === "file"}
-                                        onChange={() => handleUploadMethodChange("file")}
-                                        className="form-radio text-blue-500 border-gray-300 focus:ring-blue-500"
-                                    />
-                                    <span className="text-gray-700">File</span>
-                                </label>
-
-                                <label className="flex items-center space-x-2 text-lg font-medium">
-                                    <input
-                                        type="radio"
-                                        name="uploadMethod"
-                                        value="camera"
-                                        checked={uploadMethod === "camera"}
-                                        onChange={() => handleUploadMethodChange("camera")}
-                                        className="form-radio text-green-500 border-gray-300 focus:ring-green-500"
-                                    />
-                                    <span className="text-gray-700">Camera</span>
-                                </label>
-                            </div>
-
-
-                            {/* Input File atau Camera */}
-                            <div className="mb-2 pt-2">
-                                <Input
-                                    type="file"
-                                    name="assetImage1"
-                                    className="file:h-full file:mr-4 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-gray-300 file:cursor-pointer border border-gray-400 w-full"
-                                    accept="image/*" // Hanya menerima file gambar
-                                    capture={uploadMethod === "camera" ? "environment" : undefined} // Aktifkan kamera belakang (environment) atau depan (user)
-                                    onChange={handleImageChange}
-                                />
                                 {previewImage && (
                                     <div className="mt-4">
                                         <Image
@@ -727,75 +586,11 @@ const CreateAssetForm = ({
                                             width={400}
                                             height={200}
                                             className="rounded-lg shadow-sm items-center justify-center object-center"
-                                            style={{ maxWidth: "100%", height: "auto" }}
+                                            style={{ maxWidth: '100%', height: 'auto' }}
                                         />
                                     </div>
                                 )}
                             </div>
-
-                            {/* Tampilkan tombol camera hanya jika uploadMethod === "camera" */}
-                            {uploadMethod === "camera" && (
-                                <div className="flex flex-col items-center justify-center p-4">
-                                    {/* Tombol untuk memulai/menghentikan kamera */}
-                                    <div className="mb-4">
-                                        {!isCameraActive ? (
-                                            <Button
-                                                onClick={startCamera}
-                                                type="button"
-                                                className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                                            >
-                                                Start Camera
-                                            </Button>
-                                        ) : (
-                                            <Button
-                                                onClick={stopCamera}
-                                                type="button"
-                                                className="bg-red-500 text-white px-4 py-2 rounded-md"
-                                            >
-                                                Stop Camera
-                                            </Button>
-                                        )}
-                                    </div>
-
-                                    {/* Video untuk menampilkan stream kamera */}
-                                    {isCameraActive && (
-                                        <div className="mb-4">
-                                            <video
-                                                ref={videoRef}
-                                                autoPlay
-                                                playsInline
-                                                className="w-full max-w-md border-2 border-gray-300 rounded-lg"
-                                            />
-                                        </div>
-                                    )}
-
-                                    {/* Tombol untuk menangkap gambar */}
-                                    {isCameraActive && (
-                                        <Button
-                                            onClick={captureImage}
-                                            type="button"
-                                            className="bg-green-500 text-white px-4 py-2 rounded-md mb-4"
-                                        >
-                                            Capture Image
-                                        </Button>
-                                    )}
-
-                                    {/* Canvas untuk menangkap gambar (tersembunyi) */}
-                                    <canvas ref={canvasRef} className="hidden" />
-
-                                    {/* Menampilkan gambar yang diambil */}
-                                    {imageSrc && (
-                                        <div className="mt-4">
-                                            <h3 className="text-lg font-bold mb-2">Captured Image:</h3>
-                                            <Image
-                                                src={imageSrc}
-                                                alt="Captured"
-                                                className="w-full max-w-md rounded-lg shadow-md"
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            )}
                         </Card>
                     </div>
                     <div className="relative ">
