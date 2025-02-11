@@ -1,0 +1,57 @@
+name: Deploy Next.js to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: |
+        npm install
+
+    - name: Build Next.js
+      run: |
+        npm run build
+
+    - name: Deploy to VPS
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SERVER_USER: ${{ secrets.SERVER_USER }}
+        SERVER_IP: ${{ secrets.SERVER_IP }}
+        DEPLOY_DIR: '/projects'  # Direktori aplikasi di VPS
+      run: |
+        # Setup SSH key
+        echo "$SSH_PRIVATE_KEY" > private_key.pem
+        chmod 600 private_key.pem
+        ssh -i private_key.pem -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP <<EOF
+          # Stop aplikasi lama jika ada
+          pm2 stop all || true
+
+          # Masuk ke direktori aplikasi
+          cd $DEPLOY_DIR
+
+          # Pull perubahan terbaru dari GitHub
+          git pull
+
+          # Install dependensi baru jika ada
+          npm install
+
+          # Build aplikasi
+          npm run build
+
+          # Jalankan aplikasi menggunakan PM2
+          pm2 start npm --name "asset-management" -- run start
+        EOF
