@@ -421,7 +421,7 @@ const CreateAssetForm = ({
                                 )}
                             />
                             <FormItem>
-                                <FormLabel>Department Name</FormLabel>
+                                <FormLabel>Department</FormLabel>
                                 <FormControl>
                                     <Input value={selectedDepartmentName?.dept_name ?? ""} readOnly />
                                 </FormControl>
