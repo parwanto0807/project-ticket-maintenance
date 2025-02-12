@@ -12,24 +12,24 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { deleteProduct } from "@/action/master/product";
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { toast } from "sonner";
+import { deleteAssetById } from "@/action/asset/asset";
 
 
-export default function DeleteAlertProduct({ id }: { id: string }) {
+export default function DeleteAlertAsset({ id }: { id: string }) {
   const handleDelete = async () => {
     try {
-      const response = await deleteProduct(id);
-      if (response.success) {
-        toast.success(response.success)
+      const response = await deleteAssetById(id);
+      if (response.message) {
+        toast.success(response.message)
       } else {
-        toast.error(response.error)
+        toast.error(response.message)
       }
 
     } catch (error) {
-      console.error('Error deleting product:', error);
-      toast.error('An error occurred while deleting the product');
+      console.error('Error deleting asset:', error);
+      toast.error('An error occurred while deleting the asset');
     }
   };
 

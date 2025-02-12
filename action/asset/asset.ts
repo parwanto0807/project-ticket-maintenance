@@ -147,3 +147,17 @@ export const deleteAssetType = async (id: string) => {
         return {message: "Delete type asset Filed!"}  
     }
 }
+
+export const deleteAssetById = async (id: string) => {
+  try {
+      await db.asset.delete({
+          where : {
+              id: id
+          }
+      })
+      revalidatePath("/dashboard/asset/asset-list")
+      return {message: "Delete asset successfull"}
+  } catch {
+      return {message: "Delete asset Filed!"}  
+  }
+}
