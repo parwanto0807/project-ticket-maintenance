@@ -585,6 +585,7 @@ const CreateAssetForm = ({
                                     name="assetImage1"
                                     className="file:h-full file:mr-4 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-gray-300 file:cursor-pointer border border-gray-400 w-full"
                                     accept="image/*"
+                                    capture="environment"
                                     onChange={handleImageChange}
                                 />
 

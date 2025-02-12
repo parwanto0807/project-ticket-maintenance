@@ -34,10 +34,12 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                             <p>{data.assetNumber}</p>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <ImageDialog
-                                                src={data.assetImage1 || "/noImage.jpg"}
-                                                alt={`${data.assetNumber} Asset Image`}
-                                            />
+                                            <div className="w-12 h-12 overflow-hidden rounded">
+                                                <ImageDialog
+                                                    src={data.assetImage1 || "/noImage.jpg"}
+                                                    alt={`${data.assetNumber} Asset Image`}
+                                                />
+                                            </div>
                                         </div>
                                         <div>
                                             <p className="text-sm pt-1">
@@ -98,10 +100,12 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                     <TableCell >{data.status}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-2">
                                         <div className="flex items-center gap-2">
-                                            <ImageDialog
-                                                src={data.assetImage1 || "/noImage.jpg"}
-                                                alt={`${data.assetNumber} Asset Image`}
-                                            />
+                                            <div className="w-12 h-12 overflow-hidden rounded">
+                                                <ImageDialog
+                                                    src={data.assetImage1 || "/noImage.jpg"}
+                                                    alt={`${data.assetNumber} Asset Image`}
+                                                />
+                                            </div>
                                         </div>
                                     </TableCell>
                                     <TableCell className="flex items-center justify-center object-center gap-2">
