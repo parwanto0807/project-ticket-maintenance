@@ -580,18 +580,10 @@ const CreateAssetForm = ({
                         <Card className="w-full py-2 px-2 border-2 mt-4 rounded-sm items-center justify-center">
                             <h3 className="w-full font-bold items-center justify-center text-center">Upload Images</h3>
                             <div className="mb-2 pt-2">
-                                {/* <input
-                                    type="file"
-                                    name="assetImage1"
-                                    className="file:h-full file:mr-4 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-gray-300 file:cursor-pointer border border-gray-400 w-full"
-                                    accept="image/*"
-                                    capture="environment"
-                                    onChange={handleImageChange}
-                                /> */}
                                 <input
                                     type="file"
                                     name="assetImage1"
-                                    className="..."
+                                    className="file:h-full file:mr-4 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-gray-300 file:cursor-pointer border border-gray-400 w-full"
                                     accept="image/*"
                                     onChange={handleImageChange}
                                 />
