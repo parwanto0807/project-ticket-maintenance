@@ -1,5 +1,5 @@
 
-import { UpdateProduct } from "./buttons";
+import { UpdateAssetLink } from "./buttons";
 import DeleteAlertProduct from "./alert-delete";
 import {
     Table,
@@ -57,7 +57,7 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                     </div>
                                     <div className="flex-1 w-full items-center justify-between pt-4">
                                         <div className="flex justify-end gap-2">
-                                            <UpdateProduct id={data.id} />
+                                            <UpdateAssetLink id={data.id} />
                                             <DeleteAlertProduct id={data.id} />
                                         </div>
                                     </div>
@@ -109,7 +109,7 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                         </div>
                                     </TableCell>
                                     <TableCell className="flex items-center justify-center object-center gap-2">
-                                        <UpdateProduct id={data.id} />
+                                        <UpdateAssetLink id={data.id} />
                                         <DeleteAlertProduct id={data.id} />
                                     </TableCell>
                                 </TableRow >

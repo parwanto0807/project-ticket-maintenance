@@ -109,3 +109,22 @@ export const fetchAssetType = async() => {
         return { error: 'Error fetching asset type' };
     }
 }
+
+export const fetchAssetById = async(id: string) => {
+    noStore();
+    try {
+        const findAssetById = await db.asset.findUnique({
+            where: {id: id},
+            include: {
+                assetType: true,
+                department: true,
+                product: true,
+                employee: true
+            }
+        })
+        return findAssetById
+    } catch (error) {
+        console.error('Error fetch asset by ID', error)
+        return { error: 'Error fetching asset by ID'}
+    }
+}

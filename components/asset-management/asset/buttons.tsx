@@ -19,11 +19,11 @@ export function CreateAssetButton() {
   );
 }
 
-export function UpdateProduct({ id }: { id: string }) {
+export function UpdateAssetLink({ id }: { id: string }) {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/dashboard/master/products/edit/${id}`);
+    router.push(`/dashboard/asset/asset-list/edit/${id}`);
   };
 
   return (

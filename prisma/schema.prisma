@@ -275,13 +275,12 @@ model Asset {
   assetType     AssetType      @relation(fields: [assetTypeId], references: [id])
   departmentId  String
   assetImage1   String?        @default("/public/noImage.jpg")
+  productId     String         @map("product_id")
+  employeeId    String?
 
-  // Relasi ke Product (setiap Asset merujuk ke satu Product)
-  productId  String      @map("product_id") // Relasi ke Product
   product    Product     @relation(fields: [productId], references: [id], name: "ProductAssets")
   employee   Employee?   @relation(fields: [employeeId], references: [id], name: "AssignAssets")
   department Department? @relation(fields: [departmentId], references: [id], name: "DepartmentAsset")
-  employeeId String?
 }
 
 model AssetType {
