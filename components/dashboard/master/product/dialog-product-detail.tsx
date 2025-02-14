@@ -25,7 +25,7 @@ export function ProductDialog({ product }: { product: Product }) {
                     <SearchCheckIcon className="w-5 h-5" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg rounded-lg shadow-lg">
+            <DialogContent className="max-w-lg max-h-[70vh] overflow-y-auto rounded-lg shadow-lg">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-bold text-gray-800 dark:text-white">
                         {product.part_name}
