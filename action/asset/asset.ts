@@ -138,7 +138,6 @@ export const createAsset = async (formData: FormData) => {
   }
 
   try {
-    // Upload image to Vercel Blob
     let imageUrl = "";
     if (result.data.assetImage1) {
       const { url } = await put(

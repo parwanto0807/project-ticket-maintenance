@@ -1,5 +1,6 @@
 "use client";
 import * as z from "zod";
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -19,17 +20,17 @@ import {
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from "react";
-import { ArrowLeftStartOnRectangleIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftStartOnRectangleIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { updateEmployee } from '@/action/master/employees';
 import type { Department } from '@prisma/client';
 import Image from 'next/image';
-import ImageEdit from './image-edit';
 import { Input } from "@/components/ui/input";
 import CreateDeptForm from './create-dept-form';
 import { EmployeeSchemaCreate } from "@/schemas";
 import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
 
 type Employee = {
   id: string;
@@ -51,14 +52,13 @@ function EditForm({
   const [isPending] = useTransition();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  const Def = employee?.picture ?? '';
-  const [imageUrl, setImageUrlEdit] = useState<string>(Def);
-  const imageUrlOrDefault = imageUrl || '';
-  const [isImageVisible, setIsImageVisible] = useState(true);
-  const [isButtonVisible, setIsButtonVisible] = useState(true);
-  const [isImageEditVisible, setIsImageEditVisible] = useState(false);
-  const [isImageUrlVisible, setisImageUrlVisible] = useState(true);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const urlToFile = async (url: string, filename: string): Promise<File> => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new File([blob], filename, { type: blob.type });
+  };
+  const [fileName, setFileName] = useState<string>('');
 
   const form = useForm<z.infer<typeof EmployeeSchemaCreate>>({
     resolver: zodResolver(EmployeeSchemaCreate),
@@ -67,40 +67,69 @@ function EditForm({
       email: employee?.email || "",
       address: employee?.address || "",
       userDept: employee?.userDept || "",
+      picture: undefined,
     }
   });
 
-  const onSubmit = (values: z.infer<typeof EmployeeSchemaCreate>) => {
-    setLoading(true);
-    // Gabungkan imageUrl ke dalam form values
-    const updatedValues = { ...values, picture: imageUrl };
-    console.log("Form Values:", updatedValues); // Check form values before submission
+  const { setValue } = form;
 
-    updateEmployee(employee?.id ?? "", updatedValues)
-      .then((data) => {
-        setLoading(false);
-        if (data?.error) {
-          toast.error(data.error);
-          setTimeout(() => {
-            form.reset();
-          }, 2000);
-        }
-        if (data?.success) {
-          toast.success(data.success);
-          setTimeout(() => {
-            form.reset();
-          }, 2000);
-          router.push('/dashboard/master/employees');
-        }
+  useEffect(() => {
+    if (employee?.picture) {
+      setPreviewImage(employee?.picture);
+      setFileName(employee?.picture || "");
+    }
+  }, [employee?.picture]);
+
+  useEffect(() => {
+    if (employee?.picture) {
+      urlToFile(employee?.picture, "image.jpg").then((file) => {
+        form.setValue("picture", file);
       });
+    }
+  }, [employee?.picture, form]);
+
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.size > 0) {
+      const imageUrl = URL.createObjectURL(file);
+      setPreviewImage(imageUrl);
+      setValue("picture", file);
+    } else {
+      setPreviewImage("/noImage.jpg");
+    }
   };
 
-  const handleCancelImage = () => {
-    setImageUrlEdit("");
-    setIsImageVisible(!isImageVisible);
-    setIsButtonVisible(!isButtonVisible);
-    setIsImageEditVisible(isButtonVisible);
-    setisImageUrlVisible(!isImageUrlVisible);
+
+  const onSubmit = async (values: z.infer<typeof EmployeeSchemaCreate>) => {
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("name", values.name);
+    formData.append("email", values.email);
+    formData.append("address", values.address);
+    formData.append("userDept", values.userDept);
+
+    if (values.picture instanceof File) {
+      formData.append("picture", values.picture);
+    }
+
+    try {
+      const data = await updateEmployee(employee?.id ?? '', formData); // Kirim FormData ke backend
+
+      if (data?.error) {
+        toast.error(data.error);
+      } else {
+        toast.success(data.success);
+        form.reset();
+        router.push("/dashboard/master/employees");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Terjadi kesalahan!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -217,53 +246,34 @@ function EditForm({
             </div>
           </div>
 
-          <div className='mb-4'>
-            {isImageEditVisible && (
-              <ImageEdit setImageUrlEdit={setImageUrlEdit} />
-            )}
-          </div>
 
           <div className='mt-8'>
-            {imageUrl && (
-              <div className='mt-2'>
-                {isImageUrlVisible && (
-                  <label htmlFor="imageUrl" className='block text-sm font-medium'>
-                    Old Image :
-                  </label>
-                )}
-                <input
-                  type="text"
-                  id="picture"
-                  name="picture"
-                  // defaultValue={imageUrlOrDefault} // Menampilkan URL gambar
-                  value={imageUrlOrDefault}
-                  readOnly // Membuat input hanya untuk baca saja
-                  className={`text-black text-sm font-medium py-0.5 w-64 border border-gray-200`}
-                  required
-                  hidden
-                />
-              </div>
-            )}
-
-            <div className='flex items-center gap-2 mt-2'>
-              {isImageVisible && (
-                <Image
-                  className='border p-2 backdrop-blur-sm bg-white/30'
-                  src={employee?.picture ?? ''}
-                  alt="Preview"
-                  width={150}
-                  height={150}
-                />
-              )}
-              {isButtonVisible && (
-                <Button variant="outline" size="icon" type="button" onClick={handleCancelImage}>
-                  <XMarkIcon className='text-red-600 h-4 w-4' />
-                </Button>
-              )}
-
-              <div id="picture-error" aria-live="polite" aria-atomic="true">
-                <p className='mt-2 text-sm text-red-500'>{employee?.picture}</p>
-              </div>
+            <div className="w-full md:w-1/4 items-center justify-center">
+              <Card className="w-full py-2 px-2 border-2 mt-4 rounded-sm items-center justify-center">
+                <h3 className="w-full font-bold items-center justify-center text-center">Upload Images</h3>
+                <div className="mb-2 pt-2">
+                  <input
+                    type="file"
+                    name="picture"
+                    className="file:h-full file:mr-4 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-gray-300 file:cursor-pointer border border-gray-400 w-full"
+                    accept="image/*"
+                    onChange={handleImageChange || "/noImage.jpg"}
+                  />
+                  {fileName && <p className="mt-2 text-gray-600" hidden>File: {fileName}</p>}
+                  {previewImage && (
+                    <div className="mt-4">
+                      <Image
+                        src={previewImage}
+                        alt="Preview"
+                        width={400}
+                        height={200}
+                        className="rounded-lg shadow-sm items-center justify-center object-center"
+                        style={{ maxWidth: '100%', height: 'auto' }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </Card>
             </div>
           </div>
 
