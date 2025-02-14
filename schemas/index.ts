@@ -207,11 +207,12 @@ export const EmployeeSchema = z.object({
     address: z.string().min(5, {
         message: "Address is required"
     }),
-    picture: z.string().min(3),
+    picture: z.union([z.instanceof(File), z.null(), z.undefined()]).optional(),
     userDept: z.string().min(3, {
         message: "Depteartment is required"
     }),
 })
+
 export const EmployeeSchemaCreate = z.object({
     name: z.string().min(3),
     email: z.string().min(5, {
@@ -223,6 +224,7 @@ export const EmployeeSchemaCreate = z.object({
     userDept: z.string().min(3, {
         message: "Depteartment is required"
     }),
+    picture:z.union([z.instanceof(File), z.null(), z.undefined()]).optional(),
 })
 
 export const DeptSchema = z.object({
@@ -308,7 +310,7 @@ export const AssetSchema = z.object({
     productId: z.string().nonempty({ message: "Product ID cannot be empty" }),
     departmentId: z.string().nonempty({ message: "Department ID cannot be empty" }),
     employeeId: z.string().nullable().optional().or(z.literal("")),
-    assetImage1: z.instanceof(File).refine((file) => file.size > 0, { message: "Asset image is requires" }).refine((file) => file.size ===0 || file.type.startsWith("image/"), { message: "Only Images Allowed", }).refine((file) => file.size < 4000000, { message: "Asset image size is too large" }),
+    assetImage1: z.instanceof(File).refine((file) => file.size > 0, { message: "Asset image is requires" }).refine((file) => file.size === 0 || file.type.startsWith("image/"), { message: "Only Images Allowed", }).refine((file) => file.size < 4000000, { message: "Asset image size is too large" }),
 });
 
 export const AssetTypeSchema = z.object({

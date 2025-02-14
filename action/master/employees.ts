@@ -2,87 +2,132 @@
 
 import * as z from "zod";
 import { db } from "@/lib/db";
-
 import { revalidatePath } from "next/cache";
-import { EmployeeSchema, DeptSchema } from "@/schemas";
+import { DeptSchema, EmployeeSchemaCreate } from "@/schemas";
 import { getDeptById } from "@/data/master/employee";
+import { put, del } from "@vercel/blob";
 
-export const deleteEmployee = async(id: string)=> {
+export const deleteEmployee = async (id: string) => {
     try {
         await db.employee.delete({
-            where:{
+            where: {
                 id
             }
         });
         revalidatePath('/dahsboard/master/employees')
-        return {success:"Deleted employee successfull"}
+        return { success: "Deleted employee successfull" }
     } catch {
-        return { error:"Filed deleted employee"}
+        return { error: "Filed deleted employee" }
     }
 }
 
-export const updateEmployee = async (id: string, values: z.infer<typeof EmployeeSchema>) => {
-
-    const validatedFields = EmployeeSchema.safeParse(values);
-    const now = new Date()
-
-    if (!validatedFields.success) {
-        const errors = validatedFields.error.flatten().fieldErrors;
-        console.error("Validation Error", errors)
-        return {
-            Error: errors
-        }
-    }
+export const updateEmployee = async (id: string, formData: FormData) => {
     try {
-        //console.log("Creating Employee with values:", validatedFields.data);
-        await db.employee.update({
-            data: {
-                name: validatedFields.data.name,
-                email: validatedFields.data.email,
-                address: validatedFields.data.address,
-                picture: validatedFields.data.picture,
-                userDept: validatedFields.data.userDept,
-                updatedAt: now,
-            }, 
-            where: { id }
+        const name = formData.get("name") as string;
+        const email = formData.get("email") as string;
+        const address = formData.get("address") as string;
+        const userDept = formData.get("userDept") as string;
+        const picture = formData.get("picture") as File | null;
+
+        if (!name || !email || !address || !userDept) {
+            return { error: "Semua field wajib diisi" };
+        }
+
+        // Ambil data karyawan lama untuk mendapatkan nama gambar lama
+        const existingEmployee = await db.employee.findUnique({
+            where: { id },
+            select: { picture: true }, // Hanya ambil gambar
         });
 
-        revalidatePath("/dashboard/master/employees")
-        return { success: "Succescfully updated employee data" }
-    } catch {
-        return { error: " Filed updated employee data" }
+        let imageUrl: string | undefined;
+
+        if (picture) {
+            // Hapus gambar lama jika ada
+            if (existingEmployee?.picture) {
+                await del(existingEmployee.picture);
+            }
+
+            // Simpan gambar baru ke Vercel Blob Storage
+            const { url } = await put(picture.name, picture, {
+                access: "public",
+                contentType: picture.type,
+            });
+
+            imageUrl = url; 
+        }
+
+        await db.employee.update({
+            where: { id },
+            data: {
+                name,
+                email,
+                address,
+                userDept,
+                ...(imageUrl ? { picture: imageUrl } : {}),
+            },
+        });
+        revalidatePath('/dahsboard/master/employees')
+        return { success: "Berhasil memperbarui karyawan" };
+    } catch (error) {
+        console.error("Error updating employee:", error);
+        return { error: "Gagal memperbarui karyawan" };
     }
 };
 
-export const createEmployee = async (values: z.infer<typeof EmployeeSchema>) => {
+export const createEmployee = async (formData: FormData) => {
+    const now = new Date();
 
-    const validatedFields = EmployeeSchema.safeParse(values);
-    const now = new Date()
+    // Convert FormData ke Object biasa
+    const values = {
+        userDept: formData.get("userDept") as string,
+        name: formData.get("name") as string,
+        email: formData.get("email") as string,
+        address: formData.get("address") as string,
+        picture: formData.get("picture") as File | null | string,
+    };
 
-    if (!validatedFields.success) {
-        const errors = validatedFields.error.flatten().fieldErrors;
-        console.error("Validation Error", errors)
-        return {
-            Error: errors
-        }
+    // Validasi dengan Zod
+    const validatedFieldDept = EmployeeSchemaCreate.safeParse(values);
+    if (!validatedFieldDept.success) {
+        console.error(validatedFieldDept.error);
+        return { error: "Invalid input data" };
     }
+
+    const { name, userDept, address, email, picture } = validatedFieldDept.data;
     try {
-        //console.log("Creating Employee with values:", validatedFields.data);
+        let imageUrl = "";
+
+        // Upload gambar jika ada
+        if (picture) {
+            const { url } = await put(
+                picture.name ,
+                picture,
+                {
+                    access: "public",
+                    contentType: picture.type,
+                });
+            imageUrl = url;
+        }
+
+        // Simpan data ke database
         await db.employee.create({
             data: {
-                name: validatedFields.data.name,
-                email: validatedFields.data.email,
-                address: validatedFields.data.address,
-                picture: validatedFields.data.picture,
-                userDept: validatedFields.data.userDept,
+                userDept,
+                address,
+                email,
+                name,
+                picture: imageUrl, // Simpan URL gambar jika ada
                 createdAt: now,
                 updatedAt: now,
-            }
+            },
         });
-        revalidatePath("/dashboard/master/employees")
-        return { success: "Succescfully created employee data" }
-    } catch {
-        return { error: " Filed created employee data" }
+
+        // Revalidate path
+        revalidatePath("/dashboard/master/employees/create");
+        return { success: "Successfully created department" };
+    } catch (error) {
+        console.error("Error creating department:", error);
+        return { error: "Failed to create department" };
     }
 };
 

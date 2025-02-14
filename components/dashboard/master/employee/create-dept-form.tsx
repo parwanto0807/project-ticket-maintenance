@@ -154,6 +154,10 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
                                             <Input
                                                 {...field}
                                                 value={inputName}
+                                                onChange={(e) => {
+                                                    setInputName(e.target.value);
+                                                    form.setValue("dept_name", e.target.value); // Sync dengan react-hook-form
+                                                }}
                                                 disabled={isPending}
                                                 placeholder="Department Name"
                                             />
@@ -172,6 +176,10 @@ const CreateDeptForm = ({ deptFind }: { deptFind: Department[] }) => {
                                             <Input
                                                 {...field}
                                                 value={inputNote}
+                                                onChange={(e) => {
+                                                    setInputNote(e.target.value);
+                                                    form.setValue("note", e.target.value); // Sync dengan react-hook-form
+                                                }}
                                                 disabled={isPending}
                                                 placeholder="Note"
                                             />

@@ -1,5 +1,4 @@
 import { getEmployeesFindAll } from "@/data/master/employee";
-import Image from "next/image";
 import { formatDate } from "@/lib/utils";
 import { UpdateEmployee } from "./buttons";
 import DeleteAlert from "./alert-delete";
@@ -10,7 +9,8 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-  } from "@/components/ui/table"
+} from "@/components/ui/table"
+import ImageDialogEmployee from "./imageDialog";
 const ITEMS_PER_PAGE_EMPLOYEES = 30;
 
 export default async function EmployeeTable({ query, currentPage }: { query: string; currentPage: number; }) {
@@ -27,20 +27,19 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                                 key={employees.id}
                                 className="mb-2 w-full rounded-md p-4"
                             >
-                                <div className="flex items-center justify-between border-b pb-4">
+                                <div className="flex flex-row items-center justify-between border-b pb-4">
                                     <div>
-                                        <div className="mb-2 flex items-center">
-                                            <Image
-                                                src={employees.picture}
-                                                className="mr-2 rounded-full"
-                                                width={28}
-                                                height={28}
-                                                alt={`${employees.name}'s profile picture`}
-                                            />
-                                            <p>{employees.name}</p>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-12 h-12 overflow-hidden rounded">
+                                                <ImageDialogEmployee
+                                                    src={employees.picture || "/noImage.jpg"}
+                                                    alt={`${employees.name} Asset Image`}
+                                                />
+                                            </div>
                                         </div>
                                         <div>
                                             <p className="text-sm font-medium pt-2">
+                                                {employees.name} &nbsp;
                                                 {employees.department.dept_name}
                                             </p>
                                         </div>
@@ -66,11 +65,12 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                             </div>
                         </div>
                     </div>
-                    
+
                     <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                         <TableHeader className="rounded-lg text-left text-sm font-normal">
                             <TableRow>
                                 <TableHead scope="col" className="px-3 py-5 font-medium uppercase">No</TableHead>
+                                <TableHead scope="col" className="px-4 py-5 font-medium sm:pl-6 uppercase"># </TableHead>
                                 <TableHead scope="col" className="px-4 py-5 font-medium sm:pl-6 uppercase">Employee </TableHead>
                                 <TableHead scope="col" className="px-3 py-5 font-medium uppercase">Address</TableHead>
                                 <TableHead scope="col" className="px-3 py-5 font-medium uppercase">Department</TableHead>
@@ -83,20 +83,16 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                                 <TableRow key={employees.id}>
                                     <TableCell className="whitespace-nowrap px-3 py-2">{offset + index + 1}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-2">
-                                        <div className="flex item-center gap-2">
-                                            <Image
-                                                src={employees.picture || "/noavatar.png"}
-                                                alt={`${employees.name}'profile picture`}
-                                                width={50}
-                                                height={30}
-                                                className="rounded-lg mr-2"
-                                            />
-                                            <div>
-                                                <p>{employees.name}</p><br />
-                                                <p>{employees.email}</p>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-12 h-12 overflow-hidden rounded">
+                                                <ImageDialogEmployee
+                                                    src={employees.picture || "/noImage.jpg"}
+                                                    alt={`${employees.name} Asset Image`}
+                                                />
                                             </div>
                                         </div>
                                     </TableCell>
+                                    <TableCell className="whitespace-nowrap px-3 py-3">{employees.name}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3">{employees.address}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3">{employees.department.dept_name}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3">{formatDate(employees.createdAt.toString())}</TableCell>

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,34 +9,35 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from '@/components/ui/form'
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
 import { useForm } from "react-hook-form";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import Link from 'next/link';
+import Link from "next/link";
 import { createEmployee } from "@/action/master/employees";
-import ImageUpload from '../../../image-upload';
 import { Input } from "@/components/ui/input";
 import { Department } from "@prisma/client";
 import { EmployeeSchemaCreate } from "@/schemas";
-import CreateDeptForm from "./create-dept-form";
 import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
+import Image from "next/image";
+import CreateDeptForm from "./create-dept-form";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 
 const CreateEmployeeForm = ({ deptFind }: { deptFind: Department[] }) => {
   const [isPending] = useTransition();
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>("/noavatar.png");
   const router = useRouter();
+  const [previewImage, setPreviewImage] = useState<string | null>("/noImage.jpg");
 
   const form = useForm<z.infer<typeof EmployeeSchemaCreate>>({
     resolver: zodResolver(EmployeeSchemaCreate),
@@ -45,37 +46,56 @@ const CreateEmployeeForm = ({ deptFind }: { deptFind: Department[] }) => {
       email: "",
       address: "",
       userDept: "",
-
-    }
+      picture: undefined,
+    },
   });
+  console.log('Default Value:', form.control._formValues);
 
-  const onSubmit = (values: z.infer<typeof EmployeeSchemaCreate>) => {
-    setLoading(true)
+  const { setValue } = form;
 
-    // Gabungkan imageUrl ke dalam form values
-    const updatedValues = { ...values, picture: imageUrl };
-
-    console.log("Form Values:", updatedValues); // Check form values before submission
-
-    createEmployee(updatedValues)
-      .then((data) => {
-        if (data?.error) {
-          setLoading(false);
-          toast.error(data.error);
-          setTimeout(() => {
-            form.reset();
-          }, 2000);
-        }
-        if (data?.success) {
-          setLoading(false);
-          toast.success(data.success);
-          setTimeout(() => {
-            form.reset();
-          }, 2000);
-          router.push('/dashboard/master/employees');
-        }
-      })
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.size > 0) {
+      const imageUrl = URL.createObjectURL(file);
+      setPreviewImage(imageUrl);
+      setValue("picture", file);
+    } else {
+      setPreviewImage("/noImage.jpg");
+    }
   };
+
+  const onSubmit = async (values: z.infer<typeof EmployeeSchemaCreate>) => {
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("name", values.name);
+    formData.append("email", values.email);
+    formData.append("address", values.address);
+    formData.append("userDept", values.userDept);
+
+    if (values.picture instanceof File) {
+      formData.append("picture", values.picture);
+    }
+
+    try {
+      const data = await createEmployee(formData); // Kirim FormData ke backend
+
+      if (data?.error) {
+        toast.error(data.error);
+      } else {
+        toast.success(data.success);
+        form.reset();
+        router.push("/dashboard/master/employees");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Terjadi kesalahan!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   return (
     <Form {...form}>
 
@@ -188,24 +208,32 @@ const CreateEmployeeForm = ({ deptFind }: { deptFind: Department[] }) => {
               </div>
             </div>
           </div>
-          <div className=' mt-8'>
-            <ImageUpload setImageUrl={setImageUrl} />
-            {imageUrl && (
-              <div className='mt-2'>
+          <div className="w-full md:w-1/4 items-center justify-center">
+            <Card className="w-full py-2 px-2 border-2 mt-4 rounded-sm items-center justify-center">
+              <h3 className="w-full font-bold items-center justify-center text-center">Upload Images</h3>
+              <div className="mb-2 pt-2">
                 <input
-                  type="text"
-                  id="picture"
+                  type="file"
                   name="picture"
-                  value={imageUrl} // Menampilkan URL gambar
-                  readOnly // Membuat input hanya untuk baca saja
-                  className="text-black text-sm font-medium py-0.5 w-64 border border-gray-200"
-                  hidden
+                  className="file:h-full file:mr-4 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-gray-300 file:cursor-pointer border border-gray-400 w-full"
+                  accept="image/*"
+                  onChange={handleImageChange || "/noImage.jpg"}
                 />
-                <FormMessage />
+                {previewImage && (
+                  <div className="mt-4">
+                    <Image
+                      src={previewImage}
+                      alt="Preview"
+                      width={400}
+                      height={200}
+                      className="rounded-lg shadow-sm items-center justify-center object-center"
+                      style={{ maxWidth: '100%', height: 'auto' }}
+                    />
+                  </div>
+                )}
               </div>
-            )}
+            </Card>
           </div>
-
           <div className="relative ">
             <Button className={`w-24 h-9 rounded-lg absolute right-0 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white font-semibold py-2 px-4 rounded-lg`} type="submit">{loading ? 'Load Save...' : 'Save'}</Button>
           </div>
