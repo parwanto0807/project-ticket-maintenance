@@ -12,7 +12,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 // import { Badge } from "@/components/ui/badge";
 import { Product } from "@prisma/client";
-import { SearchIcon } from "lucide-react";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 export function ProductDialog({ product }: { product: Product }) {
     return (
@@ -20,9 +20,9 @@ export function ProductDialog({ product }: { product: Product }) {
             <DialogTrigger asChild>
                 <Button
                     variant="outline"
-                    className="p-2 rounded-lg border bg-white dark:bg-gray-800 hover:bg-green-600 hover:text-white transition duration-300 flex justify-center items-center"
+                    className="text-white-600 rounded-md border p-2 hover:bg-green-800 h-8 text-center hover:text-white flex justify-center items-center"
                 >
-                    <SearchIcon className="w-3 h-3" />
+                    <MagnifyingGlassIcon className="w-4"/>
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg max-h-[70vh] overflow-y-auto rounded-lg shadow-lg">
