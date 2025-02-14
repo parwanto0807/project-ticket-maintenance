@@ -25,9 +25,9 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                         {products.map((products) => (
                             <div
                                 key={products.id}
-                                className="grid grid-cols-1 gap-1 mb-2 w-full rounded-md p-2"
+                                className="grid grid-cols-1 gap-1 mb-2 w-full  border-b pb-1 rounded-md p-2"
                             >
-                                <div className="flex items-center justify-between border-b pb-1">
+                                <div className="flex items-center justify-between">
                                     <div>
                                         <div className="mb-1 flex items-center text-black font-bold dark:text-white">
                                             <p>{products.nick_name}</p>

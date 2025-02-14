@@ -25,9 +25,9 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                         {Array.isArray(employees) && employees.map((employees) => (
                             <div
                                 key={employees.id}
-                                className="mb-2 w-full rounded-md p-4"
+                                className="mb-2 w-full rounded-md p-1"
                             >
-                                <div className="flex flex-row items-center justify-between border-b pb-4">
+                                <div className="grid grid-cols-1 items-center justify-between border-b pb-1">
                                     <div>
                                         <div className="flex items-center gap-2">
                                             <div className="w-12 h-12 overflow-hidden rounded">
@@ -37,7 +37,7 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                                                 />
                                             </div>
                                         </div>
-                                        <div>
+                                        <div className="flex items-center gap-2">
                                             <p className="text-sm font-medium pt-2">
                                                 {employees.name} &nbsp;
                                                 {employees.department.dept_name}
@@ -48,7 +48,7 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                                     </div>
 
 
-                                    <div className="flex-1 w-full items-center justify-between pt-4">
+                                    <div className="w-full items-center justify-between pt-1">
                                         <div className="flex justify-end gap-2">
                                             <UpdateEmployee id={employees.id} />
                                             <DeleteAlert id={employees.id} />
