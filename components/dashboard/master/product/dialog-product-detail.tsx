@@ -12,17 +12,17 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 // import { Badge } from "@/components/ui/badge";
 import { Product } from "@prisma/client";
-import { SearchCheckIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 
 export function ProductDialog({ product }: { product: Product }) {
     return (
         <Dialog>
             <DialogTrigger asChild>
                 <Button
-                    variant="ghost"
-                    className="p-2 rounded-lg border bg-gray-100 dark:bg-gray-800 hover:bg-green-600 hover:text-white transition duration-300"
+                    variant="outline"
+                    className="p-2 rounded-lg border bg-white dark:bg-gray-800 hover:bg-green-600 hover:text-white transition duration-300 flex justify-center items-center"
                 >
-                    <SearchCheckIcon className="w-5 h-5" />
+                    <SearchIcon className="w-3 h-3" />
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg max-h-[70vh] overflow-y-auto rounded-lg shadow-lg">
