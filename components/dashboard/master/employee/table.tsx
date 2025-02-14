@@ -30,7 +30,7 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                                 <div className="grid grid-cols-1 items-center justify-between border-b pb-1">
                                     <div>
                                         <div className="flex items-center gap-2">
-                                            <div className="w-12 h-12 overflow-hidden rounded">
+                                            <div className="w-12 h-12 overflow-hidden rounded items-center justify-center">
                                                 <ImageDialogEmployee
                                                     src={employees.picture || "/noImage.jpg"}
                                                     alt={`${employees.name} Asset Image`}

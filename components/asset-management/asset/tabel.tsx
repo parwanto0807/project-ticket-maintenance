@@ -12,6 +12,8 @@ import {
 import { fetchAssetList } from "@/data/asset/asset";
 import { formatCurrencyQtt } from "@/lib/utils";
 import ImageDialog from "./imageDialog";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
@@ -111,6 +113,9 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                     <TableCell className="flex items-center justify-center object-center gap-2">
                                         <UpdateAssetLink id={data.id} />
                                         <DeleteAlertProduct id={data.id} />
+                                        <Link href={`/dashboard/asset/generate-pdf/${data.id}`}passHref>
+                                            <Button variant="outline">Generate PDF</Button>
+                                        </Link>
                                     </TableCell>
                                 </TableRow >
                             ))}
