@@ -10,6 +10,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { ProductDialog } from "./dialog-product-detail";
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
 export default async function ProductsTable({ query, currentPage }: { query: string; currentPage: number; }) {
@@ -24,11 +25,11 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                         {products.map((products) => (
                             <div
                                 key={products.id}
-                                className="mb-2 w-full rounded-md p-4"
+                                className="grid grid-cols-1 gap-1 mb-2 w-full rounded-md p-2"
                             >
                                 <div className="flex items-center justify-between border-b pb-1">
                                     <div>
-                                        <div className="mb-2 flex items-center text-black dark:text-white">
+                                        <div className="mb-1 flex items-center text-black font-bold dark:text-white">
                                             <p>{products.nick_name}</p>
                                         </div>
                                         <div>
@@ -37,20 +38,21 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                                                 {products.part_name}
                                             </p>
                                         </div>
-                                        <div>
+                                        <div className="flex flex-row">
                                             <p className="text-sm pb-2">
                                                 {products.brand.name}
-                                            </p>
+                                            </p> &nbsp;
+                                            <p className="text-sm text-gray-500">{products.kategoriproduct.name}</p> &nbsp;
+                                            <p className="text-sm text-gray-500">{products.jenisproduct.name}</p>
                                         </div>
-                                        <p className="text-sm text-gray-500">{products.kategoriproduct.name}</p>
-                                        <p className="text-sm text-gray-500">{products.jenisproduct.name}</p>
-                                        <p className="text-sm text-gray-500">{products.description}</p>
+
                                     </div>
-                                    <div className="flex-1 w-full items-center justify-between pt-4">
-                                        <div className="flex justify-end gap-2">
-                                            <UpdateProduct id={products.id} />
-                                            <DeleteAlertProduct id={products.id} />
-                                        </div>
+                                </div>
+                                <div className="col-span-2 w-full items-center justify-between">
+                                    <div className="flex justify-end gap-2">
+                                        <UpdateProduct id={products.id} />
+                                        <DeleteAlertProduct id={products.id} />
+                                        <ProductDialog product = {products}/>
                                     </div>
                                 </div>
                             </div>
@@ -63,7 +65,6 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                                 <TableHead className="text-black py-8 items-center dark:text-white font-bold uppercase">No</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Part Number</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Part Name</TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Description</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Entry Unit</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Stock Unit</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Out Unit</TableHead>
@@ -82,7 +83,6 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                                     <TableCell className="text-center">{offset + index + 1}</TableCell>
                                     <TableCell>{products.part_number}</TableCell>
                                     <TableCell>{products.part_name}</TableCell>
-                                    <TableCell>{products.description}</TableCell>
                                     <TableCell className="text-center">{products.satuan_pemasukan}</TableCell>
                                     <TableCell className="text-center">{products.satuan_penyimpanan}</TableCell>
                                     <TableCell className="text-center">{products.satuan_pengeluaran}</TableCell>
@@ -95,6 +95,7 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                                     <TableCell className="flex items-center justify-center object-center gap-2">
                                         <UpdateProduct id={products.id} />
                                         <DeleteAlertProduct id={products.id} />
+                                        <ProductDialog product = {products}/>
                                     </TableCell>
                                 </TableRow >
                             ))}

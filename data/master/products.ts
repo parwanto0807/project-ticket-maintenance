@@ -55,6 +55,18 @@ export const getBrandFindAll = async () => {
         return { error: "Filed find data group product" }
     }
 }
+export const getBrandFindById = async (id:string) => {
+    try {
+        const brandFind = await db.brand.findUnique({
+            where: {
+                id:id
+            }
+        })
+        return brandFind
+    } catch {
+        return { error: "Filed find data group product" }
+    }
+}
 
 export const getGroupFindAll = async () => {
     try {
@@ -69,11 +81,37 @@ export const getGroupFindAll = async () => {
     }
 }
 
+export const getGroupFindById = async (id : string) => {
+    try {
+        const groupyFind = await db.group.findUnique({
+            where: {
+                id:id
+            }
+        })
+        return groupyFind
+    } catch {
+        return { error: "Filed find data group product" }
+    }
+}
+
 export const getCategoryFindAll = async () => {
     try {
         const categoryFind = await db.kategoriProduct.findMany({
             orderBy: {
                 name: 'asc'
+            }
+        })
+        return categoryFind
+    } catch {
+        return { error: "Filed find data category product" }
+    }
+}
+
+export const getCategoryFindById = async (id : string) => {
+    try {
+        const categoryFind = await db.kategoriProduct.findUnique({
+            where: {
+                id:id
             }
         })
         return categoryFind
