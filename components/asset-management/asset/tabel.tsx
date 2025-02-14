@@ -14,6 +14,7 @@ import { formatCurrencyQtt } from "@/lib/utils";
 import ImageDialog from "./imageDialog";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { PrinterIcon } from "@heroicons/react/24/outline";
 
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
@@ -30,7 +31,7 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                 key={data.id}
                                 className="mb-2 w-full rounded-md p-4"
                             >
-                                <div className="flex items-center justify-between border-b pb-1">
+                                <div className="grid grid-cols-1 items-center justify-between border-b pb-1">
                                     <div>
                                         <div className="mb-2 flex items-center font-bold text-black dark:text-white">
                                             <p>{data.assetNumber}</p>
@@ -57,10 +58,17 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                             <p className="flex-nonetext-sm text-gray-500">{data.status}</p>
                                         </div>
                                     </div>
-                                    <div className="flex-1 w-full items-center justify-between pt-4">
-                                        <div className="flex justify-end gap-2">
+                                    <div className="w-full items-center justify-between pt-2">
+                                        <div className="flex items-center justify-end gap-2 ">
                                             <UpdateAssetLink id={data.id} />
                                             <DeleteAlertProduct id={data.id} />
+                                            <Link href={`/dashboard/asset/generate-pdf/${data.id}`} passHref>
+                                                <Button
+                                                    variant="outline"
+                                                    className="text-green-700 rounded-md border p-2 hover:bg-green-800 h-8 text-center hover:text-white flex justify-center items-center">
+                                                    <PrinterIcon className="w-4 h-4" />
+                                                </Button>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
@@ -113,8 +121,12 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                     <TableCell className="flex items-center justify-center object-center gap-2">
                                         <UpdateAssetLink id={data.id} />
                                         <DeleteAlertProduct id={data.id} />
-                                        <Link href={`/dashboard/asset/generate-pdf/${data.id}`}passHref>
-                                            <Button variant="outline">Generate PDF</Button>
+                                        <Link href={`/dashboard/asset/generate-pdf/${data.id}`} passHref>
+                                            <Button
+                                                variant="outline"
+                                                className="text-green-700 rounded-md border p-2 hover:bg-green-800 h-8 text-center hover:text-white flex justify-center items-center">
+                                                <PrinterIcon className="w-4 h-4" />
+                                            </Button>
                                         </Link>
                                     </TableCell>
                                 </TableRow >

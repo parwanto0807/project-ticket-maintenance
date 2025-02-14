@@ -26,7 +26,7 @@ interface Asset {
 }
 
 interface LabelPDFProps {
-    asset: Asset; // ✅ Perbaiki di sini, sebelumnya mungkin hanya assetId
+    asset: Asset; 
     qrCodeUrl: string;
 }
 
