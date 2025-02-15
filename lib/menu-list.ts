@@ -6,7 +6,7 @@ import {
   Boxes,
   // Omega,
   HardDrive,
-  // Wrench,
+  Wrench,
   // FileText,
   // BarChart,
   // Scan,
@@ -131,29 +131,29 @@ export function getMenuList(pathname: string, role: string): Group[] {
             // },
           ],
         },
-        // {
-        //   href: "/dashboard/assets/maintenance",
-        //   label: "MAINTENANCE",
-        //   active: pathname.includes("/dashboard/assets/maintenance"),
-        //   icon: Wrench,
-        //   submenus: [
-        //     {
-        //       href: "/dashboard/assets/maintenance/tickets",
-        //       label: "Maintenance Tickets",
-        //       active: pathname === "/dashboard/assets/maintenance/tickets",
-        //     },
-        //     {
-        //       href: "/dashboard/assets/maintenance/schedule",
-        //       label: "Maintenance Schedule",
-        //       active: pathname === "/dashboard/assets/maintenance/schedule",
-        //     },
-        //     {
-        //       href: "/dashboard/assets/maintenance/history",
-        //       label: "Maintenance History",
-        //       active: pathname === "/dashboard/assets/maintenance/history",
-        //     },
-        //   ],
-        // },
+        {
+          href: "/dashboard/assets/maintenance",
+          label: "MAINTENANCE",
+          active: pathname.includes("/dashboard/assets/maintenance"),
+          icon: Wrench,
+          submenus: [
+            {
+              href: "/dashboard/assets/maintenance/tickets",
+              label: "Maintenance Tickets",
+              active: pathname === "/dashboard/assets/maintenance/tickets",
+            },
+            {
+              href: "/dashboard/assets/maintenance/schedule",
+              label: "Maintenance Schedule",
+              active: pathname === "/dashboard/assets/maintenance/schedule",
+            },
+            {
+              href: "/dashboard/assets/maintenance/history",
+              label: "Maintenance History",
+              active: pathname === "/dashboard/assets/maintenance/history",
+            },
+          ],
+        },
       ],
     },
     // {

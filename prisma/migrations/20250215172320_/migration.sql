@@ -1,5 +1,89 @@
 -- CreateEnum
+CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'USER');
+
+-- CreateEnum
 CREATE TYPE "AssetStatus" AS ENUM ('AVAILABLE', 'IN_USE', 'UNDER_MAINTENANCE', 'DECOMMISSIONED');
+
+-- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL,
+    "name" TEXT,
+    "email" TEXT NOT NULL,
+    "emailVerified" TIMESTAMP(3),
+    "image" TEXT,
+    "password" TEXT,
+    "role" "UserRole" NOT NULL DEFAULT 'USER',
+    "isTwoFactorEnabled" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Account" (
+    "userId" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "provider" TEXT NOT NULL,
+    "providerAccountId" TEXT NOT NULL,
+    "refresh_token" TEXT,
+    "access_token" TEXT,
+    "expires_at" INTEGER,
+    "token_type" TEXT,
+    "scope" TEXT,
+    "id_token" TEXT,
+    "session_state" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Account_pkey" PRIMARY KEY ("provider","providerAccountId")
+);
+
+-- CreateTable
+CREATE TABLE "VerificationToken" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "VerificationToken_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PasswordResetToken" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "PasswordResetToken_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "TwoFactorToken" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "TwoFactorToken_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "TwoFactorConfirmation" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+
+    CONSTRAINT "TwoFactorConfirmation_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "AccountEmail" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "AccountEmail_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "Employee" (
@@ -168,10 +252,8 @@ CREATE TABLE "KategoriProduct" (
 
 -- CreateTable
 CREATE TABLE "Asset" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "description" TEXT,
-    "category" TEXT NOT NULL,
+    "_id" TEXT NOT NULL,
+    "assetNumber" TEXT NOT NULL,
     "status" "AssetStatus" NOT NULL,
     "location" TEXT,
     "purchaseDate" TIMESTAMP(3),
@@ -180,48 +262,112 @@ CREATE TABLE "Asset" (
     "usefulLife" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "assetTypeId" INTEGER NOT NULL,
+    "assetTypeId" TEXT NOT NULL,
+    "departmentId" TEXT NOT NULL,
+    "assetImage1" TEXT DEFAULT '/public/noImage.jpg',
     "product_id" TEXT NOT NULL,
     "employeeId" TEXT,
 
-    CONSTRAINT "Asset_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Asset_pkey" PRIMARY KEY ("_id")
 );
 
 -- CreateTable
 CREATE TABLE "AssetType" (
-    "id" SERIAL NOT NULL,
+    "_id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
+    "kode" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "AssetType_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "AssetType_pkey" PRIMARY KEY ("_id")
 );
 
 -- CreateTable
 CREATE TABLE "Depreciation" (
-    "id" SERIAL NOT NULL,
-    "assetId" INTEGER NOT NULL,
+    "_id" TEXT NOT NULL,
+    "assetId" TEXT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
     "description" TEXT,
-    "depreciationTypeId" INTEGER NOT NULL,
+    "depreciationTypeId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Depreciation_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Depreciation_pkey" PRIMARY KEY ("_id")
 );
 
 -- CreateTable
 CREATE TABLE "DepreciationType" (
-    "id" SERIAL NOT NULL,
+    "_id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "DepreciationType_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "DepreciationType_pkey" PRIMARY KEY ("_id")
 );
+
+-- CreateTable
+CREATE TABLE "TicketMaintenance" (
+    "_id" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "troubleUser" TEXT NOT NULL,
+    "analisaDescription" TEXT,
+    "actionDescription" TEXT,
+    "priorityStatus" TEXT NOT NULL DEFAULT 'Low',
+    "status" TEXT NOT NULL DEFAULT 'Pending',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "scheduledDate" TIMESTAMP(3),
+    "completedDate" TIMESTAMP(3),
+    "productId" TEXT NOT NULL,
+    "employeeId" TEXT NOT NULL,
+    "assetId" TEXT NOT NULL,
+
+    CONSTRAINT "TicketMaintenance_pkey" PRIMARY KEY ("_id")
+);
+
+-- CreateTable
+CREATE TABLE "ScheduleMaintenance" (
+    "_id" TEXT NOT NULL,
+    "scheduledDate" TIMESTAMP(3) NOT NULL,
+    "completedDate" TIMESTAMP(3),
+    "notes" TEXT,
+    "ticketId" TEXT NOT NULL,
+
+    CONSTRAINT "ScheduleMaintenance_pkey" PRIMARY KEY ("_id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationToken_email_token_key" ON "VerificationToken"("email", "token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PasswordResetToken_token_key" ON "PasswordResetToken"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PasswordResetToken_email_token_key" ON "PasswordResetToken"("email", "token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TwoFactorToken_token_key" ON "TwoFactorToken"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TwoFactorToken_email_token_key" ON "TwoFactorToken"("email", "token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TwoFactorConfirmation_userId_key" ON "TwoFactorConfirmation"("userId");
+
+-- AddForeignKey
+ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TwoFactorConfirmation" ADD CONSTRAINT "TwoFactorConfirmation_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Employee" ADD CONSTRAINT "Employee_user_dept_fkey" FOREIGN KEY ("user_dept") REFERENCES "Department"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -254,7 +400,7 @@ ALTER TABLE "Harga" ADD CONSTRAINT "Harga_HargaJualProduct_fkey" FOREIGN KEY ("H
 ALTER TABLE "Harga" ADD CONSTRAINT "Harga_Matauang_fkey" FOREIGN KEY ("Matauang") REFERENCES "MataUang"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Asset" ADD CONSTRAINT "Asset_assetTypeId_fkey" FOREIGN KEY ("assetTypeId") REFERENCES "AssetType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Asset" ADD CONSTRAINT "Asset_assetTypeId_fkey" FOREIGN KEY ("assetTypeId") REFERENCES "AssetType"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Asset" ADD CONSTRAINT "Asset_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -263,7 +409,22 @@ ALTER TABLE "Asset" ADD CONSTRAINT "Asset_product_id_fkey" FOREIGN KEY ("product
 ALTER TABLE "Asset" ADD CONSTRAINT "Asset_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Employee"("_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Depreciation" ADD CONSTRAINT "Depreciation_assetId_fkey" FOREIGN KEY ("assetId") REFERENCES "Asset"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Asset" ADD CONSTRAINT "Asset_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Depreciation" ADD CONSTRAINT "Depreciation_depreciationTypeId_fkey" FOREIGN KEY ("depreciationTypeId") REFERENCES "DepreciationType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Depreciation" ADD CONSTRAINT "Depreciation_assetId_fkey" FOREIGN KEY ("assetId") REFERENCES "Asset"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Depreciation" ADD CONSTRAINT "Depreciation_depreciationTypeId_fkey" FOREIGN KEY ("depreciationTypeId") REFERENCES "DepreciationType"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TicketMaintenance" ADD CONSTRAINT "TicketMaintenance_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TicketMaintenance" ADD CONSTRAINT "TicketMaintenance_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Employee"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TicketMaintenance" ADD CONSTRAINT "TicketMaintenance_assetId_fkey" FOREIGN KEY ("assetId") REFERENCES "Asset"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ScheduleMaintenance" ADD CONSTRAINT "ScheduleMaintenance_ticketId_fkey" FOREIGN KEY ("ticketId") REFERENCES "TicketMaintenance"("_id") ON DELETE RESTRICT ON UPDATE CASCADE;

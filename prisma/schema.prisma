@@ -107,8 +107,9 @@ model Employee {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  asset      Asset[]    @relation("AssignAssets")
-  department Department @relation("EmployeeDept", fields: [userDept], references: [id])
+  asset      Asset[]             @relation("AssignAssets")
+  department Department          @relation("EmployeeDept", fields: [userDept], references: [id])
+  tickets    TicketMaintenance[]
 }
 
 model Department {
@@ -149,14 +150,15 @@ model Product {
   kategoriId  String @map("kategori_id")
   jenisId     String @map("jenisi_id")
 
-  jenisproduct    JenisProduct    @relation("JenisProducts", fields: [jenisId], references: [id])
-  kategoriproduct KategoriProduct @relation("KategoriProducts", fields: [kategoriId], references: [id])
-  brand           Brand           @relation("BrandProducts", fields: [brandId], references: [id])
-  group           Group           @relation("GroupProducts", fields: [groupId], references: [id])
-  rak             Rak             @relation("RakProducts", fields: [rakId], references: [id])
-  lokasiRak       LokasiRak       @relation("LokasiRakProducts", fields: [lokasiRakId], references: [id])
-  gudang          Gudang          @relation("GudangProducts", fields: [gudangId], references: [id])
-  assets          Asset[]         @relation("ProductAssets")
+  jenisproduct    JenisProduct        @relation("JenisProducts", fields: [jenisId], references: [id])
+  kategoriproduct KategoriProduct     @relation("KategoriProducts", fields: [kategoriId], references: [id])
+  brand           Brand               @relation("BrandProducts", fields: [brandId], references: [id])
+  group           Group               @relation("GroupProducts", fields: [groupId], references: [id])
+  rak             Rak                 @relation("RakProducts", fields: [rakId], references: [id])
+  lokasiRak       LokasiRak           @relation("LokasiRakProducts", fields: [lokasiRakId], references: [id])
+  gudang          Gudang              @relation("GudangProducts", fields: [gudangId], references: [id])
+  assets          Asset[]             @relation("ProductAssets")
+  tickets         TicketMaintenance[]
 }
 
 model Harga {
@@ -278,9 +280,10 @@ model Asset {
   productId     String         @map("product_id")
   employeeId    String?
 
-  product    Product     @relation(fields: [productId], references: [id], name: "ProductAssets")
-  employee   Employee?   @relation(fields: [employeeId], references: [id], name: "AssignAssets")
-  department Department? @relation(fields: [departmentId], references: [id], name: "DepartmentAsset")
+  product    Product             @relation(fields: [productId], references: [id], name: "ProductAssets")
+  employee   Employee?           @relation(fields: [employeeId], references: [id], name: "AssignAssets")
+  department Department?         @relation(fields: [departmentId], references: [id], name: "DepartmentAsset")
+  tickets    TicketMaintenance[]
 }
 
 model AssetType {
@@ -320,4 +323,34 @@ enum AssetStatus {
   IN_USE
   UNDER_MAINTENANCE
   DECOMMISSIONED
+}
+
+model TicketMaintenance {
+  id                 String                @id @default(uuid()) @map("_id") // Menggunakan UUID sebagai ID
+  description        String
+  troubleUser        String // User yang melaporkan masalah
+  analisaDescription String? // Deskripsi analisa masalah
+  actionDescription  String? // Deskripsi tindakan yang diambil
+  priorityStatus     String                @default("Low") // Prioritas: Low, Medium, High, Critical
+  status             String                @default("Pending") // Status: Pending, In Progress, Completed
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  scheduledDate      DateTime? // Tanggal penjadwalan maintenance
+  completedDate      DateTime? // Tanggal penyelesaian maintenance
+  productId          String
+  employeeId         String
+  assetId            String
+  product            Product               @relation(fields: [productId], references: [id])
+  employee           Employee              @relation(fields: [employeeId], references: [id])
+  asset              Asset                 @relation(fields: [assetId], references: [id])
+  schedules          ScheduleMaintenance[]
+}
+
+model ScheduleMaintenance {
+  id            String            @id @default(uuid()) @map("_id") // Menggunakan UUID sebagai ID
+  scheduledDate DateTime
+  completedDate DateTime?
+  notes         String?
+  ticketId      String
+  ticket        TicketMaintenance @relation(fields: [ticketId], references: [id])
 }

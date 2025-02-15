@@ -2,7 +2,7 @@
 import { db } from "@/lib/db";
 import { unstable_noStore as no_store } from "next/cache";
 // const ITEMS_PER_PAGE = 10;
-const ITEMS_PER_PAGE_EMPLOYEES = 30;
+const ITEMS_PER_PAGE_EMPLOYEES = 15;
 
 export async function getEmployeesFindWithId (id: string) {
     no_store()
@@ -85,7 +85,7 @@ export async function getEmployeesFindData () {
             },
         
             orderBy: {
-                updatedAt: "desc"
+                name: "asc"
             }
         });
         return employeesFindData;

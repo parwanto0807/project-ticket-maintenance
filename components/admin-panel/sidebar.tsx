@@ -8,6 +8,7 @@ import { Menu } from "@/components/admin-panel/menu";
 import { useSidebarToggle } from "@/hooks/use-sidebar-toggle";
 import { SidebarToggle } from "@/components/admin-panel/sidebar-toggle";
 import Image from "next/image";
+// import { Footer } from "./footer";
 
 
 export function Sidebar() {
@@ -54,6 +55,9 @@ export function Sidebar() {
           </Link>
         </Button>
         <Menu isOpen={sidebar?.isOpen} role="ADMIN" />
+        {/* <footer className="w-full">
+          <Footer />
+        </footer> */}
       </div>
     </aside>
   );

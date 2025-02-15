@@ -320,3 +320,50 @@ export const AssetTypeSchema = z.object({
     createdAt: z.date().optional(), // Nilai default dari database
     updatedAt: z.date().optional(), // Nilai akan diperbarui otomatis
 });
+
+
+// Schema untuk TicketMaintenance
+export const TicketMaintenanceSchema = z.object({
+  id: z.string().uuid(), // UUID validasi
+  description: z.string().min(1, "Description is required"), // Deskripsi wajib diisi
+  troubleUser: z.string().min(1, "Trouble user is required"), // User yang melaporkan masalah wajib diisi
+  analisaDescription: z.string().optional(), // Opsional
+  actionDescription: z.string().optional(), // Opsional
+  priorityStatus: z.enum(["Low", "Medium", "High", "Critical"]).default("Low"), // Enum dengan nilai default
+  status: z.enum(["Pending", "In Progress", "Completed"]).default("Pending"), // Enum dengan nilai default
+  createdAt: z.date().default(new Date()), // Tanggal dibuat, default sekarang
+  updatedAt: z.date().default(new Date()), // Tanggal diperbarui, default sekarang
+  scheduledDate: z.date().optional(), // Opsional
+  completedDate: z.date().optional(), // Opsional
+  productId: z.string().uuid(), // UUID validasi
+  employeeId: z.string().uuid(), // UUID validasi
+  assetId: z.string().uuid(), // UUID validasi
+});
+
+// Schema untuk membuat TicketMaintenance baru (tanpa id, createdAt, updatedAt)
+export const CreateTicketMaintenanceSchema = TicketMaintenanceSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Schema untuk memperbarui TicketMaintenance (opsional fields)
+export const UpdateTicketMaintenanceSchema = CreateTicketMaintenanceSchema.partial();
+
+
+// Schema untuk ScheduleMaintenance
+export const ScheduleMaintenanceSchema = z.object({
+  id: z.string().uuid(), // UUID validasi
+  scheduledDate: z.date(), // Tanggal penjadwalan wajib diisi
+  completedDate: z.date().optional(), // Opsional
+  notes: z.string().optional(), // Opsional
+  ticketId: z.string().uuid(), // UUID validasi
+});
+
+// Schema untuk membuat ScheduleMaintenance baru (tanpa id)
+export const CreateScheduleMaintenanceSchema = ScheduleMaintenanceSchema.omit({
+  id: true,
+});
+
+// Schema untuk memperbarui ScheduleMaintenance (opsional fields)
+export const UpdateScheduleMaintenanceSchema = CreateScheduleMaintenanceSchema.partial();

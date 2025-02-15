@@ -157,14 +157,14 @@ const TypeAssetForm = ({ assetTypeFind }: { assetTypeFind: AssetType[] }) => {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Kode for Register Asset</FormLabel>
-                                                <FormDescription className="text-xs italic">Perhatikan format kode agar seragam, Kendaraan Operasioan = KO-OPR </FormDescription>
+                                                <FormDescription className="text-xs italic">Perhatikan format kode agar seragam, GMS-ELECTRNIK-PC OFFICE = GMS-EL-PCO </FormDescription>
                                                 <FormControl>
                                                     <Input
                                                         placeholder="Note"
                                                         disabled={isPending}
                                                         {...field}
                                                         className="uppercase"
-                                                        maxLength={5}
+                                                        maxLength={10}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />

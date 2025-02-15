@@ -10,10 +10,10 @@ import { Inter as FontSans } from "next/font/google";
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
-})
+});
 
 export default function AdminPanelLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {
@@ -22,24 +22,20 @@ export default function AdminPanelLayout({
   if (!sidebar) return null;
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Sidebar />
-      <main
+      <div
         className={cn(
-          "min-h-[calc(100vh_-_56px)] transition-[margin-left] ease-in-out duration-300", fontSans.variable,
+          "flex flex-col flex-grow transition-[margin-left] ease-in-out duration-300",
+          fontSans.variable,
           sidebar?.isOpen === false ? "lg:ml-[90px]" : "lg:ml-72"
         )}
       >
-        {children}
-      </main>
-      <footer
-        className={cn(
-          "transition-[margin-left] ease-in-out duration-300", fontSans.variable,
-          sidebar?.isOpen === false ? "lg:ml-[90px]" : "lg:ml-72"
-        )}
-      >
-        {/* <Footer /> */}
-      </footer>
-    </>
+        <main className="flex-grow">{children}</main>
+        {/* <footer className="w-full">
+          <Footer />
+        </footer> */}
+      </div>
+    </div>
   );
 }

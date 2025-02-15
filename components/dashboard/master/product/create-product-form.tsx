@@ -419,7 +419,7 @@ const CreateProductForm = ({
                                                 <FormControl>
                                                     <Textarea
                                                         placeholder="Write specifications about the product you will input"
-                                                        className="resize-none"
+                                                        // className="resize-none"
                                                         {...field}
                                                         disabled={isPending}
                                                     />
