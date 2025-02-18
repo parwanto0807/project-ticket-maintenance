@@ -6,6 +6,7 @@ import { AssetSchema, AssetTypeSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
 import { put, del } from "@vercel/blob";
 import { fetchAssetById } from "@/data/asset/asset";
+import { generateAssetNumber } from "@/data/asset/asset";
 
 export const updateAsset = async (id: string, formData: FormData) => {
   if (!id) return { error: "Asset ID is required" };
@@ -82,6 +83,7 @@ export const updateAsset = async (id: string, formData: FormData) => {
     } else {
       imageUrl = existingAsset.assetImage1 ?? ""; // Gunakan gambar lama jika tidak ada yang baru
     }
+    //memastikan bahwa assetNumber adalah Number yang terakhir di panggil, sehingga tidak bentrok dengan pengguna lain. 
 
     // Update asset in database
     await db.asset.update({
@@ -151,10 +153,13 @@ export const createAsset = async (formData: FormData) => {
       imageUrl = url;
     }
 
+    const {assetNumber, countNumber} = await generateAssetNumber(result.data.assetTypeId);
     // Create asset in database
     await db.asset.create({
       data: {
         ...result.data,
+        assetNumber,
+        countNumber,
         assetImage1: imageUrl,
         purchaseCost: result.data.purchaseCost,
         residualValue: result.data.residualValue,

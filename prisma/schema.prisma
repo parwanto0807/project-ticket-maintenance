@@ -231,7 +231,12 @@ model KategoriProduct {
 }
 
 model Asset {
+<<<<<<< HEAD
   id            String              @id @default(uuid()) @map("_id")
+=======
+  id            String         @id @default(uuid()) @map("_id")
+  countNumber   Int?
+>>>>>>> 928042246e84c7d8f1bb5563c6dfe72cab899607
   assetNumber   String
   status        AssetStatus
   location      String?
