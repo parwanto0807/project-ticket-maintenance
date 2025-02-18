@@ -107,7 +107,7 @@ const CreateAssetForm = ({
             assetImage1: undefined,
         }
     });
-
+    // console.log('Default Value:', form.control._formValues);
     const { setValue } = form;
 
     useEffect(() => {
@@ -175,8 +175,17 @@ const CreateAssetForm = ({
         try {
             const response = await fetch(`/api/generateAssetNumber?assetTypeId=${value}`);
             const data = await response.json();
+
+            // Log the full response to inspect its structure
+            // console.log("API response:", data);
+
             if (response.ok) {
-                setValue("assetNumber", data.assetNumber);
+                // Check if assetNumber exists and is not an object
+                if (data.assetNumber && typeof data.assetNumber === "object" && data.assetNumber.assetNumber) {
+                    setValue("assetNumber", data.assetNumber.assetNumber);  // Access the nested assetNumber
+                } else {
+                    console.error("Asset number is not in the expected format.");
+                }
             }
         } catch (error) {
             console.error("Error generating asset number:", error);
@@ -184,6 +193,8 @@ const CreateAssetForm = ({
             setLoading(false);
         }
     };
+
+
 
 
     const onSubmit = (values: z.infer<typeof AssetSchema>) => {

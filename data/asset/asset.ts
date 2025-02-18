@@ -18,7 +18,7 @@ export async function generateAssetNumber(id: string) {
         // Ambil assetNumber terakhir dari tabel Asset
         const lastAsset = await db.asset.findFirst({
             where: { assetTypeId: id },
-            orderBy: { createdAt: 'desc' },
+            orderBy: { countNumber: 'desc' },
             select: { assetNumber: true },
         });
 
@@ -31,7 +31,7 @@ export async function generateAssetNumber(id: string) {
 
         // Gunakan kode dari AssetType sebagai prefix
         const newAssetNumber = `${assetType.kode}-${String(newIdNumber).padStart(6, '0')}`;
-        return newAssetNumber;
+        return {assetNumber: newAssetNumber, countNumber: newIdNumber};
     } catch (error) {
         console.error("Failed to generate asset number", error);
         throw new Error("Failed to fetch asset number");
