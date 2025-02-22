@@ -29,7 +29,7 @@ const TicketPage = async ({
   const totalPages = await fetchProductPages(query || "");
 
   return (
-    <ContentLayout title="Products">
+    <ContentLayout title="Maintenance Ticket">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -45,7 +45,7 @@ const TicketPage = async ({
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Product</BreadcrumbPage>
+            <BreadcrumbPage>Maintenance Ticket</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

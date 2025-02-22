@@ -158,7 +158,6 @@ model Product {
   lokasiRak       LokasiRak           @relation("LokasiRakProducts", fields: [lokasiRakId], references: [id])
   gudang          Gudang              @relation("GudangProducts", fields: [gudangId], references: [id])
   assets          Asset[]             @relation("ProductAssets")
-  tickets         TicketMaintenance[]
 }
 
 model Harga {
@@ -263,7 +262,7 @@ model KategoriProduct {
 
 model Asset {
   id            String         @id @default(uuid()) @map("_id")
-  countNumber   Int?
+  countNumber   Int
   assetNumber   String
   status        AssetStatus
   location      String?
@@ -328,23 +327,35 @@ enum AssetStatus {
 
 model TicketMaintenance {
   id                 String                @id @default(uuid()) @map("_id") // Menggunakan UUID sebagai ID
-  description        String
+  countNumber        Int
+  ticketNumber       String
   troubleUser        String // User yang melaporkan masalah
   analisaDescription String? // Deskripsi analisa masalah
   actionDescription  String? // Deskripsi tindakan yang diambil
-  priorityStatus     String                @default("Low") // Prioritas: Low, Medium, High, Critical
-  status             String                @default("Pending") // Status: Pending, In Progress, Completed
+  priorityStatus     PriorityStatus //Prioritas: Low, Medium, High, Critical
+  status             StatusTicket // Status: Pending, In Progress, Completed
   createdAt          DateTime              @default(now())
   updatedAt          DateTime              @updatedAt
   scheduledDate      DateTime? // Tanggal penjadwalan maintenance
   completedDate      DateTime? // Tanggal penyelesaian maintenance
-  productId          String
   employeeId         String
   assetId            String
-  product            Product               @relation(fields: [productId], references: [id])
   employee           Employee              @relation(fields: [employeeId], references: [id])
   asset              Asset                 @relation(fields: [assetId], references: [id])
   schedules          ScheduleMaintenance[]
+}
+
+enum PriorityStatus {
+  Low
+  Medium
+  High
+  Critical
+}
+
+enum StatusTicket {
+  Pending
+  In_Progress
+  Complete
 }
 
 model ScheduleMaintenance {
