@@ -132,15 +132,15 @@ export function getMenuList(pathname: string, role: string): Group[] {
           ],
         },
         {
-          href: "/dashboard/assets/maintenance",
+          href: "#",
           label: "MAINTENANCE",
-          active: pathname.includes("/dashboard/assets/maintenance"),
+          active: pathname.includes("#"),
           icon: Wrench,
           submenus: [
             {
-              href: "/dashboard/assets/maintenance/tickets",
+              href: "/dashboard/maintenance/ticket",
               label: "Maintenance Tickets",
-              active: pathname === "/dashboard/assets/maintenance/tickets",
+              active: pathname === "/dashboard/maintenance/ticket",
             },
             {
               href: "/dashboard/assets/maintenance/schedule",

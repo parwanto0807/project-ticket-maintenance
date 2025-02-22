@@ -118,25 +118,27 @@ model Product {
   description          String?
   minStock             Int
   maxStock             Int
-  createdAt            DateTime            @default(now())
-  updatedAt            DateTime            @default(now()) @updatedAt
-  gudangId             String              @map("gudang_id")
-  lokasiRakId          String              @map("lokasirak_id")
-  rakId                String              @map("rak_id")
-  groupId              String              @map("group_id")
-  brandId              String              @map("brand_id")
-  kategoriId           String              @map("kategori_id")
-  jenisId              String              @map("jenisi_id")
-  assets               Asset[]             @relation("ProductAssets")
-  Harga                Harga[]             @relation("HargaJualProduct")
-  brand                Brand               @relation("BrandProducts", fields: [brandId], references: [id])
-  group                Group               @relation("GroupProducts", fields: [groupId], references: [id])
-  gudang               Gudang              @relation("GudangProducts", fields: [gudangId], references: [id])
-  jenisproduct         JenisProduct        @relation("JenisProducts", fields: [jenisId], references: [id])
-  kategoriproduct      KategoriProduct     @relation("KategoriProducts", fields: [kategoriId], references: [id])
-  lokasiRak            LokasiRak           @relation("LokasiRakProducts", fields: [lokasiRakId], references: [id])
-  rak                  Rak                 @relation("RakProducts", fields: [rakId], references: [id])
-  tickets              TicketMaintenance[]
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @default(now()) @updatedAt
+
+  Harga Harga[] @relation("HargaJualProduct")
+
+  gudangId    String @map("gudang_id")
+  lokasiRakId String @map("lokasirak_id")
+  rakId       String @map("rak_id")
+  groupId     String @map("group_id")
+  brandId     String @map("brand_id")
+  kategoriId  String @map("kategori_id")
+  jenisId     String @map("jenisi_id")
+
+  jenisproduct    JenisProduct        @relation("JenisProducts", fields: [jenisId], references: [id])
+  kategoriproduct KategoriProduct     @relation("KategoriProducts", fields: [kategoriId], references: [id])
+  brand           Brand               @relation("BrandProducts", fields: [brandId], references: [id])
+  group           Group               @relation("GroupProducts", fields: [groupId], references: [id])
+  rak             Rak                 @relation("RakProducts", fields: [rakId], references: [id])
+  lokasiRak       LokasiRak           @relation("LokasiRakProducts", fields: [lokasiRakId], references: [id])
+  gudang          Gudang              @relation("GudangProducts", fields: [gudangId], references: [id])
+  assets          Asset[]             @relation("ProductAssets")
 }
 
 model Harga {
@@ -232,7 +234,7 @@ model KategoriProduct {
 
 model Asset {
   id            String         @id @default(uuid()) @map("_id")
-  countNumber   Int?
+  countNumber   Int
   assetNumber   String
   status        AssetStatus
   location      String?
@@ -327,4 +329,45 @@ enum AssetStatus {
   IN_USE
   UNDER_MAINTENANCE
   DECOMMISSIONED
+}
+model TicketMaintenance {
+  id                 String                @id @default(uuid()) @map("_id") // Menggunakan UUID sebagai ID
+  countNumber        Int
+  ticketNumber       String
+  troubleUser        String // User yang melaporkan masalah
+  analisaDescription String? // Deskripsi analisa masalah
+  actionDescription  String? // Deskripsi tindakan yang diambil
+  priorityStatus     PriorityStatus //Prioritas: Low, Medium, High, Critical
+  status             StatusTicket // Status: Pending, In Progress, Completed
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  scheduledDate      DateTime? // Tanggal penjadwalan maintenance
+  completedDate      DateTime? // Tanggal penyelesaian maintenance
+  employeeId         String
+  assetId            String
+  employee           Employee              @relation(fields: [employeeId], references: [id])
+  asset              Asset                 @relation(fields: [assetId], references: [id])
+  schedules          ScheduleMaintenance[]
+}
+
+enum PriorityStatus {
+  Low
+  Medium
+  High
+  Critical
+}
+
+enum StatusTicket {
+  Pending
+  In_Progress
+  Complete
+}
+
+model ScheduleMaintenance {
+  id            String            @id @default(uuid()) @map("_id") // Menggunakan UUID sebagai ID
+  scheduledDate DateTime
+  completedDate DateTime?
+  notes         String?
+  ticketId      String
+  ticket        TicketMaintenance @relation(fields: [ticketId], references: [id])
 }
