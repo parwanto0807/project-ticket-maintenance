@@ -323,30 +323,22 @@ export const AssetTypeSchema = z.object({
 
 
 // Schema untuk TicketMaintenance
-export const TicketMaintenanceSchema = z.object({
-  id: z.string().uuid(), // UUID validasi
-  description: z.string().min(1, "Description is required"), // Deskripsi wajib diisi
-  troubleUser: z.string().min(1, "Trouble user is required"), // User yang melaporkan masalah wajib diisi
-  analisaDescription: z.string().optional(), // Opsional
-  actionDescription: z.string().optional(), // Opsional
-  priorityStatus: z.enum(["Low", "Medium", "High", "Critical"]).default("Low"), // Enum dengan nilai default
-  status: z.enum(["Pending", "In Progress", "Completed"]).default("Pending"), // Enum dengan nilai default
-  createdAt: z.date().default(new Date()), // Tanggal dibuat, default sekarang
-  updatedAt: z.date().default(new Date()), // Tanggal diperbarui, default sekarang
-  scheduledDate: z.date().optional(), // Opsional
-  completedDate: z.date().optional(), // Opsional
-  productId: z.string().uuid(), // UUID validasi
-  employeeId: z.string().uuid(), // UUID validasi
-  assetId: z.string().uuid(), // UUID validasi
-});
-
-// Schema untuk membuat TicketMaintenance baru (tanpa id, createdAt, updatedAt)
-export const CreateTicketMaintenanceSchema = TicketMaintenanceSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
+export const CreateTicketMaintenanceSchema = z.object({
+    troubleUser: z.string().min(1, "Trouble user is required"), // User yang melaporkan masalah wajib diisi
+    analisaDescription: z.string().nullable().optional(), // Opsional
+    actionDescription: z.string().nullable().optional(), // Opsional
+    priorityStatus: z.enum(["Low", "Medium", "High", "Critical"]).default("Low"), // Enum dengan nilai default
+    status: z.enum(["Pending", "In_Progress", "Completed"]).default("Pending"), // Enum dengan nilai default
+    createdAt: z.date().default(new Date()), // Tanggal dibuat, default sekarang
+    updatedAt: z.date().default(new Date()), // Tanggal diperbarui, default sekarang
+    scheduledDate: z.date().optional(), // Opsional
+    completedDate: z.date().optional(), // Opsional
+    employeeId: z.string().min(1,"User asset is required"), // UUID validasi
+    assetId: z.string().min(1, "Asset name is required"), // UUID validasi
+    ticketNumber: z.string().min(1, "Ticket number is required"), // ✅ Tambahkan ticketNumber
+    countNumber: z.number().int().min(1, "Count number is required"), // ✅ Tambahkan countNumber
+  });
+  
 // Schema untuk memperbarui TicketMaintenance (opsional fields)
 export const UpdateTicketMaintenanceSchema = CreateTicketMaintenanceSchema.partial();
 

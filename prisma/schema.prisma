@@ -360,7 +360,7 @@ enum PriorityStatus {
 enum StatusTicket {
   Pending
   In_Progress
-  Complete
+  Completed
 }
 
 model ScheduleMaintenance {

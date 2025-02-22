@@ -4,25 +4,39 @@ import { unstable_noStore as noStore } from "next/cache";
 const ITEMS_PER_PAGE_TICKET = 15;
 
 export async function generateTicketNumber() {
-
     try {
-        const lastNumber = await db.ticketMaintenance.findFirst({
-            orderBy: { countNumber: 'desc' },
-            select: { ticketNumber: true },
-        });
-        let newIdNumber = 1;
+        // Dapatkan tanggal saat ini
+        const now = new Date();
+        const year = String(now.getFullYear()).slice(-2); // Ambil 2 digit terakhir tahun
+        const month = String(now.getMonth() + 1).padStart(2, "0"); // Bulan (dari 1-12)
 
-        if (lastNumber?.ticketNumber) {
-            const lastIdNumber = parseInt(lastNumber?.ticketNumber?.split('-').pop() || '0', 10);
-            newIdNumber = lastIdNumber + 1;
-        }
-        const newTicketNumber = `${lastNumber?.ticketNumber}-${String(newIdNumber).padStart(6, '0')}`;
+        // Cari tiket terakhir berdasarkan tahun & bulan yang sama
+        const lastTicket = await db.ticketMaintenance.findFirst({
+            where: {
+                ticketNumber: {
+                    startsWith: `T-${year}${month}`, // Cari yang formatnya sama
+                },
+            },
+            orderBy: { countNumber: "desc" }, // Ambil nomor urut terbesar
+            select: { countNumber: true },
+        });
+
+        console.log("Last Ticket:", lastTicket);
+
+        // Jika ada tiket sebelumnya, tingkatkan nomornya
+        const newIdNumber = lastTicket ? lastTicket.countNumber + 1 : 1;
+
+        // Format nomor tiket (misal: T-250200001)
+        const newTicketNumber = `T-${year}${month}${String(newIdNumber).padStart(4, "0")}`;
+
         return { ticketNumber: newTicketNumber, countNumber: newIdNumber };
     } catch (error) {
-        console.error("Filed to generate ticket Number", error)
-        throw new Error("Filed to generate ticket number")
+        console.error("Failed to generate ticket number", error);
+        throw new Error("Failed to generate ticket number");
     }
-};
+}
+
+  
 
 export const fetchTicketList = async (query: string, currentPage: number) => {
     noStore()
@@ -33,7 +47,11 @@ export const fetchTicketList = async (query: string, currentPage: number) => {
             take: ITEMS_PER_PAGE_TICKET,
             include: {
                 employee: true,
-                asset: true,
+                asset: {
+                    include:{
+                        product: true
+                    }
+                },
             },
             orderBy: {
                 updatedAt: 'desc'

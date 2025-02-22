@@ -72,6 +72,27 @@ const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET;
     }
 }
 
+export const fetchAssetListForData = async() => {
+    noStore();
+        try {
+            const assetFind = await db.asset.findMany({
+                include: {
+                    employee: true,
+                    product: true,
+                    assetType: true,
+                    department: true,
+                },
+                orderBy: {
+                    assetNumber:'desc'
+                },
+            })
+            return assetFind;
+        } catch (error) {
+            console.error('Can not find Asset List', error);
+            return { error: 'Can not find Asset List' };
+        }
+    }
+
 export const fetchAssetListPages = async(query: string) => {
     noStore();
 
