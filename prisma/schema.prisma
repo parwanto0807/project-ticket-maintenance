@@ -289,36 +289,6 @@ model DepreciationType {
   depreciations Depreciation[]
 }
 
-model TicketMaintenance {
-  id                 String                @id @default(uuid()) @map("_id")
-  description        String
-  troubleUser        String
-  analisaDescription String?
-  actionDescription  String?
-  priorityStatus     String                @default("Low")
-  status             String                @default("Pending")
-  createdAt          DateTime              @default(now())
-  updatedAt          DateTime              @updatedAt
-  scheduledDate      DateTime?
-  completedDate      DateTime?
-  productId          String
-  employeeId         String
-  assetId            String
-  schedules          ScheduleMaintenance[]
-  asset              Asset                 @relation(fields: [assetId], references: [id])
-  employee           Employee              @relation(fields: [employeeId], references: [id])
-  product            Product               @relation(fields: [productId], references: [id])
-}
-
-model ScheduleMaintenance {
-  id            String            @id @default(uuid()) @map("_id")
-  scheduledDate DateTime
-  completedDate DateTime?
-  notes         String?
-  ticketId      String
-  ticket        TicketMaintenance @relation(fields: [ticketId], references: [id])
-}
-
 enum UserRole {
   ADMIN
   USER
