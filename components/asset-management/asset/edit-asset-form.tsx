@@ -18,6 +18,7 @@ import TypeAssetForm from "./type-asset-form";
 import Link from "next/link";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { updateAsset } from "@/action/asset/asset";
+import { resizeImage } from "@/lib/resizeImage";
 
 type Employee = {
     id: string;
@@ -164,19 +165,32 @@ const EditAssetForm = ({
         }
     };
 
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            if (file.size > 2 * 1024 * 1024) {
-                toast.error("File size too large (max 2MB)");
-                return;
+    // const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const file = event.target.files?.[0];
+    //     if (file) {
+    //         if (file.size > 2 * 1024 * 1024) {
+    //             toast.error("File size too large (max 2MB)");
+    //             return;
+    //         }
+    //         const imageUrl = URL.createObjectURL(file);
+    //         setPreviewImage(imageUrl);
+    //         setValue("assetImage1", file);
+    //         setFileName(file.name);
+    //     }
+    // };
+
+        const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+            const file = event.target.files?.[0];
+            if (file && file.size > 0) {
+                const imageUrl = URL.createObjectURL(file);
+                const resizedFile = await resizeImage(file, 800, 800);
+                setPreviewImage(imageUrl);
+                setValue("assetImage1", resizedFile);
+                setFileName(file.name);
+            } else {
+                setPreviewImage(null);
             }
-            const imageUrl = URL.createObjectURL(file);
-            setPreviewImage(imageUrl);
-            setValue("assetImage1", file);
-            setFileName(file.name);
-        }
-    };
+        };
 
     // const handleSelectProduct = (product: ProductNameOnly) => {
     //     setSelectedProduct(product);

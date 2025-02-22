@@ -26,6 +26,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { AssetType } from "@prisma/client";
 import { QRCodeCanvas } from "qrcode.react";
+import { resizeImage } from "@/lib/resizeImage";
 
 type Employee = {
     id: string;
@@ -98,8 +99,8 @@ const CreateAssetForm = ({
             purchaseCost: 0,
             residualValue: 0,
             usefulLife: 0,
-            createdAt: undefined,
-            updatedAt: undefined,
+            createdAt: new Date(),
+            updatedAt: new Date(),
             assetTypeId: "",
             productId: "",
             employeeId: "",
@@ -107,7 +108,7 @@ const CreateAssetForm = ({
             assetImage1: undefined,
         }
     });
-    // console.log('Default Value:', form.control._formValues);
+    console.log('Default Value:', form.control._formValues);
     const { setValue } = form;
 
     useEffect(() => {
@@ -137,12 +138,13 @@ const CreateAssetForm = ({
         }
     };
 
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file && file.size > 0) {
             const imageUrl = URL.createObjectURL(file);
+            const resizedFile = await resizeImage(file, 800, 800);
             setPreviewImage(imageUrl);
-            setValue("assetImage1", file);
+            setValue("assetImage1", resizedFile);
         } else {
             setPreviewImage(null);
         }
