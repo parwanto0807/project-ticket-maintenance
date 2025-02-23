@@ -161,6 +161,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
         // Mengirim data ke server
         startTransition(() => {
             createTicket(formData)
+            
                 .then((data) => {
                     if (data?.error) {
                         toast.error(data.error);

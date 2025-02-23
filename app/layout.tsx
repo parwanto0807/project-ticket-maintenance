@@ -22,7 +22,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-       <SessionProvider session={session}>
+       <SessionProvider session={session ?? null}>
           {children}
         </SessionProvider>
       </body>

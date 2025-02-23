@@ -18,6 +18,8 @@ model User {
   isTwoFactorEnabled    Boolean                @default(false)
   accounts              Account[]
   twoFactorConfirmation TwoFactorConfirmation?
+  fcmToken              String? // Simpan token FCM di sini
+  Notification          Notification[]
 }
 
 model Account {
@@ -131,14 +133,14 @@ model Product {
   kategoriId  String @map("kategori_id")
   jenisId     String @map("jenisi_id")
 
-  jenisproduct    JenisProduct        @relation("JenisProducts", fields: [jenisId], references: [id])
-  kategoriproduct KategoriProduct     @relation("KategoriProducts", fields: [kategoriId], references: [id])
-  brand           Brand               @relation("BrandProducts", fields: [brandId], references: [id])
-  group           Group               @relation("GroupProducts", fields: [groupId], references: [id])
-  rak             Rak                 @relation("RakProducts", fields: [rakId], references: [id])
-  lokasiRak       LokasiRak           @relation("LokasiRakProducts", fields: [lokasiRakId], references: [id])
-  gudang          Gudang              @relation("GudangProducts", fields: [gudangId], references: [id])
-  assets          Asset[]             @relation("ProductAssets")
+  jenisproduct    JenisProduct    @relation("JenisProducts", fields: [jenisId], references: [id])
+  kategoriproduct KategoriProduct @relation("KategoriProducts", fields: [kategoriId], references: [id])
+  brand           Brand           @relation("BrandProducts", fields: [brandId], references: [id])
+  group           Group           @relation("GroupProducts", fields: [groupId], references: [id])
+  rak             Rak             @relation("RakProducts", fields: [rakId], references: [id])
+  lokasiRak       LokasiRak       @relation("LokasiRakProducts", fields: [lokasiRakId], references: [id])
+  gudang          Gudang          @relation("GudangProducts", fields: [gudangId], references: [id])
+  assets          Asset[]         @relation("ProductAssets")
 }
 
 model Harga {
@@ -340,4 +342,15 @@ model ScheduleMaintenance {
   notes         String?
   ticketId      String
   ticket        TicketMaintenance @relation(fields: [ticketId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid()) // ID unik
+  userId    String // ID user yang menerima notifikasi
+  title     String // Judul notifikasi
+  message   String // Isi pesan notifikasi
+  isRead    Boolean  @default(false) // Status apakah notifikasi sudah dibaca
+  createdAt DateTime @default(now()) // Waktu dibuat
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
