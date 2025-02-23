@@ -14,13 +14,13 @@ import {
 import { Button } from "@/components/ui/button"
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { toast } from "sonner";
-import { deleteAssetById } from "@/action/asset/asset";
+import { deleteTicket } from "@/action/maintenance/ticket";
 
 
 export default function DeleteAlertTicket({ id }: { id: string }) {
   const handleDelete = async () => {
     try {
-      const response = await deleteAssetById(id);
+      const response = await deleteTicket(id);
       if (response.message) {
         toast.success(response.message)
       } else {
@@ -28,8 +28,8 @@ export default function DeleteAlertTicket({ id }: { id: string }) {
       }
 
     } catch (error) {
-      console.error('Error deleting asset:', error);
-      toast.error('An error occurred while deleting the asset');
+      console.error('Error deleting ticket:', error);
+      toast.error('An error occurred while deleting the ticket');
     }
   };
 
