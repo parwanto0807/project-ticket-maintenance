@@ -1,5 +1,5 @@
+"use server";
 
-import { UpdateAssetLink } from "./buttons";
 import DeleteAlertTicket from "./alert-delete";
 import {
     Table,
@@ -9,12 +9,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { PrinterIcon } from "@heroicons/react/24/outline";
 import { fetchTicketList } from "@/data/asset/ticket";
 import ImageDialog from "../asset/imageDialog";
 import { Badge } from "@/components/ui/badge";
+import { TicketDialog } from "./dialog-ticket-detail";
 
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
@@ -61,15 +59,12 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                                     </div>
                                     <div className="w-full items-center justify-between pt-2">
                                         <div className="flex items-center justify-end gap-2 ">
-                                            <UpdateAssetLink id={data.id} />
-                                            <DeleteAlertTicket id={data.id} />
-                                            <Link href={`/dashboard/asset/generate-pdf/${data.id}`} passHref>
-                                                <Button
-                                                    variant="outline"
-                                                    className="text-green-700 rounded-md border p-2 hover:bg-green-800 h-8 text-center hover:text-white flex justify-center items-center">
-                                                    <PrinterIcon className="w-4 h-4" />
-                                                </Button>
-                                            </Link>
+                                            {data.scheduledDate ? (
+                                                <DeleteAlertTicket id={data.id} disabled />
+                                            ) : (
+                                                <DeleteAlertTicket id={data.id} />
+                                            )}
+                                            <TicketDialog ticket={data} />
                                         </div>
                                     </div>
                                 </div>
@@ -124,16 +119,14 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                                         </div>
                                     </TableCell>
                                     <TableCell className="flex items-center justify-center object-center gap-2">
-                                        <UpdateAssetLink id={data.id} />
-                                        <DeleteAlertTicket id={data.id} />
-                                        <Link href={`/dashboard/asset/generate-pdf/${data.id}`} passHref>
-                                            <Button
-                                                variant="outline"
-                                                className="text-green-700 rounded-md border p-2 hover:bg-green-800 h-8 text-center hover:text-white flex justify-center items-center">
-                                                <PrinterIcon className="w-4 h-4" />
-                                            </Button>
-                                        </Link>
+                                        {data.scheduledDate ? (
+                                            <DeleteAlertTicket id={data.id} disabled />
+                                        ) : (
+                                            <DeleteAlertTicket id={data.id} />
+                                        )}
+                                        <TicketDialog ticket={data} />
                                     </TableCell>
+
                                 </TableRow >
                             ))}
 
