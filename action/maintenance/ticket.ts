@@ -5,18 +5,7 @@ import { generateTicketNumber } from "@/data/asset/ticket";
 import { db } from "@/lib/db";
 import { CreateTicketMaintenanceSchema, UpdateTicketMaintenanceSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
-import admin from "firebase-admin";
 import { auth } from "@/auth";
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    }),
-  });
-}
 
 export const updateTicket = async (id: string, formData: FormData) => {
   if (!id) return { error: "Asset ID is required" };
@@ -97,43 +86,6 @@ export const createTicket = async (formData: FormData) => {
     const newTicket = await db.ticketMaintenance.create({
       data: result.data,
     });
-
-    // 🔹 **Ambil Token FCM User dari Database**
-    const user = await db.user.findUnique({
-      where: { id: session.user.id },
-      select: { fcmToken: true },
-    });
-
-    // 🔹 **Kirim Notifikasi ke User Jika Token Tersedia**
-    if (user?.fcmToken) {
-      console.log("🔔 Mengirim notifikasi ke:", user.fcmToken);
-      console.log("📢 Judul:", `Tiket Baru: ${newTicket.ticketNumber}`);
-      console.log("📃 Pesan:", `Dibuat oleh ${newTicket.troubleUser} - Prioritas: ${newTicket.priorityStatus}`);
-
-      await admin.messaging().send({
-        token: user.fcmToken,
-        notification: {
-          title: `Tiket Baru: ${newTicket.ticketNumber}`,
-          body: `Dibuat oleh ${newTicket.troubleUser} - Prioritas: ${newTicket.priorityStatus}`,
-        },
-      });
-
-      console.log("✅ Notifikasi berhasil dikirim!");
-
-      await db.notification.create({
-        data: {
-          userId: session.user.id, // Gunakan ID user login
-          title: `Tiket Baru: ${ticketNumber}`,
-          message: `Dibuat oleh ${rawData.troubleUser} - Prioritas: ${rawData.priorityStatus}`,
-          isRead: false,
-        },
-      });
-      console.log("✅ Notifikasi berhasil dibuat!");
-      
-    } else {
-      console.warn("⚠️ Tidak ada FCM token untuk user ini.");
-    }
-
 
     revalidatePath("/dashboard/maintenance/ticket");
     return { success: "Ticket created successfully!", data: newTicket };

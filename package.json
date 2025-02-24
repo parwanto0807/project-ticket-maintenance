@@ -40,8 +40,6 @@
     "cmdk": "1.0.0",
     "date-fns": "^3.0.0",
     "decimal.js": "^10.5.0",
-    "firebase": "^11.3.1",
-    "firebase-admin": "^13.1.0",
     "formidable": "^3.5.2",
     "initials": "^3.1.2",
     "lucide-react": "^0.474.0",
