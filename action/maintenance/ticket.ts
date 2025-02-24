@@ -7,50 +7,6 @@ import { CreateTicketMaintenanceSchema, UpdateTicketMaintenanceSchema } from "@/
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 
-export const updateTicket = async (id: string, formData: FormData) => {
-  if (!id) return { error: "Asset ID is required" };
-
-  // Parse FormData
-  const rawData = {
-    analisaDescription: formData.get("analisaDescription") || undefined,
-    actionDescription: formData.get("actionDescription") || undefined,
-    priorityStatus: formData.get("priorityStatus") || undefined,
-    status: formData.get("status") || undefined,
-    scheduledDate: formData.get("scheduledDate") || undefined,
-    assetId: formData.get("assetId") || undefined,
-    employeeId: formData.get("employeeId") || undefined,
-  };
-
-  // Validasi data dengan UpdateTicketMaintenanceSchema
-  const result = UpdateTicketMaintenanceSchema.safeParse(rawData);
-
-  if (!result.success) {
-    return { error: "Invalid field data" };
-  }
-
-  // Hapus field yang undefined agar sesuai dengan tipe Prisma
-  const filteredData = Object.fromEntries(
-    Object.entries(result.data).filter(([, v]) => v !== undefined)
-  );
-
-  try {
-    await db.ticketMaintenance.update({
-      where: { id },
-      data: {
-        ...filteredData,
-        updatedAt: new Date(), // Pastikan updatedAt selalu diperbarui
-      },
-    });
-
-    revalidatePath("/dashboard/maintenance/ticket");
-    return { success: "Ticket updated successfully!" };
-  } catch (error) {
-    console.error("Error updating ticket:", error);
-    return { error: "Failed to update ticket" };
-  }
-};
-
-
 export const createTicket = async (formData: FormData) => {
   try {
     const { ticketNumber, countNumber } = await generateTicketNumber();
@@ -95,6 +51,51 @@ export const createTicket = async (formData: FormData) => {
   }
 };
 
+
+
+export const updateTicket = async (id: string, formData: FormData) => {
+  if (!id) return { error: "Asset ID is required" };
+
+  // Parse FormData
+  const rawData = {
+    analisaDescription: formData.get("analisaDescription") || undefined,
+    actionDescription: formData.get("actionDescription") || undefined,
+    priorityStatus: formData.get("priorityStatus") || undefined,
+    status: formData.get("status") || undefined,
+    scheduledDate: formData.get("scheduledDate") || undefined,
+    assetId: formData.get("assetId") || undefined,
+    employeeId: formData.get("employeeId") || undefined,
+  };
+
+  // Validasi data dengan UpdateTicketMaintenanceSchema
+  const result = UpdateTicketMaintenanceSchema.safeParse(rawData);
+
+  if (!result.success) {
+    return { error: "Invalid field data" };
+  }
+
+  // Hapus field yang undefined agar sesuai dengan tipe Prisma
+  const filteredData = Object.fromEntries(
+    Object.entries(result.data).filter(([, v]) => v !== undefined)
+  );
+
+  try {
+    await db.ticketMaintenance.update({
+      where: { id },
+      data: {
+        ...filteredData,
+        updatedAt: new Date(), // Pastikan updatedAt selalu diperbarui
+      },
+    });
+
+
+    revalidatePath("/dashboard/maintenance/ticket");
+    return { success: "Ticket updated successfully!" };
+  } catch (error) {
+    console.error("Error updating ticket:", error);
+    return { error: "Failed to update ticket" };
+  }
+};
 
 export const deleteTicket = async (id: string) => {
   try {

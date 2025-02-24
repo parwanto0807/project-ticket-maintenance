@@ -1,9 +1,7 @@
-
 "use client";
 
 import { cn } from "@/lib/utils";
 import { useStore } from "@/hooks/use-store";
-// import { Footer } from "@/components/admin-panel/footer";
 import { Sidebar } from "@/components/admin-panel/sidebar";
 import { useSidebarToggle } from "@/hooks/use-sidebar-toggle";
 import { Inter as FontSans } from "next/font/google";
@@ -19,7 +17,6 @@ export default function AdminPanelLayout({
   children: React.ReactNode;
 }) {
   const sidebar = useStore(useSidebarToggle, (state) => state);
-
   if (!sidebar) return null;
 
   return (
@@ -33,9 +30,6 @@ export default function AdminPanelLayout({
         )}
       >
         <main className="flex-grow">{children}</main>
-        {/* <footer className="w-full">
-          <Footer />
-        </footer> */}
       </div>
     </div>
   );
