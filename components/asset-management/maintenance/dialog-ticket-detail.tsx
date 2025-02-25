@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 // import { Badge } from "@/components/ui/badge";
 import { TicketMaintenance } from "@prisma/client";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import ReadMoreText from "./read-more";
 
 export function TicketDialog({ ticket }: { ticket: TicketMaintenance }) {
     return (
@@ -36,9 +37,9 @@ export function TicketDialog({ ticket }: { ticket: TicketMaintenance }) {
                 </DialogHeader>
                 <Card className="p-4 border rounded-lg shadow-sm bg-gray-50 dark:bg-gray-800">
                     <CardContent className="grid gap-3 text-sm">
-                        <p><strong className="text-gray-700 dark:text-gray-300">Trouble User :</strong> {ticket.troubleUser}</p>
-                        <p><strong className="text-gray-700 dark:text-gray-300">Analisa Teknisi :</strong> {ticket.analisaDescription}</p>
-                        <p><strong className="text-gray-700 dark:text-gray-300">Action Teknisi:</strong> {ticket.actionDescription}</p>
+                        <p><strong className="text-gray-700 dark:text-gray-300">Trouble User :</strong> <ReadMoreText text={ticket.troubleUser} /></p>
+                        <p><strong className="text-gray-700 dark:text-gray-300">Analisa Teknisi :</strong> <ReadMoreText text={ticket.analisaDescription ?? ""} /></p>
+                        <p><strong className="text-gray-700 dark:text-gray-300">Action Teknisi:</strong> <ReadMoreText text={ticket.actionDescription ?? ""} /></p>
                     </CardContent>
                 </Card>
                 <DialogFooter>

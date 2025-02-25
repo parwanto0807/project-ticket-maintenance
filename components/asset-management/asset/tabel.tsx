@@ -24,7 +24,7 @@ export default async function AssetTable({ query, currentPage }: { query: string
     return (
         <div className="mt-6 flow-root">
             <div className="inline-block min-w-full align-middle">
-                <div className="rounded-lg p-2 md:pt-0 md:table  bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+                <div className="rounded-lg p-2 md:pt-0 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                     <div className="md:hidden">
                         {Array.isArray(data) && data.map((data) => (
                             <div
@@ -86,6 +86,7 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Asset type</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Usefull Life</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">User Name</TableHead>
+                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Department</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Location</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Cost Purchase </TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Date Purchase</TableHead>
@@ -104,6 +105,7 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                     <TableCell className="text-center">{data.assetType.name}</TableCell>
                                     <TableCell className="text-center">{data.usefulLife}</TableCell>
                                     <TableCell className="text-left">{data.employee?.name}</TableCell>
+                                    <TableCell className="text-left">{data.department?.dept_name}</TableCell>
                                     <TableCell >{data.location}</TableCell>
                                     <TableCell >{formatCurrencyQtt(Number(data.purchaseCost?.toString()))}</TableCell>
                                     <TableCell >{data.purchaseDate?.toDateString()}</TableCell>

@@ -359,3 +359,13 @@ export const CreateScheduleMaintenanceSchema = ScheduleMaintenanceSchema.omit({
 
 // Schema untuk memperbarui ScheduleMaintenance (opsional fields)
 export const UpdateScheduleMaintenanceSchema = CreateScheduleMaintenanceSchema.partial();
+
+export const TechnicianSchema = z.object({
+  name: z.string().min(3, "Nama minimal 3 karakter").max(100, "Nama maksimal 100 karakter"),
+  phone: z.string().optional().refine((val) => !val || /^[0-9+]{10,15}$/.test(val), {
+    message: "Nomor telepon harus valid (10-15 digit angka atau + untuk kode negara)",
+  }),
+  email: z.string().email("Format email tidak valid").optional(),
+  specialization: z.string().min(3, "Spesialisasi minimal 3 karakter").max(200, "Spesialisasi maksimal 200 karakter"),
+  status: z.enum(["ACTIVE", "INACTIVE", "ON_LEAVE"]),
+});
