@@ -11,6 +11,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { ProductDialog } from "./dialog-product-detail";
+import ReadMoreText from "@/components/asset-management/maintenance/read-more";
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
 export default async function ProductsTable({ query, currentPage }: { query: string; currentPage: number; }) {
@@ -81,8 +82,8 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                             {products.map((products, index) => (
                                 <TableRow key={products.id}>
                                     <TableCell className="text-center">{offset + index + 1}</TableCell>
-                                    <TableCell>{products.part_number}</TableCell>
-                                    <TableCell>{products.part_name}</TableCell>
+                                    <TableCell><ReadMoreText text={products.part_number}/></TableCell>
+                                    <TableCell><ReadMoreText text={products.part_name}/></TableCell>
                                     <TableCell className="text-center">{products.satuan_pemasukan}</TableCell>
                                     <TableCell className="text-center">{products.satuan_penyimpanan}</TableCell>
                                     <TableCell className="text-center">{products.satuan_pengeluaran}</TableCell>

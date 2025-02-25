@@ -303,7 +303,7 @@ enum AssetStatus {
   DECOMMISSIONED
 }
 model TicketMaintenance {
-  id                 String                @id @default(uuid()) @map("_id") // Menggunakan UUID sebagai ID
+  id                 String         @id @default(uuid()) @map("_id") // Menggunakan UUID sebagai ID
   countNumber        Int
   ticketNumber       String
   troubleUser        String // User yang melaporkan masalah
@@ -311,15 +311,18 @@ model TicketMaintenance {
   actionDescription  String? // Deskripsi tindakan yang diambil
   priorityStatus     PriorityStatus //Prioritas: Low, Medium, High, Critical
   status             StatusTicket // Status: Pending, In Progress, Completed
-  createdAt          DateTime              @default(now())
-  updatedAt          DateTime              @updatedAt
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
   scheduledDate      DateTime? // Tanggal penjadwalan maintenance
   completedDate      DateTime? // Tanggal penyelesaian maintenance
   employeeId         String
   assetId            String
-  employee           Employee              @relation(fields: [employeeId], references: [id])
-  asset              Asset                 @relation(fields: [assetId], references: [id])
-  schedules          ScheduleMaintenance[]
+  technicianId       String?
+
+  employee   Employee              @relation(fields: [employeeId], references: [id])
+  asset      Asset                 @relation(fields: [assetId], references: [id])
+  schedules  ScheduleMaintenance[]
+  technician Technician?           @relation(fields: [technicianId], references: [id])
 }
 
 enum PriorityStatus {
@@ -331,8 +334,10 @@ enum PriorityStatus {
 
 enum StatusTicket {
   Pending
+  Assigned
   In_Progress
   Completed
+  Canceled
 }
 
 model ScheduleMaintenance {
@@ -353,4 +358,22 @@ model Notification {
   createdAt DateTime @default(now()) // Waktu dibuat
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Technician {
+  id             String              @id @default(uuid())
+  name           String
+  phone          String? // Nomor telepon opsional
+  email          String?             @unique
+  specialization String // Bidang keahlian (misal: Networking, Hardware, Software)
+  status         TechnicianStatus    @default(ACTIVE)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  tickets        TicketMaintenance[] 
+}
+
+enum TechnicianStatus {
+  ACTIVE
+  INACTIVE
+  ON_LEAVE
 }

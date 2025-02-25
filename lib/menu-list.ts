@@ -12,7 +12,7 @@ import {
   // Scan,
   // Bell,
   // ClipboardList,
-  // Users,
+     Users,
   // Tool,
   // Calendar,
   // Archive,
@@ -131,6 +131,34 @@ export function getMenuList(pathname: string, role: string): Group[] {
             // },
           ],
         },
+        // {
+        //   href: "#",
+        //   label: "MAINTENANCE",
+        //   active: pathname.includes("#"),
+        //   icon: Wrench,
+        //   submenus: [
+        //     {
+        //       href: "/dashboard/maintenance/ticket",
+        //       label: "Maintenance Tickets",
+        //       active: pathname === "/dashboard/maintenance/ticket",
+        //     },
+        //     {
+        //       href: "/dashboard/assets/maintenance/schedule",
+        //       label: "Maintenance Schedule",
+        //       active: pathname === "/dashboard/assets/maintenance/schedule",
+        //     },
+        //     {
+        //       href: "/dashboard/assets/maintenance/history",
+        //       label: "Maintenance History",
+        //       active: pathname === "/dashboard/assets/maintenance/history",
+        //     },
+        //   ],
+        // },
+      ],
+    },
+    {
+      groupLabel: "MAINTENANCE MANAGEMENT",
+      menus: [
         {
           href: "#",
           label: "MAINTENANCE",
@@ -151,6 +179,34 @@ export function getMenuList(pathname: string, role: string): Group[] {
               href: "/dashboard/assets/maintenance/history",
               label: "Maintenance History",
               active: pathname === "/dashboard/assets/maintenance/history",
+            },
+          ],
+        },
+        {
+          href: "#",
+          label: "TECHNICIAN",
+          active: pathname.includes("#"),
+          icon: Users,
+          submenus: [
+            {
+              href: "/dashboard/technician/assign",
+              label: "Assign Technician",
+              active: pathname === "/dashboard/technician/assign",
+            },
+            {
+              href: "/dashboard/technician/history",
+              label: "Technician History",
+              active: pathname === "/dashboard/technician/history",
+            },
+            {
+              href: "/dashboard/technician/schedule",
+              label: "Technician Schedule",
+              active: pathname === "/dashboard/technician/schedule",
+            },
+            {
+              href: "/dashboard/technician/list",
+              label: "Technician List",
+              active: pathname === "/dashboard/technician/list",
             },
           ],
         },

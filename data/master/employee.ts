@@ -119,15 +119,6 @@ export async function getEmployeesPages (query: string) {
                             mode: 'insensitive'
                         }
                     },
-                    // {
-                    //     department:{
-                    //         dept_name:{
-                    //             contains: query,
-                    //             mode: 'insensitive'
-                    //         }
-                    //     }
-                    // }
-
                 ]
             },
             orderBy: {

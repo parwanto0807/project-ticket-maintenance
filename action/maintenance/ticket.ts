@@ -31,10 +31,10 @@ export const createTicket = async (formData: FormData) => {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    console.log("Raw Data", rawData);
+    // console.log("Raw Data", rawData);
 
     const result = CreateTicketMaintenanceSchema.safeParse(rawData);
-    console.log("Result", result);
+    // console.log("Result", result);
     if (!result.success) {
       return { error: "Invalid field data", details: result.error.format() };
     }

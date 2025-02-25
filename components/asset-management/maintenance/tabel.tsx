@@ -1,4 +1,3 @@
-"use server";
 
 import DeleteAlertTicket from "./alert-delete";
 import {
@@ -13,6 +12,7 @@ import { fetchTicketList } from "@/data/asset/ticket";
 import ImageDialog from "../asset/imageDialog";
 import { Badge } from "@/components/ui/badge";
 import { TicketDialog } from "./dialog-ticket-detail";
+import ReadMoreText from "./read-more";
 
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
@@ -20,7 +20,7 @@ export default async function TicketTable({ query, currentPage }: { query: strin
     const data = await fetchTicketList(query, currentPage);
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_PRODUCT;
     return (
-        <div className="mt-1 flow-root">
+        <div className="mt-0 flow-root">
             <div className="inline-block min-w-full align-middle">
                 <div className="rounded-lg p-0 md:pt-0 md:table  bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                     <div className="md:hidden">
@@ -74,7 +74,7 @@ export default async function TicketTable({ query, currentPage }: { query: strin
 
                     <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                         <TableHeader>
-                            <TableRow className="text-[11px] font-bold uppercase ">
+                            <TableRow className="text-[10px] font-bold uppercase ">
                                 <TableHead className="text-black dark:text-white">No</TableHead>
                                 <TableHead className="text-black dark:text-white">Ticket Number</TableHead>
                                 <TableHead className="text-black dark:text-white">Trouble User</TableHead>
@@ -87,7 +87,7 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                                 <TableHead className="text-black dark:text-white">User Ticket</TableHead>
                                 <TableHead className="text-black dark:text-white">Asset Name</TableHead>
                                 <TableHead className="text-black dark:text-white">Asset Image</TableHead>
-                                <TableHead className="text-black dark:text-white">Action</TableHead>
+                                <TableHead className="text-black dark:text-white text-center">Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody className="text-[12px] border-none">
@@ -95,9 +95,9 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                                 <TableRow key={data.id}>
                                     <TableCell className="text-center">{offset + index + 1}</TableCell>
                                     <TableCell className="text-center font-bold text-nowrap">{data.ticketNumber}</TableCell>
-                                    <TableCell>{data.troubleUser}</TableCell>
-                                    <TableCell>{data.analisaDescription}</TableCell>
-                                    <TableCell className="text-center">{data.actionDescription}</TableCell>
+                                    <TableCell><ReadMoreText text={data.troubleUser} /></TableCell>
+                                    <TableCell><ReadMoreText text={data.analisaDescription ?? ""} /></TableCell>
+                                    <TableCell className="text-center"><ReadMoreText text={data.actionDescription ?? ""} /></TableCell>
                                     <TableCell className="text-center">{data.priorityStatus}</TableCell>
                                     <TableCell className="text-center">
                                         <Badge variant="destructive" className="font-mono tracking-widest uppercase">
@@ -108,7 +108,7 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                                     <TableCell >{data.completedDate?.toDateString()}</TableCell>
                                     <TableCell >{data.employee.name}</TableCell>
                                     <TableCell >{data.asset.product.part_name}</TableCell>
-                                    <TableCell className="whitespace-nowrap px-3 py-2">
+                                    <TableCell className="flex whitespace-nowrap gap-4">
                                         <div className="flex items-center gap-2">
                                             <div className="w-12 h-12 overflow-hidden rounded">
                                                 <ImageDialog
@@ -118,13 +118,15 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="flex items-center justify-center object-center gap-2">
-                                        {data.scheduledDate ? (
-                                            <DeleteAlertTicket id={data.id} disabled />
-                                        ) : (
-                                            <DeleteAlertTicket id={data.id} />
-                                        )}
-                                        <TicketDialog ticket={data} />
+                                    <TableCell>
+                                        <div className="flex items-center justify-center object-center gap-2">
+                                            {data.scheduledDate ? (
+                                                <DeleteAlertTicket id={data.id} disabled />
+                                            ) : (
+                                                <DeleteAlertTicket id={data.id} />
+                                            )}
+                                            <TicketDialog ticket={data} />
+                                        </div>
                                     </TableCell>
 
                                 </TableRow >
