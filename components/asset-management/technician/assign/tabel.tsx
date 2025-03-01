@@ -40,13 +40,29 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                     <div>
                                         <div className="mb-2 flex items-center justify-between font-bold text-black dark:text-white">
                                             <Badge variant="secondary" className="font-mono tracking-widest uppercase h-10 border-orange-500">{data.ticketNumber}</Badge>  &nbsp;
-                                            <Badge variant="destructive" className="absolute right-10 font-mono tracking-widest uppercase">
-                                                {data.status}
+                                            <Badge
+                                                className={`
+                                          font-mono tracking-widest uppercase
+                                          ${data.status === "Pending"
+                                                        ? "bg-red-100 text-red-500"
+                                                        : data.status === "Assigned"
+                                                            ? "bg-blue-100 text-blue-500"
+                                                            : data.status === "In_Progress"
+                                                                ? "bg-orange-100 text-orange-500"
+                                                                : data.status === "Completed"
+                                                                    ? "bg-green-100 text-green-500"
+                                                                    : data.status === "Canceled"
+                                                                        ? "bg-red-100 text-red-500"
+                                                                        : "bg-gray-100 text-gray-500"
+                                                    }
+                                        `}
+                                            >
+                                                {data.status.replace("_", " ")}
                                             </Badge> &nbsp;
                                         </div>
                                         <div>
-                                            <p className="text-sm pt-1">
-                                                {data.asset.product.part_name}  &nbsp;
+                                            <p className="text-sm pt-1 text-wrap">
+                                                {<ReadMoreText text={data.asset.product.part_name} />}  &nbsp;
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -64,8 +80,47 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                             />
                                         </div>
                                     </div>
+                                    
                                     <div className="w-full items-center justify-between pt-2">
+                                    <span className="font-bold text-gray-700">Technician</span> &nbsp;
                                         <div className="flex items-center justify-end gap-2 ">
+                                            <div>
+                                                {data.technician ? (
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <span>{data.technician.name}</span> &nbsp;
+                                                        <TicketMaintenanceUpdateSheet
+                                                            ticketId={data.id}
+                                                            technicians={technician} // array technician dari getTechniciansForData()
+                                                            initialTechnicianId={data.technician.id}
+                                                            initialScheduledDate={
+                                                                data.scheduledDate
+                                                                    ? new Date(data.scheduledDate).toISOString().split("T")[0]
+                                                                    : ""
+                                                            }
+                                                        >
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                disabled={!!data.analisaDescription}  // Jika analisaDescription ada, disable tombol
+                                                                className="flex items-center gap-2 text-blue-500 bg-white border border-blue-500 rounded-md px-3 py-1 transition-all duration-200 transform hover:scale-105 hover:bg-blue-500 hover:text-white hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            >
+                                                                <FileEdit className="w-4 h-4" />
+                                                                Change
+                                                            </Button>
+                                                        </TicketMaintenanceUpdateSheet>
+                                                    </div>
+                                                ) : (
+                                                    <TicketMaintenanceUpdateSheet
+                                                        ticketId={data.id}
+                                                        technicians={technician}
+                                                        initialScheduledDate={
+                                                            data.scheduledDate
+                                                                ? new Date(data.scheduledDate).toISOString().split("T")[0]
+                                                                : ""
+                                                        }
+                                                    />
+                                                )}
+                                            </div>
                                             {data.scheduledDate ? (
                                                 <DeleteAlertTicket id={data.id} disabled />
                                             ) : (
@@ -102,9 +157,26 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                 <TableRow key={data.id}>
                                     <TableCell className="text-center">{offset + index + 1}</TableCell>
                                     <TableCell
-                                        className="text-center font-bold text-nowrap">{data.ticketNumber}  &nbsp;                                      <Badge variant="destructive" className="font-mono tracking-widest uppercase">
-                                            {data.status}
+                                        className="text-center font-bold text-nowrap">{data.ticketNumber}  &nbsp;                                      <Badge
+                                            className={`
+                                          font-mono tracking-widest uppercase
+                                          ${data.status === "Pending"
+                                                    ? "bg-red-100 text-red-500"
+                                                    : data.status === "Assigned"
+                                                        ? "bg-blue-100 text-blue-500"
+                                                        : data.status === "In_Progress"
+                                                            ? "bg-orange-100 text-orange-500"
+                                                            : data.status === "Completed"
+                                                                ? "bg-green-100 text-green-500"
+                                                                : data.status === "Canceled"
+                                                                    ? "bg-red-100 text-red-500"
+                                                                    : "bg-gray-100 text-gray-500"
+                                                }
+                                        `}
+                                        >
+                                            {data.status.replace("_", " ")}
                                         </Badge>
+
                                     </TableCell>
                                     <TableCell><ReadMoreText text={data.troubleUser} /></TableCell>
                                     <TableCell><ReadMoreText text={data.analisaDescription ?? ""} /></TableCell>
@@ -130,7 +202,8 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        className="flex items-center gap-2 text-blue-500 bg-white border border-blue-500 rounded-md px-3 py-1 transition-all duration-200 transform hover:scale-105 hover:bg-blue-500 hover:text-white hover:shadow-lg"
+                                                        disabled={!!data.analisaDescription}  // Jika analisaDescription ada, disable tombol
+                                                        className="flex items-center gap-2 text-blue-500 bg-white border border-blue-500 rounded-md px-3 py-1 transition-all duration-200 transform hover:scale-105 hover:bg-blue-500 hover:text-white hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >
                                                         <FileEdit className="w-4 h-4" />
                                                         Change
@@ -149,6 +222,7 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                             />
                                         )}
                                     </TableCell>
+
 
 
                                     <TableCell >{data.asset.product.part_name}</TableCell>

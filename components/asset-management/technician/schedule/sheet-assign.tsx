@@ -39,19 +39,18 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [transformClass, setTransformClass] = useState("translate-x-10 opacity-0");
-  const [technicianId, setTechnicianId] = useState(initialTechnicianId);
-  const [scheduledDate, setScheduledDate] = useState(initialScheduledDate);
+
+  // Gunakan nilai langsung dari prop karena tidak ada perubahan
+  const technicianId = initialTechnicianId || "";
+  const [scheduledDate] = useState(initialScheduledDate);
+
+  // Field tambahan untuk input yang dapat diedit
+  const [analisaDescription, setAnalisaDescription] = useState("");
+  const [actionDescription, setActionDescription] = useState("");
+  // Karena status hanya ditampilkan sebagai read-only, kita bisa gunakan konstanta
+  const status = "In_Progress";
   const [loading, setLoading] = useState(false);
 
-  // Reset state setiap kali sheet terbuka
-  useEffect(() => {
-    if (open) {
-      setTechnicianId(initialTechnicianId);
-      setScheduledDate(initialScheduledDate);
-    }
-  }, [open, initialTechnicianId, initialScheduledDate]);
-
-  // Animasi transisi sheet
   useEffect(() => {
     if (open) {
       setTimeout(() => {
@@ -62,28 +61,33 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
     }
   }, [open]);
 
+  const safeTechnicians = Array.isArray(technicians) ? technicians : [];
+  const selectedTechnician = safeTechnicians.find((tech) => tech.id === technicianId);
+  const technicianDisplay = selectedTechnician
+    ? `${selectedTechnician.name} - ${selectedTechnician.specialization}`
+    : "Not Assigned";
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!technicianId) {
-      alert("Pilih Technician terlebih dahulu.");
+    if (!analisaDescription.trim()) {
+      alert("Masukkan analisa description.");
       return;
     }
-
-    if (!scheduledDate) {
-      alert("Masukkan tanggal schedule.");
+    if (!actionDescription.trim()) {
+      alert("Masukkan action description.");
       return;
     }
 
     const today = new Date().toISOString().split("T")[0];
-    if (scheduledDate < today) {
+    if (scheduledDate && scheduledDate < today) {
       alert("Tanggal schedule tidak boleh kurang dari hari ini.");
       return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch(`/api/ticket/${ticketId}`, {
+      const response = await fetch(`/api/schedule/${ticketId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -91,7 +95,9 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
         body: JSON.stringify({
           technicianId,
           scheduledDate,
-          status: "Assigned", // Set status ke "Assigned"
+          analisaDescription,
+          actionDescription,
+          status,
         }),
       });
 
@@ -127,38 +133,75 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
         <SheetHeader>
           <SheetTitle>Update Ticket Maintenance</SheetTitle>
           <SheetDescription>
-            Pilih technician dan tentukan jadwal action untuk tiket ini.
+            Detail tiket dan aksi update:
           </SheetDescription>
         </SheetHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Readonly Technician */}
           <div>
             <label htmlFor="technician" className="block text-sm font-medium text-gray-700">
               Technician
             </label>
-            <select
+            <input
               id="technician"
-              value={technicianId}
-              onChange={(e) => setTechnicianId(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            >
-              <option value="">Pilih Technician</option>
-              {technicians.map((tech) => (
-                <option key={tech.id} value={tech.id}>
-                  {tech.name} &nbsp; {tech.specialization}
-                </option>
-              ))}
-            </select>
+              type="text"
+              value={technicianDisplay}
+              readOnly
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100"
+            />
           </div>
+          {/* Readonly Scheduled Date */}
           <div>
             <label htmlFor="scheduledDate" className="block text-sm font-medium text-gray-700">
               Schedule Date
             </label>
             <input
-              type="date"
               id="scheduledDate"
-              value={scheduledDate}
-              onChange={(e) => setScheduledDate(e.target.value)}
+              type="text"
+              value={scheduledDate || "Not set"}
+              readOnly
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100"
+            />
+          </div>
+          {/* Analisa Description */}
+          <div>
+            <label htmlFor="analisaDescription" className="block text-sm font-medium text-gray-700">
+              Analisa Description
+            </label>
+            <textarea
+              id="analisaDescription"
+              value={analisaDescription}
+              onChange={(e) => setAnalisaDescription(e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              placeholder="Enter analisa description..."
+              rows={3}
+            />
+          </div>
+          {/* Action Description */}
+          <div>
+            <label htmlFor="actionDescription" className="block text-sm font-medium text-gray-700">
+              Action Description
+            </label>
+            <textarea
+              id="actionDescription"
+              value={actionDescription}
+              onChange={(e) => setActionDescription(e.target.value)}
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              placeholder="Enter action description..."
+              rows={3}
+            />
+          </div>
+          {/* Readonly Status */}
+          <div>
+            <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+              Status
+            </label>
+            <input
+              id="status"
+              type="text"
+              value={status}
+              readOnly
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100"
             />
           </div>
           <Button type="submit" disabled={loading}>

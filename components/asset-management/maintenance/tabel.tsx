@@ -33,8 +33,24 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                                     <div>
                                         <div className="mb-2 flex items-center justify-between font-bold text-black dark:text-white">
                                             <Badge variant="secondary" className="font-mono tracking-widest uppercase h-10 border-orange-500">{data.ticketNumber}</Badge>  &nbsp;
-                                            <Badge variant="destructive" className="absolute right-10 font-mono tracking-widest uppercase">
-                                                {data.status}
+                                            <Badge
+                                                className={`
+                                          font-mono tracking-widest uppercase
+                                          ${data.status === "Pending"
+                                                        ? "bg-red-100 text-red-500"
+                                                        : data.status === "Assigned"
+                                                            ? "bg-blue-100 text-blue-500"
+                                                            : data.status === "In_Progress"
+                                                                ? "bg-orange-100 text-orange-500"
+                                                                : data.status === "Completed"
+                                                                    ? "bg-green-100 text-green-500"
+                                                                    : data.status === "Canceled"
+                                                                        ? "bg-red-100 text-red-500"
+                                                                        : "bg-gray-100 text-gray-500"
+                                                    }
+                                        `}
+                                            >
+                                                {data.status.replace("_", " ")}
                                             </Badge> &nbsp;
                                         </div>
                                         <div>
@@ -100,8 +116,24 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                                     <TableCell className="text-center"><ReadMoreText text={data.actionDescription ?? ""} /></TableCell>
                                     <TableCell className="text-center">{data.priorityStatus}</TableCell>
                                     <TableCell className="text-center">
-                                        <Badge variant="destructive" className="font-mono tracking-widest uppercase">
-                                            {data.status}
+                                        <Badge
+                                            className={`
+                                          font-mono tracking-widest uppercase
+                                          ${data.status === "Pending"
+                                                    ? "bg-red-100 text-red-500"
+                                                    : data.status === "Assigned"
+                                                        ? "bg-blue-100 text-blue-500"
+                                                        : data.status === "In_Progress"
+                                                            ? "bg-orange-100 text-orange-500"
+                                                            : data.status === "Completed"
+                                                                ? "bg-green-100 text-green-500"
+                                                                : data.status === "Canceled"
+                                                                    ? "bg-red-100 text-red-500"
+                                                                    : "bg-gray-100 text-gray-500"
+                                                }
+                                        `}
+                                        >
+                                            {data.status.replace("_", " ")}
                                         </Badge>
                                     </TableCell>
                                     <TableCell >{data.scheduledDate?.toDateString()}</TableCell>

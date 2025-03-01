@@ -127,7 +127,7 @@ export const createTicketAssign = async (formData: FormData) => {
       analisaDescription: (formData.get("analisaDescription") as string) || "",
       actionDescription: (formData.get("actionDescription") as string) || "",
       priorityStatus: formData.get("priorityStatus") as "Low" | "Medium" | "High" | "Critical",
-      status: ((formData.get("status") as string) || "").replace(" ", "_") as "Pending" | "In_Progress" | "Completed",
+      status: "Assigned",
       employeeId: formData.get("employeeId") as string,
       technicianId: formData.get("technicianId") as string,
       assetId: formData.get("assetId") as string,
@@ -179,7 +179,7 @@ export const updateTicketAssign = async (formData: FormData) => {
       actionDescription: (formData.get("actionDescription") as string) || "",
       priorityStatus: formData.get("priorityStatus") as "Low" | "Medium" | "High" | "Critical",
       // Normalize status dengan mengganti spasi dengan underscore
-      status: ((formData.get("status") as string) || "").replace(" ", "_") as "Pending" | "In_Progress" | "Completed",
+      status: "Assigned",
       employeeId: formData.get("employeeId") as string,
       technicianId: formData.get("technicianId") as string,
       assetId: formData.get("assetId") as string,

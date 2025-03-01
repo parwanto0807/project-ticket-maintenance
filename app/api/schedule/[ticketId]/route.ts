@@ -4,8 +4,8 @@ import { db } from "@/lib/db"; // Pastikan path sesuai dengan setup Prisma Anda
 export async function PUT(req: Request, { params }: { params: { ticketId: string } }) {
   try {
     const body = await req.json();
-    const { technicianId, scheduledDate } = body;
-    
+    const { technicianId, scheduledDate, analisaDescription, actionDescription, status } = body;
+
     // Validasi input
     if (!technicianId || !scheduledDate) {
       return NextResponse.json(
@@ -13,19 +13,26 @@ export async function PUT(req: Request, { params }: { params: { ticketId: string
         { status: 400 }
       );
     }
-    
-    // Update record menggunakan params.ticketId karena file route adalah [ticketId].ts
+
+    // Update record di database
     const updatedTicket = await db.ticketMaintenance.update({
       where: { id: params.ticketId },
       data: {
         technicianId,
-        status: "Assigned", // Set status ke "Assigned"
         scheduledDate: new Date(scheduledDate),
+        analisaDescription,
+        actionDescription,
+        status,
+        updatedAt: new Date(),
       },
     });
+
     return NextResponse.json(updatedTicket);
   } catch (error) {
     console.error("Error updating ticket:", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
