@@ -1,3 +1,4 @@
+"use server";
 
 import DeleteAlertTicket from "./alert-delete";
 import {
@@ -9,16 +10,22 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { fetchTicketList } from "@/data/asset/ticket";
-import ImageDialog from "../asset/imageDialog";
+import ImageDialog from "../../asset/imageDialog";
 import { Badge } from "@/components/ui/badge";
 import { TicketDialog } from "./dialog-ticket-detail";
-import ReadMoreText from "./read-more";
+import ReadMoreText from "../../maintenance/read-more";
+import TicketMaintenanceUpdateSheet from "./sheet-assign";
+import { getTechniciansForData } from "@/data/asset/technician";
+import { Button } from "@/components/ui/button";
+import { FileEdit } from "lucide-react";
 
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
-export default async function TicketTable({ query, currentPage }: { query: string; currentPage: number; }) {
+export default async function AssignTable({ query, currentPage }: { query: string; currentPage: number; }) {
     const data = await fetchTicketList(query, currentPage);
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_PRODUCT;
+    const technician = await getTechniciansForData();
+
     return (
         <div className="mt-0 flow-root">
             <div className="inline-block min-w-full align-middle">
@@ -54,8 +61,8 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                                             </Badge> &nbsp;
                                         </div>
                                         <div>
-                                            <p className="text-sm pt-1">
-                                                {data.asset.product.part_name}  &nbsp;
+                                            <p className="text-sm pt-1 text-wrap">
+                                                {<ReadMoreText text={data.asset.product.part_name} />}  &nbsp;
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -73,8 +80,47 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                                             />
                                         </div>
                                     </div>
+                                    
                                     <div className="w-full items-center justify-between pt-2">
+                                    <span className="font-bold text-gray-700">Technician</span> &nbsp;
                                         <div className="flex items-center justify-end gap-2 ">
+                                            <div>
+                                                {data.technician ? (
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <span>{data.technician.name}</span> &nbsp;
+                                                        <TicketMaintenanceUpdateSheet
+                                                            ticketId={data.id}
+                                                            technicians={technician} // array technician dari getTechniciansForData()
+                                                            initialTechnicianId={data.technician.id}
+                                                            initialScheduledDate={
+                                                                data.scheduledDate
+                                                                    ? new Date(data.scheduledDate).toISOString().split("T")[0]
+                                                                    : ""
+                                                            }
+                                                        >
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                disabled={!!data.analisaDescription}  // Jika analisaDescription ada, disable tombol
+                                                                className="flex items-center gap-2 text-blue-500 bg-white border border-blue-500 rounded-md px-3 py-1 transition-all duration-200 transform hover:scale-105 hover:bg-blue-500 hover:text-white hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            >
+                                                                <FileEdit className="w-4 h-4" />
+                                                                Change
+                                                            </Button>
+                                                        </TicketMaintenanceUpdateSheet>
+                                                    </div>
+                                                ) : (
+                                                    <TicketMaintenanceUpdateSheet
+                                                        ticketId={data.id}
+                                                        technicians={technician}
+                                                        initialScheduledDate={
+                                                            data.scheduledDate
+                                                                ? new Date(data.scheduledDate).toISOString().split("T")[0]
+                                                                : ""
+                                                        }
+                                                    />
+                                                )}
+                                            </div>
                                             {data.scheduledDate ? (
                                                 <DeleteAlertTicket id={data.id} disabled />
                                             ) : (
@@ -90,17 +136,17 @@ export default async function TicketTable({ query, currentPage }: { query: strin
 
                     <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                         <TableHeader>
-                            <TableRow className="text-[10px] font-bold uppercase ">
+                            <TableRow className="text-[10px] font-bold uppercase">
                                 <TableHead className="text-black dark:text-white">No</TableHead>
-                                <TableHead className="text-black dark:text-white">Ticket Number</TableHead>
+                                <TableHead className="text-black dark:text-white text-center">Ticket Number</TableHead>
                                 <TableHead className="text-black dark:text-white">Trouble User</TableHead>
                                 <TableHead className="text-black dark:text-white">Analisa Technician</TableHead>
                                 <TableHead className="text-black dark:text-white">Action Technician</TableHead>
                                 <TableHead className="text-black dark:text-white">Priority Status</TableHead>
-                                <TableHead className="text-black dark:text-white">Ticket Status</TableHead>
-                                <TableHead className="text-black dark:text-white">Check Date</TableHead>
+                                <TableHead className="text-black dark:text-white">Schedule Check Date</TableHead>
                                 <TableHead className="text-black dark:text-white">Complete Date </TableHead>
                                 <TableHead className="text-black dark:text-white">User Ticket</TableHead>
+                                <TableHead className="text-black dark:text-white text-center">Technician</TableHead>
                                 <TableHead className="text-black dark:text-white">Asset Name</TableHead>
                                 <TableHead className="text-black dark:text-white">Asset Image</TableHead>
                                 <TableHead className="text-black dark:text-white text-center">Action</TableHead>
@@ -110,13 +156,8 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                             {Array.isArray(data) && data.map((data, index) => (
                                 <TableRow key={data.id}>
                                     <TableCell className="text-center">{offset + index + 1}</TableCell>
-                                    <TableCell className="text-center font-bold text-nowrap">{data.ticketNumber}</TableCell>
-                                    <TableCell><ReadMoreText text={data.troubleUser} /></TableCell>
-                                    <TableCell><ReadMoreText text={data.analisaDescription ?? ""} /></TableCell>
-                                    <TableCell className="text-center"><ReadMoreText text={data.actionDescription ?? ""} /></TableCell>
-                                    <TableCell className="text-center">{data.priorityStatus}</TableCell>
-                                    <TableCell className="text-center">
-                                        <Badge
+                                    <TableCell
+                                        className="text-center font-bold text-nowrap">{data.ticketNumber}  &nbsp;                                      <Badge
                                             className={`
                                           font-mono tracking-widest uppercase
                                           ${data.status === "Pending"
@@ -135,10 +176,55 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                                         >
                                             {data.status.replace("_", " ")}
                                         </Badge>
+
                                     </TableCell>
+                                    <TableCell><ReadMoreText text={data.troubleUser} /></TableCell>
+                                    <TableCell><ReadMoreText text={data.analisaDescription ?? ""} /></TableCell>
+                                    <TableCell className="text-center"><ReadMoreText text={data.actionDescription ?? ""} /></TableCell>
+                                    <TableCell className="text-center">{data.priorityStatus}</TableCell>
                                     <TableCell >{data.scheduledDate?.toDateString()}</TableCell>
                                     <TableCell >{data.completedDate?.toDateString()}</TableCell>
                                     <TableCell >{data.employee.name}</TableCell>
+                                    <TableCell>
+                                        {data.technician ? (
+                                            <div className="flex items-center justify-between w-full">
+                                                <span className="font-bold text-gray-700">{data.technician.name}</span>
+                                                <TicketMaintenanceUpdateSheet
+                                                    ticketId={data.id}
+                                                    technicians={technician} // array technician dari getTechniciansForData()
+                                                    initialTechnicianId={data.technician.id}
+                                                    initialScheduledDate={
+                                                        data.scheduledDate
+                                                            ? new Date(data.scheduledDate).toISOString().split("T")[0]
+                                                            : ""
+                                                    }
+                                                >
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        disabled={!!data.analisaDescription}  // Jika analisaDescription ada, disable tombol
+                                                        className="flex items-center gap-2 text-blue-500 bg-white border border-blue-500 rounded-md px-3 py-1 transition-all duration-200 transform hover:scale-105 hover:bg-blue-500 hover:text-white hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    >
+                                                        <FileEdit className="w-4 h-4" />
+                                                        Change
+                                                    </Button>
+                                                </TicketMaintenanceUpdateSheet>
+                                            </div>
+                                        ) : (
+                                            <TicketMaintenanceUpdateSheet
+                                                ticketId={data.id}
+                                                technicians={technician}
+                                                initialScheduledDate={
+                                                    data.scheduledDate
+                                                        ? new Date(data.scheduledDate).toISOString().split("T")[0]
+                                                        : ""
+                                                }
+                                            />
+                                        )}
+                                    </TableCell>
+
+
+
                                     <TableCell >{data.asset.product.part_name}</TableCell>
                                     <TableCell className="flex whitespace-nowrap gap-4">
                                         <div className="flex items-center gap-2">

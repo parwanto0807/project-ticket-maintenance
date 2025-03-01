@@ -3,7 +3,7 @@
 import { generateTicketNumber } from "@/data/asset/ticket";
 // import * as z from "zod"
 import { db } from "@/lib/db";
-import { CreateTicketMaintenanceSchema, UpdateTicketMaintenanceSchema } from "@/schemas";
+import { CreateTicketMaintenanceOnAssignSchema, CreateTicketMaintenanceSchema, UpdateTicketMaintenanceSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 
@@ -110,3 +110,103 @@ export const deleteTicket = async (id: string) => {
     return { message: "Delete ticket Filed!" }
   }
 }
+
+export const createTicketAssign = async (formData: FormData) => {
+  try {
+    const { ticketNumber, countNumber } = await generateTicketNumber();
+    const session = await auth();
+    if (!session?.user?.id) {
+      return { error: "User not authenticated" };
+    }
+
+    const scheduledDateStr = formData.get("scheduledDate") as string | null;
+    const scheduledDate = scheduledDateStr ? new Date(scheduledDateStr) : undefined;
+
+    const rawData = {
+      troubleUser: formData.get("troubleUser") as string,
+      analisaDescription: (formData.get("analisaDescription") as string) || "",
+      actionDescription: (formData.get("actionDescription") as string) || "",
+      priorityStatus: formData.get("priorityStatus") as "Low" | "Medium" | "High" | "Critical",
+      status: "Assigned",
+      employeeId: formData.get("employeeId") as string,
+      technicianId: formData.get("technicianId") as string,
+      assetId: formData.get("assetId") as string,
+      scheduledDate,
+      completedDate: undefined,
+      ticketNumber,
+      countNumber,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    console.log(rawData);
+
+    const result = CreateTicketMaintenanceOnAssignSchema.safeParse(rawData);
+    if (!result.success) {
+      return { error: "Invalid field data", details: result.error.format() };
+    }
+
+    const newTicket = await db.ticketMaintenance.create({
+      data: result.data,
+    });
+
+    revalidatePath("/dashboard/technician/assign");
+    return { success: "Ticket created successfully!", data: newTicket };
+  } catch (error) {
+    console.error("Error creating ticket:", error);
+    return { error: "Failed to create ticket" };
+  }
+};
+
+export const updateTicketAssign = async (formData: FormData) => {
+  try {
+    // Pastikan ticketId tersedia dalam FormData
+    const ticketId = formData.get("ticketId") as string;
+    if (!ticketId) {
+      return { error: "Ticket ID is required" };
+    }
+
+    // Ambil dan konversi nilai scheduledDate dan completedDate
+    const scheduledDateStr = formData.get("scheduledDate") as string | null;
+    const scheduledDate = scheduledDateStr ? new Date(scheduledDateStr) : undefined;
+
+    const completedDateStr = formData.get("completedDate") as string | null;
+    const completedDate = completedDateStr ? new Date(completedDateStr) : undefined;
+
+    // Bangun data mentah untuk update
+    const rawData = {
+      troubleUser: formData.get("troubleUser") as string,
+      analisaDescription: (formData.get("analisaDescription") as string) || "",
+      actionDescription: (formData.get("actionDescription") as string) || "",
+      priorityStatus: formData.get("priorityStatus") as "Low" | "Medium" | "High" | "Critical",
+      // Normalize status dengan mengganti spasi dengan underscore
+      status: "Assigned",
+      employeeId: formData.get("employeeId") as string,
+      technicianId: formData.get("technicianId") as string,
+      assetId: formData.get("assetId") as string,
+      scheduledDate,
+      completedDate,
+      updatedAt: new Date(),
+    };
+
+    // Validasi data menggunakan schema (gunakan schema yang sesuai dengan update)
+    const result = CreateTicketMaintenanceOnAssignSchema.safeParse(rawData);
+    if (!result.success) {
+      return { error: "Invalid field data", details: result.error.format() };
+    }
+
+    // Update record di database
+    const updatedTicket = await db.ticketMaintenance.update({
+      where: { id: ticketId },
+      data: result.data,
+    });
+
+    // Revalidasi path agar data di dashboard ter-refresh
+    revalidatePath("/dashboard/technician/assign");
+
+    return { success: "Ticket updated successfully!", data: updatedTicket };
+  } catch (error) {
+    console.error("Error updating ticket:", error);
+    return { error: "Failed to update ticket" };
+  }
+};
+

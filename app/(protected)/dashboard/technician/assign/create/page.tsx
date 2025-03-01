@@ -10,8 +10,9 @@ import {
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 import { getEmployeesFindData } from "@/data/master/employee";
-import CreateTicketForm from "@/components/asset-management/maintenance/create-ticket-form";
 import { AssetStatus, AssetType, Department, Employee, Product } from "@prisma/client";
+import CreateTicketOnAssignForm from "@/components/asset-management/technician/assign/create-ticket-form";
+import { getTechniciansForData } from "@/data/asset/technician";
 
 interface Asset {
     id: string;
@@ -37,13 +38,17 @@ interface Asset {
     department: Department | null;
 }
 
-const RegisterTicket = async () => {
+const RegisterTicketAssign = async () => {
 
     const assetFind = await fetchAssetListForData() || [];
     const validAssetFind = Array.isArray(assetFind) ? assetFind : []; 
 
     const employeeFind = await getEmployeesFindData() || [];
     const validEmployeeFind = Array.isArray(employeeFind) ? employeeFind : [];
+
+    const technicianFind = await getTechniciansForData() || [];
+    const validTechnicianFind = Array.isArray(technicianFind) ? technicianFind : []; 
+
 
     return (
         <ContentLayout title="Register Asset">
@@ -57,13 +62,13 @@ const RegisterTicket = async () => {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link href="/dashboard">Maintenance</Link>
+                            <Link href="/dashboard">Technician</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link href="/dashboard/maintenance/ticket">Ticket Maintenance</Link>
+                            <Link href="/dashboard/technician/assign">Assign Technician</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
@@ -72,12 +77,13 @@ const RegisterTicket = async () => {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <CreateTicketForm
+            <CreateTicketOnAssignForm
                 assetFind={validAssetFind as Asset[]}
                 employeeDataFind={validEmployeeFind }
+                technicianFind = { validTechnicianFind}
             />
         </ContentLayout>
     );
 };
 
-export default RegisterTicket;
+export default RegisterTicketAssign;

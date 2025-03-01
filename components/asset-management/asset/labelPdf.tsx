@@ -29,7 +29,6 @@ interface LabelPDFProps {
   qrCodeUrl: string;
 }
 
-// Konversi 78 mm × 30 mm ke poin (1 mm ≈ 2.8346 pt):
 const LABEL_WIDTH = 78 * 2.8346;  // ~221 pt
 const LABEL_HEIGHT = 30 * 2.8346; // ~85 pt
 
@@ -39,30 +38,29 @@ const styles = StyleSheet.create({
     height: LABEL_HEIGHT,
     padding: 4,
     borderRadius: 4,
-    border: "1px solid #ccc",
-    backgroundColor: "#f9f9f9",
+    border: "1px solid #000",
+    // backgroundColor: "#fff",  // Background dihapus
     position: "relative",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
   },
-  // Header dengan posisi absolut di atas
   header: {
     position: "absolute",
     top: 3,
     left: 3,
     right: 3,
-    backgroundColor: "#0a74da",
-    color: "#fff",
+    color: "#000",
     fontSize: 7,
     fontWeight: "bold",
     textAlign: "center",
     paddingVertical: 2,
-    borderRadius: 3,
+    borderWidth: 0.5,       // Ketebalan border dikurangi
+    borderColor: "#000",    // Warna border hitam
+    borderRadius: 2,        // Opsional: sedikit lengkungan pada sudut border
   },
   content: {
-    // Area utama untuk QR dan teks
-    marginTop: 8, // Jeda dari header
+    marginTop: 12,
     width: "100%",
     paddingHorizontal: 4,
     display: "flex",
@@ -70,18 +68,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   qrCodeContainer: {
-    width: 48,
-    height: 48,
-    backgroundColor: "#fff",
-    border: "1px solid #ddd",
+    width: 60,
+    height: 60,
+    // backgroundColor: "#fff",  // Background dihapus
+    border: "1px solid #000",
     borderRadius: 3,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },
   qrCode: {
-    width: 45,
-    height: 45,
+    width: 59,
+    height: 59,
   },
   textContainer: {
     marginLeft: 8,
@@ -93,35 +91,35 @@ const styles = StyleSheet.create({
   assetNumber: {
     fontSize: 8,
     fontWeight: "bold",
-    color: "#333",
+    color: "#000",
     marginBottom: 1,
   },
   divider: {
     width: "100%",
     height: 1,
-    backgroundColor: "#ddd",
+    backgroundColor: "#000",
     marginBottom: 2,
   },
   product: {
     fontSize: 7,
-    color: "#555",
+    color: "#000",
     marginBottom: 1,
   },
   location: {
     fontSize: 7,
-    color: "#555",
+    color: "#000",
     marginBottom: 1,
   },
   employee: {
     fontSize: 7,
-    color: "#555",
+    color: "#000",
   },
 });
 
 const LabelPDF: React.FC<LabelPDFProps> = ({ asset, qrCodeUrl }) => (
   <Document>
     <Page size={{ width: LABEL_WIDTH, height: LABEL_HEIGHT }} style={styles.page}>
-      {/* Header */}
+      {/* Header dengan border tipis */}
       <Text style={styles.header}>Asset milik PT. Grafindo Mitrasemesta</Text>
 
       <View style={styles.content}>

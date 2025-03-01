@@ -8,7 +8,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import CreateTechnicianForm from "@/components/asset-management/technician/create-technician-form";
+import CreateTechnicianForm from "@/components/asset-management/technician/list/create-technician-form";
 
 const RegisterTechnician = async () => {
     return (

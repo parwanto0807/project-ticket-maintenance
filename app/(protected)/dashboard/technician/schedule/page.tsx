@@ -1,10 +1,7 @@
 import Link from "next/link"
-//import PageProduct from "@/components/demo/products-content";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import Search from "@/components/ui/search";
 import Pagination from "@/components/ui/pagination";
-
-
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,9 +10,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import TechnicianTable from "@/components/asset-management/technician/list/tabel";
-import { getTechniciansPages } from "@/data/asset/technician";
-import { CreateTechnicianButton } from "@/components/asset-management/technician/list/buttons";
+import { fetchTicketListPages } from "@/data/asset/ticket";
+import { CreateTicketButtonAssign } from "@/components/asset-management/technician/assign/buttons";
+import AssignTaskList from "@/components/asset-management/technician/schedule/tabel";
 
 const TicketPage = async ({
   searchParams
@@ -27,10 +24,10 @@ const TicketPage = async ({
 }) => {
   const { query = "", page } = await searchParams || { query: "", page: "1" };
   const currentPage = Number(page) || 1;
-  const totalPages = await getTechniciansPages(query || "");
+  const totalPages = await fetchTicketListPages(query || "");
 
   return (
-    <ContentLayout title="Technician List">
+    <ContentLayout title="Technician Schedule">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -46,7 +43,7 @@ const TicketPage = async ({
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Technician List</BreadcrumbPage>
+            <BreadcrumbPage>Technician Schedule</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -54,11 +51,11 @@ const TicketPage = async ({
         <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
           <div className="flex items-center justify-between gap-2">
             <Search placeholder="Search Ticket Assign..." />
-            <CreateTechnicianButton />
+            <CreateTicketButtonAssign />
           </div>
 
           <div className="w-full">
-            <TechnicianTable  query={query} currentPage={currentPage} />
+            <AssignTaskList query={query} currentPage={currentPage} />
           </div>
 
           <div className="flex justify-center mt-4">
