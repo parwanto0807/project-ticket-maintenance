@@ -13,9 +13,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import TechnicianTable from "@/components/asset-management/technician/tabel";
+import TechnicianTable from "@/components/asset-management/technician/list/tabel";
 import { getTechniciansPages } from "@/data/asset/technician";
-import { CreateTechnicianButton } from "@/components/asset-management/technician/buttons";
+import { CreateTechnicianButton } from "@/components/asset-management/technician/list/buttons";
 
 const TicketPage = async ({
   searchParams
@@ -58,7 +58,7 @@ const TicketPage = async ({
           </div>
 
           <div className="w-full">
-            <TechnicianTable query={query} currentPage={currentPage} />
+            <TechnicianTable  query={query} currentPage={currentPage} />
           </div>
 
           <div className="flex justify-center mt-4">

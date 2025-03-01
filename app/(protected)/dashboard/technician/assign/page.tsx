@@ -1,10 +1,7 @@
 import Link from "next/link"
-//import PageProduct from "@/components/demo/products-content";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import Search from "@/components/ui/search";
 import Pagination from "@/components/ui/pagination";
-
-
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,8 +11,8 @@ import {
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 import { fetchTicketListPages } from "@/data/asset/ticket";
-import TicketTable from "@/components/asset-management/maintenance/tabel";
-import { CreateTicketButton } from "@/components/asset-management/maintenance/buttons";
+import AssignTable from "@/components/asset-management/technician/assign/tabel";
+import { CreateTicketButtonAssign } from "@/components/asset-management/technician/assign/buttons";
 
 const TicketPage = async ({
   searchParams
@@ -54,11 +51,11 @@ const TicketPage = async ({
         <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
           <div className="flex items-center justify-between gap-2">
             <Search placeholder="Search Ticket Assign..." />
-            <CreateTicketButton />
+            <CreateTicketButtonAssign />
           </div>
 
           <div className="w-full">
-            <TicketTable query={query} currentPage={currentPage} />
+            <AssignTable query={query} currentPage={currentPage} />
           </div>
 
           <div className="flex justify-center mt-4">

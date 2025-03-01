@@ -338,6 +338,23 @@ export const CreateTicketMaintenanceSchema = z.object({
     ticketNumber: z.string().min(1, "Ticket number is required"), // ✅ Tambahkan ticketNumber
     countNumber: z.number().int().min(1, "Count number is required"), // ✅ Tambahkan countNumber
   });
+
+  export const CreateTicketMaintenanceOnAssignSchema = z.object({
+    troubleUser: z.string().min(1, "Trouble user is required"), // User yang melaporkan masalah wajib diisi
+    analisaDescription: z.string().nullable().optional(), // Opsional
+    actionDescription: z.string().nullable().optional(), // Opsional
+    priorityStatus: z.enum(["Low", "Medium", "High", "Critical"]).default("Low"), // Enum dengan nilai default
+    status: z.enum(["Pending", "In_Progress", "Completed"]).default("Pending"), // Enum dengan nilai default
+    createdAt: z.date().default(new Date()), // Tanggal dibuat, default sekarang
+    updatedAt: z.date().default(new Date()), // Tanggal diperbarui, default sekarang
+    scheduledDate: z.date().optional(), // Opsional
+    completedDate: z.date().optional(), // Opsional
+    employeeId: z.string().min(1,"User asset is required"), // UUID validasi
+    technicianId: z.string().optional(),
+    assetId: z.string().min(1, "Asset name is required"), // UUID validasi
+    ticketNumber: z.string().min(1, "Ticket number is required"), // ✅ Tambahkan ticketNumber
+    countNumber: z.number().int().min(1, "Count number is required"), // ✅ Tambahkan countNumber
+  });
   
 // Schema untuk memperbarui TicketMaintenance (opsional fields)
 export const UpdateTicketMaintenanceSchema = CreateTicketMaintenanceSchema.partial();

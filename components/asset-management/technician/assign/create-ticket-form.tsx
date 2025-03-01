@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
 import * as z from "zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateTicketMaintenanceSchema } from "@/schemas";
+import { CreateTicketMaintenanceOnAssignSchema } from "@/schemas";
 import {
     Form,
     FormControl,
@@ -18,11 +18,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useTransition } from "react";
-import { createTicket } from "@/action/maintenance/ticket";
+import { createTicketAssign } from "@/action/maintenance/ticket";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AssetStatus, AssetType, Department, Product } from "@prisma/client";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { AssetStatus, AssetType, Department, Product, Technician } from "@prisma/client";
+// import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface Asset {
     id: string;
@@ -42,11 +48,11 @@ interface Asset {
     assetImage1: string | null;
     productId: string;
     employeeId: string | null;
-
     product: Product | null;
     employee: Employee | null;
     department: Department | null;
 }
+
 type Employee = {
     id: string;
     name: string;
@@ -63,25 +69,28 @@ type Employee = {
     };
 };
 
-const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[]; employeeDataFind: Employee[] }) => {
+const CreateTicketOnAssignForm = ({
+    assetFind,
+    employeeDataFind,
+    technicianFind,
+}: {
+    assetFind: Asset[];
+    employeeDataFind: Employee[];
+    technicianFind: Technician[];
+}) => {
     const [isPending, startTransition] = useTransition();
     const [loading, setLoading] = useState(false);
     const [ticketNumber, setTicketNumber] = useState("");
     const [countNumber, setCountNumber] = useState(0);
     const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+    const [filteredAssets, setFilteredAssets] = useState<Asset[]>(assetFind);
     const [selectedDepartmentName, setSelectedDepartmentName] = useState<{ dept_name: string } | null>(null);
     const router = useRouter();
-    const user = useCurrentUser();
-    const userTicket = user?.email;
+    // const user = useCurrentUser();
+    // const userTicket = user?.email;
 
-    const userDept = employeeDataFind?.filter(emp => emp.email === userTicket);
-    const departmentId = userDept?.[0]?.department?.id;
-    const departmentEmployees = employeeDataFind?.filter(emp => emp.department?.id === departmentId);
-    const departmentByAsset = assetFind?.filter(ass => ass.departmentId === departmentId );
-
-    console.log("User Department", departmentEmployees);
-
-    console.log("Email", userTicket);
+    // console.log("User Department", departmentEmployees);
+    // console.log("Email", userTicket);
 
     useEffect(() => {
         const fetchTicketNumber = async () => {
@@ -109,10 +118,9 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-
     // Inisialisasi form dengan useForm
-    const form = useForm<z.infer<typeof CreateTicketMaintenanceSchema>>({
-        resolver: zodResolver(CreateTicketMaintenanceSchema),
+    const form = useForm<z.infer<typeof CreateTicketMaintenanceOnAssignSchema>>({
+        resolver: zodResolver(CreateTicketMaintenanceOnAssignSchema),
         defaultValues: {
             troubleUser: "",
             analisaDescription: "",
@@ -125,17 +133,15 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
             completedDate: new Date(),
             employeeId: "",
             assetId: "",
+            technicianId: "",
             ticketNumber: ticketNumber,
             countNumber: countNumber,
-        }
+        },
     });
 
-    console.log('Default Value:', form.control._formValues);
-    // Fungsi onSubmit untuk menangani pengiriman data
-    const onSubmit = (values: z.infer<typeof CreateTicketMaintenanceSchema>) => {
+    console.log("Default Value:", form.control._formValues);
+    const onSubmit = (values: z.infer<typeof CreateTicketMaintenanceOnAssignSchema>) => {
         setLoading(true);
-
-        // Membuat FormData untuk mengirim data
         const formData = new FormData();
         formData.append("troubleUser", values.troubleUser);
         if (values.analisaDescription) formData.append("analisaDescription", values.analisaDescription);
@@ -146,6 +152,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
         formData.append("countNumber", values.countNumber.toString());
         formData.append("employeeId", values.employeeId);
         formData.append("assetId", values.assetId);
+        formData.append("technicianId", values.technicianId ?? "");
 
         if (values.scheduledDate) {
             formData.append("scheduledDate", values.scheduledDate.toISOString());
@@ -160,15 +167,14 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
 
         // Mengirim data ke server
         startTransition(() => {
-            createTicket(formData)
-            
+            createTicketAssign(formData)
                 .then((data) => {
                     if (data?.error) {
                         toast.error(data.error);
                     }
                     if (data?.success) {
                         toast.success(data.success);
-                        router.push("/dashboard/maintenance/ticket");
+                        router.push("/dashboard/technician/assign");
                     }
                 })
                 .finally(() => setLoading(false));
@@ -180,7 +186,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
         form.setValue("assetId", id);
 
         // Cari asset berdasarkan id yang dipilih
-        const selectedAssetFind = assetFind?.find(ass => ass.id === id);
+        const selectedAssetFind = assetFind?.find((ass) => ass.id === id);
 
         if (selectedAssetFind) {
             // Set nilai selectedAsset
@@ -196,8 +202,12 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
         const selectedEmployee = employeeDataFind?.find(emp => emp.id === employeeId);
         if (selectedEmployee?.department) {
             setSelectedDepartmentName({ dept_name: selectedEmployee.department.dept_name });
+            // Filter assetFind agar hanya asset yang sesuai dengan department id dari employee terpilih
+            const filtered = assetFind.filter(asset => asset.departmentId === selectedEmployee.department?.id);
+            setFilteredAssets(filtered);
         }
     };
+
 
     return (
         <Form {...form}>
@@ -205,7 +215,6 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                 <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 text-center">Create Ticket</h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
                     {/* Ticket Number */}
                     <FormField
                         control={form.control}
@@ -227,28 +236,29 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                             </FormItem>
                         )}
                     />
-                    {/* Asset ID */}
+
+                    {/* User Asset (Employee) */}
                     <FormField
                         control={form.control}
                         name="employeeId"
                         render={({ field }) => (
                             <FormItem className="col-span-2">
-                                <FormLabel>User Asset</FormLabel>
+                                <FormLabel>👨‍💻 User Asset</FormLabel>
                                 <Select
                                     value={field.value}
                                     onValueChange={(value) => {
                                         field.onChange(value); // Menggunakan field.onChange
                                         handleSelectEmployee(value);
                                     }}
-                                    disabled={isPending}>
+                                    disabled={isPending}
+                                >
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select user asset" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-
-                                        {departmentEmployees?.map(data => (
+                                        {employeeDataFind?.map((data) => (
                                             <SelectItem key={data.id} value={data.id}>
                                                 {data.name}
                                             </SelectItem>
@@ -259,34 +269,36 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                             </FormItem>
                         )}
                     />
+
                     {selectedDepartmentName && (
                         <div>
-                            <p>Department: {selectedDepartmentName.dept_name}</p>
-                            {/* Tampilkan lebih banyak detail sesuai kebutuhan */}
+                            <p>🚪 Department: {selectedDepartmentName.dept_name}</p>
+                            {/* Tampilkan detail lain jika diperlukan */}
                         </div>
                     )}
-                    {/* Asset ID */}
+
+                    {/* Asset Name */}
                     <FormField
                         control={form.control}
                         name="assetId"
                         render={({ field }) => (
                             <FormItem className="col-span-2">
-                                <FormLabel>Asset Name</FormLabel>
+                                <FormLabel>🏢 Asset Name</FormLabel>
                                 <Select
                                     value={field.value}
                                     onValueChange={(value) => {
-                                        field.onChange(value); // Menggunakan field.onChange
+                                        field.onChange(value);
                                         handleSelectAsset(value);
                                     }}
-                                    disabled={isPending}>
+                                    disabled={isPending}
+                                >
                                     <FormControl>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select user asset" />
+                                            <SelectValue placeholder="Select asset" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-
-                                        {departmentByAsset?.map(data => (
+                                        {filteredAssets?.map((data) => (
                                             <SelectItem key={data.id} value={data.id}>
                                                 {data.product?.part_name} - {data.employee?.name} - {data.department?.dept_name}
                                             </SelectItem>
@@ -297,15 +309,16 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                             </FormItem>
                         )}
                     />
+
                     {selectedAsset && (
                         <div className="hidden">
                             <h3>Selected Asset</h3>
                             <p>Asset ID: {selectedAsset.id}</p>
                             <p>Asset Number: {selectedAsset.assetNumber}</p>
                             <p>Status: {selectedAsset.status}</p>
-                            {/* Tampilkan lebih banyak detail sesuai kebutuhan */}
                         </div>
                     )}
+
                     {/* Trouble User */}
                     <FormField
                         control={form.control}
@@ -356,49 +369,52 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                         )}
                     />
 
-                    {/* Analisa Description */}
+                    {/* Tambahan Field: Technician */}
                     <FormField
                         control={form.control}
-                        name="analisaDescription"
+                        name="technicianId"
                         render={({ field }) => (
                             <FormItem className="col-span-2">
-                                <FormLabel className="hidden">📋 Analisa Description</FormLabel>
-                                <FormControl>
-                                    <Input {...field} value={field.value ?? ""} placeholder="Enter analisa description"  className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white hidden" />
-                                </FormControl>
+                                <FormLabel>👨‍🔧 Technician</FormLabel>
+                                <Select
+                                    value={field.value}
+                                    onValueChange={(value) => field.onChange(value)}
+                                    disabled={isPending}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Technician" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {technicianFind.map((tech) => (
+                                            <SelectItem key={tech.id} value={tech.id}>
+                                                {tech.name} {tech.specialization}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
 
-                    {/* Action Description */}
+
+                    {/* Tambahan Field: Scheduled Date */}
                     <FormField
                         control={form.control}
-                        name="actionDescription"
+                        name="scheduledDate"
                         render={({ field }) => (
                             <FormItem className="col-span-2">
-                                <FormLabel className="hidden">🔍 Action Description</FormLabel>
+                                <FormLabel>📆 Scheduled Date</FormLabel>
                                 <FormControl>
-                                    <Input {...field} value={field.value ?? ""}  placeholder="Enter action description" className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white hidden" />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    {/* Count Number */}
-                    <FormField
-                        control={form.control}
-                        name="countNumber"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="hidden">🔢 Count Number</FormLabel>
-                                <FormControl>
-                                    <Input className="hidden"
+                                    <Input
                                         {...field}
-                                        type="number"
-                                        value={countNumber}
-                                        placeholder="Enter count number" disabled={isPending} />
+                                        type="date"
+                                        disabled={isPending}
+                                        value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -414,8 +430,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                 </div>
             </form>
         </Form>
-
     );
 };
 
-export default CreateTicketForm;
+export default CreateTicketOnAssignForm;

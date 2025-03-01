@@ -67,7 +67,21 @@ export async function getTechnicians(query: string, currentPage: number) {
                 updatedAt: "desc",
             },
         });
-        return technicians 
+        return technicians
+    } catch (error) {
+        console.error("Error Fetching Technicians:", error);
+        throw new Error("Failed to fetch Technicians");
+    }
+}
+export async function getTechniciansForData() {
+    no_store(); 
+    try {
+        const technicians = await db.technician.findMany({
+            orderBy: {
+                updatedAt: "desc",
+            },
+        });
+        return technicians
     } catch (error) {
         console.error("Error Fetching Technicians:", error);
         throw new Error("Failed to fetch Technicians");

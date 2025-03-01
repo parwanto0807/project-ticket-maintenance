@@ -194,14 +194,14 @@ export function getMenuList(pathname: string, role: string): Group[] {
               active: pathname === "/dashboard/technician/assign",
             },
             {
-              href: "/dashboard/technician/history",
-              label: "Technician History",
-              active: pathname === "/dashboard/technician/history",
-            },
-            {
               href: "/dashboard/technician/schedule",
               label: "Technician Schedule",
               active: pathname === "/dashboard/technician/schedule",
+            },
+            {
+              href: "/dashboard/technician/history",
+              label: "Technician History",
+              active: pathname === "/dashboard/technician/history",
             },
             {
               href: "/dashboard/technician/list",

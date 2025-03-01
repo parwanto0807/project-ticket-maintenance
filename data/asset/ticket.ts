@@ -47,6 +47,7 @@ export const fetchTicketList = async (query: string, currentPage: number) => {
             take: ITEMS_PER_PAGE_TICKET,
             include: {
                 employee: true,
+                technician: true,
                 asset: {
                     include:{
                         product: true
