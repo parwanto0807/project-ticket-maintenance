@@ -35,8 +35,89 @@ export async function generateTicketNumber() {
         throw new Error("Failed to generate ticket number");
     }
 }
+export const fetchTicketListAssign = async (query: string, currentPage: number) => {
+    noStore()
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE_TICKET;
+    try {
+        const ticketFind = await db.ticketMaintenance.findMany({
+            skip: offset,
+            take: ITEMS_PER_PAGE_TICKET,
+            include: {
+                employee: true,
+                technician: true,
+                asset: {
+                    include: {
+                        product: true
+                    }
+                },
+            },
+            orderBy: {
+                updatedAt: 'desc'
+            },
+            where: {
+                AND: [
+                    {
+                        OR: [
+                            { ticketNumber: { contains: query, mode: 'insensitive' } },
+                            { analisaDescription: { contains: query, mode: 'insensitive' } },
+                            { troubleUser: { contains: query, mode: 'insensitive' } },
+                            { actionDescription: { contains: query, mode: 'insensitive' } },
+                        ]
+                    },
+                    {
+                        NOT: { status: { in: ["Completed", "Canceled"] } }
+                    }
+                ]
+            }
+        })
+        return ticketFind;
+    } catch (error) {
+        console.error("Filed fetch ticket list", error)
+        throw new Error("Files fetch ticket list")
+    }
+}
 
-  
+export const fetchTicketListSchedule = async (query: string, currentPage: number) => {
+    noStore()
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE_TICKET;
+    try {
+        const ticketFind = await db.ticketMaintenance.findMany({
+            skip: offset,
+            take: ITEMS_PER_PAGE_TICKET,
+            include: {
+                employee: true,
+                technician: true,
+                asset: {
+                    include: {
+                        product: true
+                    }
+                },
+            },
+            orderBy: {
+                updatedAt: 'desc'
+            },
+            where: {
+                AND: [
+                    {
+                        OR: [
+                            { ticketNumber: { contains: query, mode: 'insensitive' } },
+                            { analisaDescription: { contains: query, mode: 'insensitive' } },
+                            { troubleUser: { contains: query, mode: 'insensitive' } },
+                            { actionDescription: { contains: query, mode: 'insensitive' } },
+                        ]
+                    },
+                    {
+                        NOT: { status: { in: ["Pending", "Completed", "Canceled"] } }
+                    }
+                ]
+            }
+        })
+        return ticketFind;
+    } catch (error) {
+        console.error("Filed fetch ticket list", error)
+        throw new Error("Files fetch ticket list")
+    }
+}
 
 export const fetchTicketList = async (query: string, currentPage: number) => {
     noStore()
@@ -49,7 +130,7 @@ export const fetchTicketList = async (query: string, currentPage: number) => {
                 employee: true,
                 technician: true,
                 asset: {
-                    include:{
+                    include: {
                         product: true
                     }
                 },

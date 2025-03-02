@@ -9,7 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { fetchTicketList } from "@/data/asset/ticket";
+import { fetchTicketListAssign } from "@/data/asset/ticket";
 import ImageDialog from "../../asset/imageDialog";
 import { Badge } from "@/components/ui/badge";
 import { TicketDialog } from "./dialog-ticket-detail";
@@ -18,11 +18,12 @@ import TicketMaintenanceUpdateSheet from "./sheet-assign";
 import { getTechniciansForData } from "@/data/asset/technician";
 import { Button } from "@/components/ui/button";
 import { FileEdit } from "lucide-react";
+import TicketCompleteDialog from "./closing-button";
 
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
 export default async function AssignTable({ query, currentPage }: { query: string; currentPage: number; }) {
-    const data = await fetchTicketList(query, currentPage);
+    const data = await fetchTicketListAssign(query, currentPage);
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_PRODUCT;
     const technician = await getTechniciansForData();
 
@@ -80,9 +81,9 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                             />
                                         </div>
                                     </div>
-                                    
+
                                     <div className="w-full items-center justify-between pt-2">
-                                    <span className="font-bold text-gray-700">Technician</span> &nbsp;
+                                        <span className="font-bold text-gray-700">Technician</span> &nbsp;
                                         <div className="flex items-center justify-end gap-2 ">
                                             <div>
                                                 {data.technician ? (
@@ -244,6 +245,7 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                                 <DeleteAlertTicket id={data.id} />
                                             )}
                                             <TicketDialog ticket={data} />
+                                            <TicketCompleteDialog ticketId={data.id} status={data.status} />
                                         </div>
                                     </TableCell>
 

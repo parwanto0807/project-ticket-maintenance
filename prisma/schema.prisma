@@ -344,6 +344,9 @@ model TicketMaintenance {
   employeeId         String
   assetId            String
   technicianId       String?
+  ticketImage1       String?        @default("/public/noImage.jpg")
+  ticketImage2       String?        @default("/public/noImage.jpg")
+  ticketImage3       String?        @default("/public/noImage.jpg")
 
   employee   Employee              @relation(fields: [employeeId], references: [id])
   asset      Asset                 @relation(fields: [assetId], references: [id])
