@@ -4,7 +4,7 @@ import { put } from "@vercel/blob"; // Pastikan modul ini telah terinstal
 
 export async function PUT(req: Request, { params }: { params: { ticketId: string } }) {
   try {
-    const contentType = req.headers.get("content-type") || "";
+    const contentTypeHeader = req.headers.get("content-type") || "";
     let technicianId: string;
     let scheduledDate: string;
     let analisaDescription: string;
@@ -15,7 +15,7 @@ export async function PUT(req: Request, { params }: { params: { ticketId: string
     let ticketImage2: File | null = null;
     let ticketImage3: File | null = null;
 
-    if (contentType.includes("multipart/form-data")) {
+    if (contentTypeHeader.includes("multipart/form-data")) {
       const formData = await req.formData();
       technicianId = formData.get("technicianId") as string;
       scheduledDate = formData.get("scheduledDate") as string;
@@ -67,22 +67,35 @@ export async function PUT(req: Request, { params }: { params: { ticketId: string
 
     // Jika file image tersedia, upload ke Vercel Blob dan simpan URL-nya
     if (ticketImage1) {
-      const imageUrl1 = await put(`/ticket/${params.ticketId}/ticketImage1`, ticketImage1, { access: 'public' });
-      updateData.ticketImage1 = imageUrl1;
+      const imageUrl1 = await put(
+        `/ticket/${params.ticketId}/ticketImage1.jpg`,
+        ticketImage1,
+        { access: "public" as const, contentType: ticketImage1.type }
+      );
+      updateData.ticketImage1 = imageUrl1.url;
     }
     if (ticketImage2) {
-      const imageUrl2 = await put(`/ticket/${params.ticketId}/ticketImage2`, ticketImage2, { access: 'public' });
-      updateData.ticketImage2 = imageUrl2;
+      const imageUrl2 = await put(
+        `/ticket/${params.ticketId}/ticketImage2.jpg`,
+        ticketImage2,
+        { access: "public" as const, contentType: ticketImage2.type }
+      );
+      updateData.ticketImage2 = imageUrl2.url;
     }
     if (ticketImage3) {
-      const imageUrl3 = await put(`/ticket/${params.ticketId}/ticketImage3`, ticketImage3, { access: 'public' });
-      updateData.ticketImage3 = imageUrl3;
+      const imageUrl3 = await put(
+        `/ticket/${params.ticketId}/ticketImage3.jpg`,
+        ticketImage3,
+        { access: "public" as const, contentType: ticketImage3.type }
+      );
+      updateData.ticketImage3 = imageUrl3.url;
     }
 
     const updatedTicket = await db.ticketMaintenance.update({
       where: { id: params.ticketId },
       data: updateData,
     });
+    console.log(updatedTicket);
 
     return NextResponse.json(updatedTicket);
   } catch (error) {
