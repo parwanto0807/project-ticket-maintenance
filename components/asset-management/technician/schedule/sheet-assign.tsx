@@ -12,6 +12,39 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { FiAlertTriangle } from "react-icons/fi";
+// import { FileEdit } from "lucide-react";
+
+// Contoh fungsi resize, Anda bisa mengadaptasinya atau mengimpor dari library
+async function resizeImage(file: File, maxWidth: number, maxHeight: number): Promise<File> {
+  const imageBitmap = await createImageBitmap(file);
+  const canvas = document.createElement("canvas");
+  let { width, height } = imageBitmap;
+  const aspectRatio = width / height;
+
+  if (width > maxWidth) {
+    width = maxWidth;
+    height = Math.round(width / aspectRatio);
+  }
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = Math.round(height * aspectRatio);
+  }
+
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.drawImage(imageBitmap, 0, 0, width, height);
+  }
+  return new Promise<File>((resolve) => {
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const resizedFile = new File([blob], file.name, { type: file.type });
+        resolve(resizedFile);
+      }
+    }, file.type);
+  });
+}
 
 interface Technician {
   id: string;
@@ -38,7 +71,7 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
   initialScheduledDate = "",
   initialAnalisaDescription = "",
   initialActionDescription = "",
-  // Default actualCheckDate ke hari ini jika tidak ada
+  // Jika tidak diberikan, default actualCheckDate adalah hari ini
   initialActualCheckDate = new Date().toISOString().split("T")[0],
   onUpdate,
   children,
@@ -172,7 +205,6 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
             Detail tiket dan aksi update:
           </SheetDescription>
         </SheetHeader>
-        {/* Tambahkan container dengan scroll jika konten terlalu panjang */}
         <div className="max-h-[80vh] overflow-y-auto pr-2">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Readonly Technician */}
@@ -224,9 +256,12 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 type="file"
                 accept="image/*"
                 {...(isMobile ? { capture: "environment" } : {})}
-                onChange={(e) => {
+                onChange={async (e) => {
                   if (e.target.files && e.target.files[0]) {
-                    setTicketImage1(e.target.files[0]);
+                    const file = e.target.files[0];
+                    // Resize file ke ukuran maksimal 800x800
+                    const resizedFile = await resizeImage(file, 800, 800);
+                    setTicketImage1(resizedFile);
                   }
                 }}
                 className="mt-1 block w-full"
@@ -242,9 +277,11 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 type="file"
                 accept="image/*"
                 {...(isMobile ? { capture: "environment" } : {})}
-                onChange={(e) => {
+                onChange={async (e) => {
                   if (e.target.files && e.target.files[0]) {
-                    setTicketImage2(e.target.files[0]);
+                    const file = e.target.files[0];
+                    const resizedFile = await resizeImage(file, 800, 800);
+                    setTicketImage2(resizedFile);
                   }
                 }}
                 className="mt-1 block w-full"
@@ -260,9 +297,11 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 type="file"
                 accept="image/*"
                 {...(isMobile ? { capture: "environment" } : {})}
-                onChange={(e) => {
+                onChange={async (e) => {
                   if (e.target.files && e.target.files[0]) {
-                    setTicketImage3(e.target.files[0]);
+                    const file = e.target.files[0];
+                    const resizedFile = await resizeImage(file, 800, 800);
+                    setTicketImage3(resizedFile);
                   }
                 }}
                 className="mt-1 block w-full"
