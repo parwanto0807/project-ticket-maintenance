@@ -42,7 +42,7 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                             <Badge variant="secondary" className="font-mono tracking-widest uppercase h-10 border-orange-500">{data.ticketNumber}</Badge>  &nbsp;
                                             <Badge
                                                 className={`
-                                          font-mono tracking-widest uppercase
+                                          absolute right-8 font-mono tracking-widest uppercase
                                           ${data.status === "Pending"
                                                         ? "bg-red-100 text-red-500"
                                                         : data.status === "Assigned"
