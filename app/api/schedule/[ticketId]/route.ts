@@ -11,7 +11,7 @@ export async function PUT(req: Request, { params }: { params: { ticketId: string
     let actionDescription: string;
     let actualCheckDate: string;
     let status: string;
-    let ticketImage1: File | null = null;
+    // let ticketImage1: File | null = null;
     let ticketImage2: File | null = null;
     let ticketImage3: File | null = null;
 
@@ -24,13 +24,13 @@ export async function PUT(req: Request, { params }: { params: { ticketId: string
       actualCheckDate = formData.get("actualCheckDate") as string;
       status = formData.get("status") as string;
 
-      const image1 = formData.get("ticketImage1");
+      // const image1 = formData.get("ticketImage1");
       const image2 = formData.get("ticketImage2");
       const image3 = formData.get("ticketImage3");
 
-      if (image1 && image1 instanceof Blob) {
-        ticketImage1 = image1 as File;
-      }
+      // if (image1 && image1 instanceof Blob) {
+      //   ticketImage1 = image1 as File;
+      // }
       if (image2 && image2 instanceof Blob) {
         ticketImage2 = image2 as File;
       }
@@ -66,14 +66,14 @@ export async function PUT(req: Request, { params }: { params: { ticketId: string
     };
 
     // Jika file image tersedia, upload ke Vercel Blob dan simpan URL-nya
-    if (ticketImage1) {
-      const imageUrl1 = await put(
-        `/ticket/${params.ticketId}/ticketImage1.jpg`,
-        ticketImage1,
-        { access: "public" as const, contentType: ticketImage1.type }
-      );
-      updateData.ticketImage1 = imageUrl1.url;
-    }
+    // if (ticketImage1) {
+    //   const imageUrl1 = await put(
+    //     `/ticket/${params.ticketId}/ticketImage1.jpg`,
+    //     ticketImage1,
+    //     { access: "public" as const, contentType: ticketImage1.type }
+    //   );
+    //   updateData.ticketImage1 = imageUrl1.url;
+    // }
     if (ticketImage2) {
       const imageUrl2 = await put(
         `/ticket/${params.ticketId}/ticketImage2.jpg`,

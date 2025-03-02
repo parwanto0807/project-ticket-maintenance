@@ -17,8 +17,9 @@ import ReadMoreText from "../../maintenance/read-more";
 import TicketMaintenanceUpdateSheet from "./sheet-assign";
 import { getTechniciansForData } from "@/data/asset/technician";
 import { Button } from "@/components/ui/button";
-import { FileEdit } from "lucide-react";
+import { AlertCircle, AlertOctagon, AlertTriangle, ArrowDownCircle, FileEdit } from "lucide-react";
 import TicketCompleteDialog from "./closing-button";
+import ImageDialogTicket from "../../maintenance/imageDialogTicket";
 
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
@@ -137,19 +138,21 @@ export default async function AssignTable({ query, currentPage }: { query: strin
 
                     <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                         <TableHeader>
-                            <TableRow className="text-[10px] font-bold uppercase">
+                            <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                                 <TableHead className="text-black dark:text-white">No</TableHead>
                                 <TableHead className="text-black dark:text-white text-center">Ticket Number</TableHead>
                                 <TableHead className="text-black dark:text-white">Trouble User</TableHead>
+                                <TableHead></TableHead>
                                 <TableHead className="text-black dark:text-white">Analisa Technician</TableHead>
+                                <TableHead></TableHead>
                                 <TableHead className="text-black dark:text-white">Action Technician</TableHead>
-                                <TableHead className="text-black dark:text-white">Priority Status</TableHead>
+                                <TableHead></TableHead>
                                 <TableHead className="text-black dark:text-white">Schedule Check Date</TableHead>
                                 <TableHead className="text-black dark:text-white">Complete Date </TableHead>
                                 <TableHead className="text-black dark:text-white">User Ticket</TableHead>
                                 <TableHead className="text-black dark:text-white text-center">Technician</TableHead>
                                 <TableHead className="text-black dark:text-white">Asset Name</TableHead>
-                                <TableHead className="text-black dark:text-white">Asset Image</TableHead>
+                                {/* <TableHead className="text-black dark:text-white">Asset Image</TableHead> */}
                                 <TableHead className="text-black dark:text-white text-center">Action</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -158,7 +161,8 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                 <TableRow key={data.id}>
                                     <TableCell className="text-center">{offset + index + 1}</TableCell>
                                     <TableCell
-                                        className="text-center font-bold text-nowrap">{data.ticketNumber}  &nbsp;                                      <Badge
+                                        className="text-center font-bold text-nowrap">{data.ticketNumber} <br />
+                                        <Badge
                                             className={`
                                           font-mono tracking-widest uppercase
                                           ${data.status === "Pending"
@@ -176,13 +180,50 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                         `}
                                         >
                                             {data.status.replace("_", " ")}
-                                        </Badge>
-
+                                        </Badge> <br />
+                                        <div className="flex items-center justify-center gap-1">
+                                            {data.priorityStatus === "Low" && (
+                                                <ArrowDownCircle className="w-4 h-4 text-green-500" />
+                                            )}
+                                            {data.priorityStatus === "Medium" && (
+                                                <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                                            )}
+                                            {data.priorityStatus === "High" && (
+                                                <AlertOctagon className="w-4 h-4 text-orange-500" />
+                                            )}
+                                            {data.priorityStatus === "Critical" && (
+                                                <AlertCircle className="w-4 h-4 text-red-500" />
+                                            )}
+                                            <span>{data.priorityStatus}</span>
+                                        </div>
                                     </TableCell>
                                     <TableCell><ReadMoreText text={data.troubleUser} /></TableCell>
+                                    <TableCell>
+                                        <div className="w-12 h-12 overflow-hidden rounded">
+                                            <ImageDialogTicket
+                                                src={data.ticketImage1 || "/noImage.jpg"}
+                                                alt={`${data.ticketImage1} Asset Image`}
+                                            />
+                                        </div>
+                                    </TableCell>
                                     <TableCell><ReadMoreText text={data.analisaDescription ?? ""} /></TableCell>
+                                    <TableCell>
+                                        <div className="w-12 h-12 overflow-hidden rounded">
+                                            <ImageDialogTicket
+                                                src={data.ticketImage2 || "/noImage.jpg"}
+                                                alt={`${data.ticketImage2} Asset Image`}
+                                            />
+                                        </div>
+                                    </TableCell>
                                     <TableCell className="text-center"><ReadMoreText text={data.actionDescription ?? ""} /></TableCell>
-                                    <TableCell className="text-center">{data.priorityStatus}</TableCell>
+                                    <TableCell>
+                                        <div className="w-12 h-12 overflow-hidden rounded">
+                                            <ImageDialogTicket
+                                                src={data.ticketImage3 || "/noImage.jpg"}
+                                                alt={`${data.ticketImage3} Asset Image`}
+                                            />
+                                        </div>
+                                    </TableCell>
                                     <TableCell >{data.scheduledDate?.toDateString()}</TableCell>
                                     <TableCell >{data.completedDate?.toDateString()}</TableCell>
                                     <TableCell >{data.employee.name}</TableCell>
@@ -227,7 +268,7 @@ export default async function AssignTable({ query, currentPage }: { query: strin
 
 
                                     <TableCell >{data.asset.product.part_name}</TableCell>
-                                    <TableCell className="flex whitespace-nowrap gap-4">
+                                    {/* <TableCell className="flex whitespace-nowrap gap-4">
                                         <div className="flex items-center gap-2">
                                             <div className="w-12 h-12 overflow-hidden rounded">
                                                 <ImageDialog
@@ -236,7 +277,7 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                                 />
                                             </div>
                                         </div>
-                                    </TableCell>
+                                    </TableCell> */}
                                     <TableCell>
                                         <div className="flex items-center justify-center object-center gap-2">
                                             {data.scheduledDate ? (

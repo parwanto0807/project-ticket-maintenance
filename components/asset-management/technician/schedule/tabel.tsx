@@ -217,6 +217,10 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                                         }
                                                         initialAnalisaDescription={data.analisaDescription || ""}
                                                         initialActionDescription={data.actionDescription || ""}
+                                                        initialTicketImage1={data.ticketImage1 || ""}
+                                                        initialTicketImage2={data.ticketImage2 || ""}
+                                                        initialTicketImage3={data.ticketImage3 || ""}
+                                                        initialTroubleUser={data.troubleUser || ""}
                                                     >
                                                         <Button
                                                             variant="ghost"

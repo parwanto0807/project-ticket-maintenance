@@ -13,6 +13,7 @@ import ImageDialog from "../asset/imageDialog";
 import { Badge } from "@/components/ui/badge";
 import { TicketDialog } from "./dialog-ticket-detail";
 import ReadMoreText from "./read-more";
+import ImageDialogTicket from "./imageDialogTicket";
 
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
@@ -67,10 +68,12 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                                             <p className="flex-nonetext-sm text-gray-500">{data.scheduledDate?.toDateString()}</p>
                                         </div>
                                         <div className="w-12 h-12 overflow-hidden rounded">
-                                            <ImageDialog
-                                                src={data.asset.assetImage1 || "/noImage.jpg"}
-                                                alt={`${data.asset.assetNumber} Asset Image`}
-                                            />
+                                            <div className="w-12 h-12 overflow-hidden rounded">
+                                                <ImageDialogTicket
+                                                    src={data.ticketImage1 || "/noImage.jpg"}
+                                                    alt={`${data.ticketImage1} Asset Image`}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="w-full items-center justify-between pt-2">
@@ -90,10 +93,11 @@ export default async function TicketTable({ query, currentPage }: { query: strin
 
                     <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                         <TableHeader>
-                            <TableRow className="text-[10px] font-bold uppercase ">
+                            <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                                 <TableHead className="text-black dark:text-white">No</TableHead>
                                 <TableHead className="text-black dark:text-white">Ticket Number</TableHead>
                                 <TableHead className="text-black dark:text-white">Trouble User</TableHead>
+                                <TableHead></TableHead>
                                 <TableHead className="text-black dark:text-white">Analisa Technician</TableHead>
                                 <TableHead className="text-black dark:text-white">Action Technician</TableHead>
                                 <TableHead className="text-black dark:text-white">Priority Status</TableHead>
@@ -111,7 +115,18 @@ export default async function TicketTable({ query, currentPage }: { query: strin
                                 <TableRow key={data.id}>
                                     <TableCell className="text-center">{offset + index + 1}</TableCell>
                                     <TableCell className="text-center font-bold text-nowrap">{data.ticketNumber}</TableCell>
-                                    <TableCell><ReadMoreText text={data.troubleUser} /></TableCell>
+                                    <TableCell >
+                                        <ReadMoreText text={data.troubleUser}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="w-12 h-12 overflow-hidden rounded">
+                                            <ImageDialogTicket
+                                                src={data.ticketImage1 || "/noImage.jpg"}
+                                                alt={`${data.ticketImage1} Asset Image`}
+                                            />
+                                        </div>
+                                    </TableCell>
                                     <TableCell><ReadMoreText text={data.analisaDescription ?? ""} /></TableCell>
                                     <TableCell className="text-center"><ReadMoreText text={data.actionDescription ?? ""} /></TableCell>
                                     <TableCell className="text-center">{data.priorityStatus}</TableCell>
