@@ -413,7 +413,7 @@ const CreateTicketOnAssignForm = ({
                                         type="date"
                                         disabled={isPending}
                                         value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
-                                        onChange={(e) => field.onChange(e.target.value)}
+                                        onChange={(e) => field.onChange(new Date(e.target.value))}
                                     />
                                 </FormControl>
                                 <FormMessage />
