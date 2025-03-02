@@ -8,7 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { fetchTicketList } from "@/data/asset/ticket";
+import { fetchTicketListSchedule } from "@/data/asset/ticket";
 import { Badge } from "@/components/ui/badge";
 import { TicketDialog } from "./dialog-ticket-detail";
 import TicketMaintenanceUpdateSheet from "./sheet-assign";
@@ -20,7 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
 export default async function AssignTable({ query, currentPage }: { query: string; currentPage: number; }) {
-    const data = await fetchTicketList(query, currentPage);
+    const data = await fetchTicketListSchedule(query, currentPage);
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_PRODUCT;
 
     return (
