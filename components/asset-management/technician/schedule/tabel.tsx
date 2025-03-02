@@ -9,11 +9,9 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { fetchTicketList } from "@/data/asset/ticket";
-import ImageDialog from "../../asset/imageDialog";
 import { Badge } from "@/components/ui/badge";
 import { TicketDialog } from "./dialog-ticket-detail";
 import TicketMaintenanceUpdateSheet from "./sheet-assign";
-import { getTechniciansForData } from "@/data/asset/technician";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, AlertOctagon, AlertTriangle, ArrowDownCircle, CheckCircle, Clock, FileEdit, Loader2, UserCheck, XCircle } from "lucide-react";
 import ReadMoreText from "./read-more";
@@ -24,7 +22,6 @@ const ITEMS_PER_PAGE_PRODUCT = 15;
 export default async function AssignTable({ query, currentPage }: { query: string; currentPage: number; }) {
     const data = await fetchTicketList(query, currentPage);
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_PRODUCT;
-    const technician = await getTechniciansForData();
 
     return (
         <div className="mt-0 flow-root">
@@ -39,7 +36,7 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                         <div className="md:hidden">
                             {Array.isArray(data) &&
                                 data.map((data) => (
-                                    <div key={data.id} className="mb-1 w-full rounded-md p-3">
+                                    <Card key={data.id} className="mb-2 w-full rounded-md p-2 bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                                         <div className="grid grid-cols-1 items-center justify-between border-b pb-1">
                                             <div>
                                                 <div className="mb-2 flex items-center justify-between font-bold text-black dark:text-white">
@@ -47,8 +44,24 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                                         {data.ticketNumber}
                                                     </Badge>
                                                     &nbsp;
-                                                    <Badge variant="destructive" className="absolute right-10 font-mono tracking-widest uppercase">
-                                                        {data.status}
+                                                    <Badge
+                                                        className={`
+                                          absolute right-8 font-mono tracking-widest uppercase
+                                          ${data.status === "Pending"
+                                                                ? "bg-red-100 text-red-500"
+                                                                : data.status === "Assigned"
+                                                                    ? "bg-blue-100 text-blue-500"
+                                                                    : data.status === "In_Progress"
+                                                                        ? "bg-orange-100 text-orange-500"
+                                                                        : data.status === "Completed"
+                                                                            ? "bg-green-100 text-green-500"
+                                                                            : data.status === "Canceled"
+                                                                                ? "bg-red-100 text-red-500"
+                                                                                : "bg-gray-100 text-gray-500"
+                                                            }
+                                        `}
+                                                    >
+                                                        {data.status.replace("_", " ")}
                                                     </Badge>
                                                     &nbsp;
                                                 </div>
@@ -67,23 +80,24 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                                         {data.scheduledDate?.toDateString()}
                                                     </p>
                                                 </div>
-                                                <div className="w-12 h-12 overflow-hidden rounded">
-                                                    <ImageDialog
-                                                        src={data.asset.assetImage1 || "/noImage.jpg"}
-                                                        alt={`${data.asset.assetNumber} Asset Image`}
-                                                    />
+                                                <div className="flex items-start justify-start ">
+                                                    <p className="text-gray-500 font-bold">Teknisi : {data.technician?.name}</p>
                                                 </div>
                                             </div>
                                             <div>
-                                                <div className="flex items-center justify-center gap-2">
+                                                <div className="flex items-end justify-end gap-2">
+                                                    <TicketDialog ticket={data} />
                                                     <TicketMaintenanceUpdateSheet
                                                         ticketId={data.id}
-                                                        technicians={technician}
+                                                        technicians={data.technician ? [data.technician] : []}
+                                                        initialTechnicianId={data.technicianId ? data.technicianId : ""}
                                                         initialScheduledDate={
                                                             data.scheduledDate
                                                                 ? new Date(data.scheduledDate).toISOString().split("T")[0]
                                                                 : ""
                                                         }
+                                                        initialAnalisaDescription={data.analisaDescription || ""}
+                                                        initialActionDescription={data.actionDescription || ""}
                                                     >
                                                         <Button
                                                             variant="ghost"
@@ -95,11 +109,11 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                                             Action
                                                         </Button>
                                                     </TicketMaintenanceUpdateSheet>
-                                                    <TicketDialog ticket={data} />
+
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </Card>
                                 ))}
                         </div>
 
@@ -121,25 +135,25 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                         <TableRow key={data.id}>
                                             <TableCell className="text-center">{offset + index + 1}</TableCell>
                                             <TableCell className="text-center font-bold text-nowrap">
-                                            <Badge
-                                            className={`
+                                                <Badge
+                                                    className={`
                                           font-mono tracking-widest uppercase
                                           ${data.status === "Pending"
-                                                    ? "bg-red-100 text-red-500"
-                                                    : data.status === "Assigned"
-                                                        ? "bg-blue-100 text-blue-500"
-                                                        : data.status === "In_Progress"
-                                                            ? "bg-orange-100 text-orange-500"
-                                                            : data.status === "Completed"
-                                                                ? "bg-green-100 text-green-500"
-                                                                : data.status === "Canceled"
-                                                                    ? "bg-red-100 text-red-500"
-                                                                    : "bg-gray-100 text-gray-500"
-                                                }
+                                                            ? "bg-red-100 text-red-500"
+                                                            : data.status === "Assigned"
+                                                                ? "bg-blue-100 text-blue-500"
+                                                                : data.status === "In_Progress"
+                                                                    ? "bg-orange-100 text-orange-500"
+                                                                    : data.status === "Completed"
+                                                                        ? "bg-green-100 text-green-500"
+                                                                        : data.status === "Canceled"
+                                                                            ? "bg-red-100 text-red-500"
+                                                                            : "bg-gray-100 text-gray-500"
+                                                        }
                                         `}
-                                        >
-                                            {data.ticketNumber.replace("_", " ")}
-                                        </Badge>
+                                                >
+                                                    {data.ticketNumber.replace("_", " ")}
+                                                </Badge>
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="outline" className="font-mono bg-slate-100 dark:text-black ">
@@ -201,6 +215,8 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                                                 ? new Date(data.scheduledDate).toISOString().split("T")[0]
                                                                 : ""
                                                         }
+                                                        initialAnalisaDescription={data.analisaDescription || ""}
+                                                        initialActionDescription={data.actionDescription || ""}
                                                     >
                                                         <Button
                                                             variant="ghost"

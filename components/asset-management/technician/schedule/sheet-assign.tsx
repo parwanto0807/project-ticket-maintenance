@@ -23,6 +23,9 @@ interface TicketMaintenanceUpdateSheetProps {
   ticketId: string;
   initialTechnicianId?: string;
   initialScheduledDate?: string;
+  initialAnalisaDescription?: string;
+  initialActionDescription?: string;
+  initialActualCheckDate?: string;
   onUpdate?: () => void;
   technicians: Technician[];
   children?: React.ReactNode;
@@ -33,6 +36,9 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
   technicians,
   initialTechnicianId = "",
   initialScheduledDate = "",
+  initialAnalisaDescription = "",
+  initialActionDescription = "",
+  initialActualCheckDate = new Date().toISOString().split("T")[0],
   onUpdate,
   children,
 }) => {
@@ -40,17 +46,25 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
   const [open, setOpen] = useState(false);
   const [transformClass, setTransformClass] = useState("translate-x-10 opacity-0");
 
-  // Gunakan nilai langsung dari prop karena tidak ada perubahan
+  // Karena technician tidak diubah, gunakan nilai langsung dari prop
   const technicianId = initialTechnicianId || "";
   const [scheduledDate] = useState(initialScheduledDate);
-
-  // Field tambahan untuk input yang dapat diedit
-  const [analisaDescription, setAnalisaDescription] = useState("");
-  const [actionDescription, setActionDescription] = useState("");
-  // Karena status hanya ditampilkan sebagai read-only, kita bisa gunakan konstanta
+  const [analisaDescription, setAnalisaDescription] = useState(initialAnalisaDescription);
+  const [actionDescription, setActionDescription] = useState(initialActionDescription);
+  const [actualCheckDate, setActualCheckDate] = useState(initialActualCheckDate);
   const status = "In_Progress";
   const [loading, setLoading] = useState(false);
 
+  // Saat sheet terbuka, reset state input dengan nilai awal dari props
+  useEffect(() => {
+    if (open) {
+      setAnalisaDescription(initialAnalisaDescription);
+      setActionDescription(initialActionDescription);
+      setActualCheckDate(initialActualCheckDate);
+    }
+  }, [open, initialAnalisaDescription, initialActionDescription, initialActualCheckDate]);
+
+  // Efek animasi saat sheet terbuka (slide-in dengan fade in)
   useEffect(() => {
     if (open) {
       setTimeout(() => {
@@ -74,14 +88,14 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
       alert("Masukkan analisa description.");
       return;
     }
-    if (!actionDescription.trim()) {
-      alert("Masukkan action description.");
-      return;
-    }
+    // if (!actionDescription.trim()) {
+    //   alert("Masukkan action description.");
+    //   return;
+    // }
 
     const today = new Date().toISOString().split("T")[0];
-    if (scheduledDate && scheduledDate < today) {
-      alert("Tanggal schedule tidak boleh kurang dari hari ini.");
+    if (actualCheckDate && actualCheckDate < today) {
+      alert("Tanggal check tidak boleh kurang dari hari ini.");
       return;
     }
 
@@ -93,11 +107,12 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          technicianId,
-          scheduledDate,
+          technicianId, // tetap kirim technicianId dari props
+          scheduledDate, // kirim scheduledDate dari props
           analisaDescription,
           actionDescription,
           status,
+          actualCheckDate: new Date(actualCheckDate).toISOString(),
         }),
       });
 
@@ -161,6 +176,19 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
               value={scheduledDate || "Not set"}
               readOnly
               className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100"
+            />
+          </div>
+          {/* Actual Check Date */}
+          <div>
+            <label htmlFor="actualCheckDate" className="block text-sm font-medium text-gray-700">
+              Actual Check Date
+            </label>
+            <input
+              id="actualCheckDate"
+              type="date"
+              value={actualCheckDate}
+              onChange={(e) => setActualCheckDate(e.target.value)}
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
             />
           </div>
           {/* Analisa Description */}

@@ -4,7 +4,7 @@ import { db } from "@/lib/db"; // Pastikan path sesuai dengan setup Prisma Anda
 export async function PUT(req: Request, { params }: { params: { ticketId: string } }) {
   try {
     const body = await req.json();
-    const { technicianId, scheduledDate, analisaDescription, actionDescription, status } = body;
+    const { technicianId, scheduledDate, analisaDescription, actionDescription, actualCheckDate, status } = body;
 
     // Validasi input
     if (!technicianId || !scheduledDate) {
@@ -22,10 +22,12 @@ export async function PUT(req: Request, { params }: { params: { ticketId: string
         scheduledDate: new Date(scheduledDate),
         analisaDescription,
         actionDescription,
+        actualCheckDate,
         status,
         updatedAt: new Date(),
       },
     });
+    // console.log(updatedTicket); 
 
     return NextResponse.json(updatedTicket);
   } catch (error) {

@@ -339,6 +339,7 @@ model TicketMaintenance {
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
   scheduledDate      DateTime? // Tanggal penjadwalan maintenance
+  actualCheckDate    DateTime?
   completedDate      DateTime? // Tanggal penyelesaian maintenance
   employeeId         String
   assetId            String
@@ -394,7 +395,7 @@ model Technician {
   status         TechnicianStatus    @default(ACTIVE)
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
-  tickets        TicketMaintenance[] 
+  tickets        TicketMaintenance[]
 }
 
 enum TechnicianStatus {
