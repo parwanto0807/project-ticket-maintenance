@@ -12,9 +12,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { FiAlertTriangle } from "react-icons/fi";
-// import { FileEdit } from "lucide-react";
+import Image from "next/image";
 
-// Contoh fungsi resize, Anda bisa mengadaptasinya atau mengimpor dari library
+// Fungsi resize (contoh sederhana)
 async function resizeImage(file: File, maxWidth: number, maxHeight: number): Promise<File> {
   const imageBitmap = await createImageBitmap(file);
   const canvas = document.createElement("canvas");
@@ -54,11 +54,15 @@ interface Technician {
 
 interface TicketMaintenanceUpdateSheetProps {
   ticketId: string;
+  initialTroubleUser?: string;
   initialTechnicianId?: string;
   initialScheduledDate?: string;
   initialAnalisaDescription?: string;
   initialActionDescription?: string;
   initialActualCheckDate?: string;
+  initialTicketImage1?: string;
+  initialTicketImage2?: string;
+  initialTicketImage3?: string;
   onUpdate?: () => void;
   technicians: Technician[];
   children?: React.ReactNode;
@@ -67,34 +71,22 @@ interface TicketMaintenanceUpdateSheetProps {
 const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> = ({
   ticketId,
   technicians,
+  initialTroubleUser = "",
   initialTechnicianId = "",
   initialScheduledDate = "",
   initialAnalisaDescription = "",
   initialActionDescription = "",
-  // Jika tidak diberikan, default actualCheckDate adalah hari ini
+  // Default actualCheckDate adalah hari ini jika tidak diberikan
   initialActualCheckDate = new Date().toISOString().split("T")[0],
+  initialTicketImage1 = "",
+  initialTicketImage2 = "",
+  initialTicketImage3 = "",
   onUpdate,
   children,
 }) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [transformClass, setTransformClass] = useState("translate-x-10 opacity-0");
-
-  // Karena technician tidak diubah, gunakan nilai langsung dari prop
-  const technicianId = initialTechnicianId || "";
-  const [scheduledDate] = useState(initialScheduledDate);
-
-  // Field tambahan untuk input yang dapat diedit
-  const [analisaDescription, setAnalisaDescription] = useState(initialAnalisaDescription);
-  const [actionDescription, setActionDescription] = useState(initialActionDescription);
-  const [actualCheckDate, setActualCheckDate] = useState(initialActualCheckDate);
-  const status = "In_Progress";
-  const [loading, setLoading] = useState(false);
-
-  // State untuk file image
-  const [ticketImage1, setTicketImage1] = useState<File | null>(null);
-  const [ticketImage2, setTicketImage2] = useState<File | null>(null);
-  const [ticketImage3, setTicketImage3] = useState<File | null>(null);
 
   // Deteksi perangkat mobile
   const [isMobile, setIsMobile] = useState(false);
@@ -104,14 +96,46 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
     }
   }, []);
 
+  // Karena technician tidak diubah, gunakan nilai langsung dari prop
+  const technicianId = initialTechnicianId || "";
+  const [scheduledDate] = useState(initialScheduledDate);
+
+  // Field tambahan untuk input yang dapat diedit
+  const [troubleUser] = useState(initialTroubleUser);
+  const [analisaDescription, setAnalisaDescription] = useState(initialAnalisaDescription);
+  const [actionDescription, setActionDescription] = useState(initialActionDescription);
+  const [actualCheckDate, setActualCheckDate] = useState(initialActualCheckDate);
+  const status = "In_Progress";
+  const [loading, setLoading] = useState(false);
+
+  // State untuk file image (ticketImage1 input dihilangkan, hanya preview)
+  const [ticketImage2, setTicketImage2] = useState<File | null>(null);
+  const [ticketImage3, setTicketImage3] = useState<File | null>(null);
+
+  // State untuk preview image URL
+  const [previewImage1, setPreviewImage1] = useState<string>("");
+  const [previewImage2, setPreviewImage2] = useState<string>("");
+  const [previewImage3, setPreviewImage3] = useState<string>("");
+
   // Saat sheet terbuka, reset state input dengan nilai awal dari props
   useEffect(() => {
     if (open) {
       setAnalisaDescription(initialAnalisaDescription);
       setActionDescription(initialActionDescription);
       setActualCheckDate(initialActualCheckDate);
+      setPreviewImage1(initialTicketImage1 || ""); // Preview hanya dari data awal
+      setPreviewImage2(initialTicketImage2 || "");
+      setPreviewImage3(initialTicketImage3 || "");
     }
-  }, [open, initialAnalisaDescription, initialActionDescription, initialActualCheckDate]);
+  }, [
+    open,
+    initialAnalisaDescription,
+    initialActionDescription,
+    initialActualCheckDate,
+    initialTicketImage1,
+    initialTicketImage2,
+    initialTicketImage3,
+  ]);
 
   // Efek animasi saat sheet terbuka (slide-in dengan fade in)
   useEffect(() => {
@@ -154,10 +178,10 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
       formData.append("actionDescription", actionDescription);
       formData.append("status", status);
       formData.append("actualCheckDate", new Date(actualCheckDate).toISOString());
+      // Trouble user diinput sebagai readonly, tetapi jika perlu dikirim:
+      formData.append("troubleUser", troubleUser);
 
-      if (ticketImage1) {
-        formData.append("ticketImage1", ticketImage1);
-      }
+      // Hanya input file untuk Ticket Image 2 dan Ticket Image 3
       if (ticketImage2) {
         formData.append("ticketImage2", ticketImage2);
       }
@@ -201,10 +225,9 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
       <SheetContent className={`transition-transform duration-300 ease-out ${transformClass}`}>
         <SheetHeader>
           <SheetTitle>Update Ticket Maintenance</SheetTitle>
-          <SheetDescription>
-            Detail tiket dan aksi update:
-          </SheetDescription>
+          <SheetDescription>Detail tiket dan aksi update:</SheetDescription>
         </SheetHeader>
+        {/* Container scroll agar tombol submit tetap terlihat */}
         <div className="max-h-[80vh] overflow-y-auto pr-2">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Readonly Technician */}
@@ -246,66 +269,37 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               />
             </div>
-            {/* File Input untuk Ticket Image 1 */}
+            {/* Readonly Trouble User */}
             <div>
-              <label htmlFor="ticketImage1" className="block text-sm font-medium text-gray-700">
-                Ticket Image 1
+              <label htmlFor="troubleUser" className="block text-sm font-medium text-gray-700">
+                Trouble User
               </label>
-              <input
-                id="ticketImage1"
-                type="file"
-                accept="image/*"
-                {...(isMobile ? { capture: "environment" } : {})}
-                onChange={async (e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    const file = e.target.files[0];
-                    // Resize file ke ukuran maksimal 800x800
-                    const resizedFile = await resizeImage(file, 800, 800);
-                    setTicketImage1(resizedFile);
-                  }
-                }}
-                className="mt-1 block w-full"
+              <textarea
+                id="troubleUser"
+                rows={3}
+                value={troubleUser}
+                readOnly
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100"
               />
             </div>
-            {/* File Input untuk Ticket Image 2 */}
+            {/* Preview untuk Ticket Image 1 (tidak ada input file) */}
             <div>
-              <label htmlFor="ticketImage2" className="block text-sm font-medium text-gray-700">
-                Ticket Image 2
+              <label className="block text-sm font-medium text-gray-700">
+                Ticket Image form user complain
               </label>
-              <input
-                id="ticketImage2"
-                type="file"
-                accept="image/*"
-                {...(isMobile ? { capture: "environment" } : {})}
-                onChange={async (e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    const file = e.target.files[0];
-                    const resizedFile = await resizeImage(file, 800, 800);
-                    setTicketImage2(resizedFile);
-                  }
-                }}
-                className="mt-1 block w-full"
-              />
-            </div>
-            {/* File Input untuk Ticket Image 3 */}
-            <div>
-              <label htmlFor="ticketImage3" className="block text-sm font-medium text-gray-700">
-                Ticket Image 3
-              </label>
-              <input
-                id="ticketImage3"
-                type="file"
-                accept="image/*"
-                {...(isMobile ? { capture: "environment" } : {})}
-                onChange={async (e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    const file = e.target.files[0];
-                    const resizedFile = await resizeImage(file, 800, 800);
-                    setTicketImage3(resizedFile);
-                  }
-                }}
-                className="mt-1 block w-full"
-              />
+              {previewImage1 && previewImage1.trim() !== "" ? (
+                <div className="mt-2">
+                  <Image
+                    src={previewImage1}
+                    alt="Preview Ticket Image 1"
+                    width={96}
+                    height={96}
+                    className="object-cover rounded"
+                  />
+                </div>
+              ) : (
+                <p className="mt-2 text-sm text-gray-500">No image available</p>
+              )}
             </div>
             {/* Analisa Description */}
             <div>
@@ -321,6 +315,41 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 rows={3}
               />
             </div>
+            {/* File Input untuk Ticket Image 2 */}
+            <div>
+              <label htmlFor="ticketImage2" className="block text-sm font-medium text-gray-700">
+                Ticket Image Analisa Description
+              </label>
+              <input
+                id="ticketImage2"
+                type="file"
+                accept="image/*"
+                {...(isMobile ? { capture: "environment" } : {})}
+                onChange={async (e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    const file = e.target.files[0];
+                    let finalFile = file;
+                    if (file.size > 1048576) {
+                      finalFile = await resizeImage(file, 800, 800);
+                    }
+                    setTicketImage2(finalFile);
+                    setPreviewImage2(URL.createObjectURL(finalFile));
+                  }
+                }}
+                className="mt-1 block w-full"
+              />
+              {previewImage2 && previewImage2.trim() !== "" && (
+                <div className="mt-2">
+                  <Image
+                    src={previewImage2}
+                    alt="Preview Ticket Image 2"
+                    width={96}
+                    height={96}
+                    className="object-cover rounded"
+                  />
+                </div>
+              )}
+            </div>
             {/* Action Description */}
             <div>
               <label htmlFor="actionDescription" className="block text-sm font-medium text-gray-700">
@@ -334,6 +363,41 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 placeholder="Enter action description..."
                 rows={3}
               />
+            </div>
+            {/* File Input untuk Ticket Image 3 */}
+            <div>
+              <label htmlFor="ticketImage3" className="block text-sm font-medium text-gray-700">
+                Ticket Image Action Description
+              </label>
+              <input
+                id="ticketImage3"
+                type="file"
+                accept="image/*"
+                {...(isMobile ? { capture: "environment" } : {})}
+                onChange={async (e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    const file = e.target.files[0];
+                    let finalFile = file;
+                    if (file.size > 1048576) {
+                      finalFile = await resizeImage(file, 800, 800);
+                    }
+                    setTicketImage3(finalFile);
+                    setPreviewImage3(URL.createObjectURL(finalFile));
+                  }
+                }}
+                className="mt-1 block w-full"
+              />
+              {previewImage3 && previewImage3.trim() !== "" && (
+                <div className="mt-2">
+                  <Image
+                    src={previewImage3}
+                    alt="Preview Ticket Image 3"
+                    width={96}
+                    height={96}
+                    className="object-cover rounded"
+                  />
+                </div>
+              )}
             </div>
             {/* Readonly Status */}
             <div>

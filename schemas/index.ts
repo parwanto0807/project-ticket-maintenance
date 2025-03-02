@@ -328,7 +328,7 @@ export const CreateTicketMaintenanceSchema = z.object({
     analisaDescription: z.string().nullable().optional(), // Opsional
     actionDescription: z.string().nullable().optional(), // Opsional
     priorityStatus: z.enum(["Low", "Medium", "High", "Critical"]).default("Low"), // Enum dengan nilai default
-    status: z.enum(["Pending", "In_Progress", "Completed"]).default("Pending"), // Enum dengan nilai default
+    status: z.enum(["Pending", "Assigned", "In_Progress", "Completed"]).default("Pending"), // Enum dengan nilai default
     createdAt: z.date().default(new Date()), // Tanggal dibuat, default sekarang
     updatedAt: z.date().default(new Date()), // Tanggal diperbarui, default sekarang
     scheduledDate: z.date().optional(), // Opsional
@@ -337,6 +337,7 @@ export const CreateTicketMaintenanceSchema = z.object({
     assetId: z.string().min(1, "Asset name is required"), // UUID validasi
     ticketNumber: z.string().min(1, "Ticket number is required"), // ✅ Tambahkan ticketNumber
     countNumber: z.number().int().min(1, "Count number is required"), // ✅ Tambahkan countNumber
+    ticketImage1: z.string().nullable().optional(), // Opsional
   });
 
   export const CreateTicketMaintenanceOnAssignSchema = z.object({
@@ -344,7 +345,7 @@ export const CreateTicketMaintenanceSchema = z.object({
     analisaDescription: z.string().nullable().optional(), // Opsional
     actionDescription: z.string().nullable().optional(), // Opsional
     priorityStatus: z.enum(["Low", "Medium", "High", "Critical"]).default("Low"), // Enum dengan nilai default
-    status: z.enum(["Pending", "In_Progress", "Completed"]).default("Pending"), // Enum dengan nilai default
+    status: z.enum(["Pending","Assigned", "In_Progress", "Completed"]).default("Pending"), // Enum dengan nilai default
     createdAt: z.date().default(new Date()), // Tanggal dibuat, default sekarang
     updatedAt: z.date().default(new Date()), // Tanggal diperbarui, default sekarang
     scheduledDate: z.date().optional(), // Opsional

@@ -423,9 +423,16 @@ const CreateTicketOnAssignForm = ({
                 </div>
 
                 {/* Submit Button */}
-                <div className="text-center">
+                <div className=" flex items-end justify-end gap-4">
                     <Button type="submit" className="w-full md:w-auto px-6 py-2 text-lg" disabled={loading}>
                         {loading ? "Submitting..." : "Submit"}
+                    </Button>
+                    <Button
+                        variant="destructive"
+                        type="button"
+                        onClick={() => router.push("/dashboard/technician/assign")}
+                    >
+                        Back
                     </Button>
                 </div>
             </form>

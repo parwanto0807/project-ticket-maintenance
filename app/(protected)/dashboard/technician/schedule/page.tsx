@@ -11,7 +11,7 @@ import {
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 import { fetchTicketListPages } from "@/data/asset/ticket";
-import { CreateTicketButtonAssign } from "@/components/asset-management/technician/assign/buttons";
+// import { CreateTicketButtonAssign } from "@/components/asset-management/technician/assign/buttons";
 import AssignTaskList from "@/components/asset-management/technician/schedule/tabel";
 
 const TicketPage = async ({
@@ -51,7 +51,7 @@ const TicketPage = async ({
         <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
           <div className="flex items-center justify-between gap-2">
             <Search placeholder="Search Ticket Assign..." />
-            <CreateTicketButtonAssign />
+            {/* <CreateTicketButtonAssign /> */}
           </div>
 
           <div className="w-full">

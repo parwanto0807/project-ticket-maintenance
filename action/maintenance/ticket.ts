@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { CreateTicketMaintenanceOnAssignSchema, CreateTicketMaintenanceSchema, UpdateTicketMaintenanceSchema } from "@/schemas";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
+import { put, del } from "@vercel/blob";
 
 export const createTicket = async (formData: FormData) => {
   try {
@@ -15,13 +16,13 @@ export const createTicket = async (formData: FormData) => {
       return { error: "User not authenticated" };
     }
 
-
-    const rawData = {
+    // Buat objek rawData awal tanpa ticketImage1
+    const rawData: Record<string, unknown> = {
       troubleUser: formData.get("troubleUser") as string,
-      analisaDescription: formData.get("analisaDescription") as string | "",
-      actionDescription: formData.get("actionDescription") as string | "",
+      analisaDescription: (formData.get("analisaDescription") as string) || "",
+      actionDescription: (formData.get("actionDescription") as string) || "",
       priorityStatus: formData.get("priorityStatus") as "Low" | "Medium" | "High" | "Critical",
-      status: (formData.get("status") as string).replace(" ", "_") as "Pending" | "In_Progress" | "Completed", // Normalize status
+      status: (formData.get("status") as string).replace(" ", "_") as "Pending" | "In_Progress" | "Completed",
       employeeId: formData.get("employeeId") as string,
       assetId: formData.get("assetId") as string,
       scheduledDate: undefined,
@@ -31,10 +32,32 @@ export const createTicket = async (formData: FormData) => {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    // console.log("Raw Data", rawData);
+
+    // Konversi tanggal jika tersedia
+    const scheduledDateValue = formData.get("scheduledDate") as string;
+    if (scheduledDateValue) {
+      rawData.scheduledDate = new Date(scheduledDateValue);
+    }
+    const completedDateValue = formData.get("completedDate") as string;
+    if (completedDateValue) {
+      rawData.completedDate = new Date(completedDateValue);
+    }
+
+    // Penanganan file gambar untuk ticketImage1 saja
+    const imageFile = formData.get("ticketImage1");
+    if (imageFile && imageFile instanceof Blob) {
+      const ticketImage1File = imageFile as File;
+      // Upload file menggunakan put dari @vercel/blob
+      const imageResult = await put(
+        `/ticket/${ticketNumber}/ticketImage1.jpg`,
+        ticketImage1File,
+        { access: "public" as const, contentType: ticketImage1File.type }
+      );
+      // Simpan URL gambar ke rawData
+      rawData.ticketImage1 = imageResult.url;
+    }
 
     const result = CreateTicketMaintenanceSchema.safeParse(rawData);
-    // console.log("Result", result);
     if (!result.success) {
       return { error: "Invalid field data", details: result.error.format() };
     }
@@ -56,25 +79,44 @@ export const createTicket = async (formData: FormData) => {
 export const updateTicket = async (id: string, formData: FormData) => {
   if (!id) return { error: "Asset ID is required" };
 
-  // Parse FormData
-  const rawData = {
+  // Parse field dasar dari FormData
+  const rawData: Record<string, unknown> = {
     analisaDescription: formData.get("analisaDescription") || undefined,
     actionDescription: formData.get("actionDescription") || undefined,
     priorityStatus: formData.get("priorityStatus") || undefined,
     status: formData.get("status") || undefined,
-    scheduledDate: formData.get("scheduledDate") || undefined,
+    scheduledDate: formData.get("scheduledDate")
+      ? new Date(formData.get("scheduledDate") as string)
+      : undefined,
     assetId: formData.get("assetId") || undefined,
     employeeId: formData.get("employeeId") || undefined,
   };
 
-  // Validasi data dengan UpdateTicketMaintenanceSchema
-  const result = UpdateTicketMaintenanceSchema.safeParse(rawData);
-
-  if (!result.success) {
-    return { error: "Invalid field data" };
+  // Penanganan ticketImage1
+  const ticketImage1Field = formData.get("ticketImage1");
+  const deleteImage1Flag = formData.get("deleteTicketImage1"); // Flag delete, misalnya "true"
+  if (ticketImage1Field && ticketImage1Field instanceof Blob) {
+    const file = ticketImage1Field as File;
+    // Upload file ke Vercel Blob
+    const imageResult = await put(
+      `/ticket/${id}/ticketImage1.jpg`,
+      file,
+      { access: "public" as const, contentType: file.type }
+    );
+    rawData.ticketImage1 = imageResult.url;
+  } else if (deleteImage1Flag === "true") {
+    // Hapus gambar dari Vercel Blob jika flag delete diaktifkan
+    await del(`/ticket/${id}/ticketImage1.jpg`);
+    rawData.ticketImage1 = null;
   }
 
-  // Hapus field yang undefined agar sesuai dengan tipe Prisma
+  // Validasi data menggunakan schema
+  const result = UpdateTicketMaintenanceSchema.safeParse(rawData);
+  if (!result.success) {
+    return { error: "Invalid field data", details: result.error.format() };
+  }
+
+  // Hapus field yang undefined
   const filteredData = Object.fromEntries(
     Object.entries(result.data).filter(([, v]) => v !== undefined)
   );
@@ -84,11 +126,9 @@ export const updateTicket = async (id: string, formData: FormData) => {
       where: { id },
       data: {
         ...filteredData,
-        updatedAt: new Date(), // Pastikan updatedAt selalu diperbarui
+        updatedAt: new Date(),
       },
     });
-
-
     revalidatePath("/dashboard/maintenance/ticket");
     return { success: "Ticket updated successfully!" };
   } catch (error) {
