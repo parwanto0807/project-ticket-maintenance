@@ -33,18 +33,17 @@ interface LabelPDFProps {
 }
 
 const LABEL_WIDTH = 78 * 2.8346;  // 78 mm
-const LABEL_HEIGHT = 70 * 2.8346; // 60 mm
+const LABEL_HEIGHT = 60 * 2.8346; // 60 mm
 
 const styles = StyleSheet.create({
   page: {
     width: LABEL_WIDTH,
     height: LABEL_HEIGHT,
-    paddingTop: 15,
+    paddingTop: 12,
     paddingBottom:5,
-    paddingLeft:5,
-    paddingRight:5,
+    paddingLeft: 5,
+    paddingRight: 5,
     borderRadius: 4,
-    border: "1px solid #000",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -64,7 +63,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 4,
-    marginBottom: 2,
+    marginBottom: 1,
   },
   barcode: {
     width: "100%",
@@ -74,7 +73,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    marginTop: 4,
+    marginTop: 2,
   },
   textRow: {
     flexDirection: "row",
@@ -89,6 +88,23 @@ const styles = StyleSheet.create({
     fontSize: 8,
     width: "73%",
   },
+  // Style khusus untuk baris Asset Number
+  assetNumberLabel: {
+    fontSize: 10,
+    width: "100%",
+    fontWeight: "bold",
+    paddingBottom: 4,
+    textAlign: 'center',
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#000",
+  },
+  // assetNumberValue: {
+  //   fontSize: 10,
+  //   width: "65%",
+  //   fontWeight: "bold",
+  //   paddingBottom: 4,
+  //   textAlign: 'center',
+  // },
   footer: {
     borderTopWidth: 0.5,
     borderTopColor: "#000",
@@ -120,8 +136,7 @@ const LabelPDF: React.FC<LabelPDFProps> = ({ asset, barcodeUrl }) => (
       {/* Informasi Asset dengan tampilan kolom */}
       <View style={styles.textContainer}>
         <View style={styles.textRow}>
-          <Text style={styles.textLabel}>Asset Number</Text>
-          <Text style={styles.textValue}>: {asset.assetNumber}</Text>
+          <Text style={styles.assetNumberLabel}>Asset Number : {asset.assetNumber}</Text>
         </View>
         <View style={styles.textRow}>
           <Text style={styles.textLabel}>Asset Name</Text>
@@ -151,6 +166,7 @@ const LabelPDF: React.FC<LabelPDFProps> = ({ asset, barcodeUrl }) => (
 );
 
 export default LabelPDF;
+
 
 
 // /* eslint-disable jsx-a11y/alt-text */
