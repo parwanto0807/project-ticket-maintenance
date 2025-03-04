@@ -33,7 +33,7 @@ interface LabelPDFProps {
 }
 
 const LABEL_WIDTH = 78 * 2.8346;  // 78 mm
-const LABEL_HEIGHT = 60 * 2.8346; // 60 mm
+const LABEL_HEIGHT = 70 * 2.8346; // 60 mm
 
 const styles = StyleSheet.create({
   page: {
