@@ -11,12 +11,42 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 // import { Badge } from "@/components/ui/badge";
-import { TicketMaintenance } from "@prisma/client";
+// import { TicketMaintenance } from "@prisma/client";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import ReadMoreText from "./read-more";
 import Image from "next/image";
 
-export function TicketDialog({ ticket }: { ticket: TicketMaintenance }) {
+interface Ticket {
+    id: string;
+    ticketNumber: string;
+    status: string;
+    troubleUser: string;
+    analisaDescription?: string;
+    actionDescription?: string;
+    priorityStatus: string;
+    scheduledDate?: string;
+    completedDate?: string;
+    ticketImage1?: string;
+    ticketImage2?: string;
+    ticketImage3?: string;
+    createdAt: Date;
+    employee: {
+      name: string;
+      email: string;
+    };
+    asset: {
+      assetImage1?: string;
+      assetNumber: string;
+      product: {
+        part_name: string;
+      };
+    };
+    technician?: {
+      name: string;
+    }
+  }
+
+export function TicketDialog({ ticket }: { ticket: Ticket }) {
     // Pastikan URL gambar tidak kosong, gunakan fallback "/noImage.jpg"
     const imageSrc1 =
         ticket.ticketImage1 && ticket.ticketImage1.trim() !== ""
@@ -44,7 +74,7 @@ export function TicketDialog({ ticket }: { ticket: TicketMaintenance }) {
             <DialogContent className="max-w-lg max-h-[70vh] overflow-y-auto rounded-lg shadow-lg">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-bold text-gray-800 dark:text-white">
-                        {ticket.ticketNumber} - {ticket.createdAt.toDateString()}
+                    {ticket.ticketNumber} - {new Date(ticket.createdAt).toDateString()}
                     </DialogTitle>
                     <DialogDescription className="text-sm text-gray-600 dark:text-gray-300">
                         Detail lengkap ticket maintenance

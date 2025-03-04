@@ -481,7 +481,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                     <Button
                         variant="destructive"
                         type="button"
-                        onClick={() => router.push("/dashboard/maintenance/ticket")}
+                        onClick={() => router.push("/dashboard")}
                     >
                         Back
                     </Button>
