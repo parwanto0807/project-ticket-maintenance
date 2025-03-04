@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
   page: {
     width: LABEL_WIDTH,
     height: LABEL_HEIGHT,
+    paddingTop: 5,
     padding: 10,
     borderRadius: 4,
     border: "1px solid #000",
