@@ -10,20 +10,20 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import { fetchTicketListPages } from "@/data/asset/ticket";
+import { fetchTicketListHistory, fetchTicketListPages } from "@/data/asset/ticket";
 import HistoryTable from "@/components/asset-management/technician/history/tabel";
+import { Ticket } from "@/types/ticket";
 
-const TicketPage = async ({
-  searchParams
-}: {
-  searchParams?: {
-    query?: string;
-    page?: string;
-  }
-}) => {
-  const { query = "", page } = await searchParams || { query: "", page: "1" };
-  const currentPage = Number(page) || 1;
+const TicketPage = async ({ searchParams }: { searchParams: { query?: string; page?: string } }) => {
+  // const { query = "", page } = await searchParams || { query: "", page: "1" };
+  // const currentPage = Number(page) || 1;
+   
+
+  const query = searchParams.query || "";
+  const currentPage = parseInt(searchParams.page || "1", 10);
   const totalPages = await fetchTicketListPages(query || "");
+  const tickets = await fetchTicketListHistory(query, currentPage);
+  const offset = (currentPage - 1) ;
 
   return (
     <ContentLayout title="Technician History">
@@ -54,7 +54,7 @@ const TicketPage = async ({
           </div>
 
           <div className="w-full">
-            <HistoryTable query={query} currentPage={currentPage} />
+            <HistoryTable data={tickets as Ticket[]} offset={offset}/>
           </div>
 
           <div className="flex justify-center mt-4">

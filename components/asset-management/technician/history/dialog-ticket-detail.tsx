@@ -1,3 +1,4 @@
+"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,12 +12,13 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 // import { Badge } from "@/components/ui/badge";
-import { TicketMaintenance } from "@prisma/client";
+// import { TicketMaintenance } from "@prisma/client";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import ReadMoreText from "../../maintenance/read-more";
 import Image from "next/image";
+import { Ticket } from "@/types/ticket"; 
 
-export function TicketDialog({ ticket }: { ticket: TicketMaintenance }) {
+export function TicketDialog({ ticket }: { ticket: Ticket }) {
     // Pastikan URL gambar tidak kosong, gunakan fallback "/noImage.jpg"
     const imageSrc1 =
         ticket.ticketImage1 && ticket.ticketImage1.trim() !== ""

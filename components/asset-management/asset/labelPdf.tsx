@@ -22,120 +22,126 @@ interface Asset {
   employee: {
     name: string;
   };
+  department: {
+    dept_name: string;
+  };
 }
 
 interface LabelPDFProps {
   asset: Asset;
-  qrCodeUrl: string;
+  barcodeUrl: string;
 }
 
-const LABEL_WIDTH = 78 * 2.8346;  // ~221 pt
-const LABEL_HEIGHT = 30 * 2.8346; // ~85 pt
+const LABEL_WIDTH = 78 * 2.8346;  // 78 mm
+const LABEL_HEIGHT = 60 * 2.8346; // 60 mm
 
 const styles = StyleSheet.create({
   page: {
     width: LABEL_WIDTH,
     height: LABEL_HEIGHT,
-    padding: 4,
+    padding: 10,
     borderRadius: 4,
     border: "1px solid #000",
-    // backgroundColor: "#fff",  // Background dihapus
-    position: "relative",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "space-between",
   },
   header: {
-    position: "absolute",
-    top: 3,
-    left: 3,
-    right: 3,
-    color: "#000",
-    fontSize: 7,
+    fontSize: 8,
     fontWeight: "bold",
     textAlign: "center",
-    paddingVertical: 2,
-    borderWidth: 0.5,       // Ketebalan border dikurangi
-    borderColor: "#000",    // Warna border hitam
-    borderRadius: 2,        // Opsional: sedikit lengkungan pada sudut border
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#000",
+    paddingBottom: 2,
   },
-  content: {
-    marginTop: 12,
+  barcodeContainer: {
     width: "100%",
-    paddingHorizontal: 4,
+    height: 20 * 2.3346, // sekitar 20 mm
     display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  qrCodeContainer: {
-    width: 60,
-    height: 60,
-    // backgroundColor: "#fff",  // Background dihapus
-    border: "1px solid #000",
-    borderRadius: 3,
-    display: "flex",
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
+    marginTop: 4,
+    marginBottom: 2,
   },
-  qrCode: {
-    width: 59,
-    height: 59,
+  barcode: {
+    width: "100%",
+    height: "100%",
   },
   textContainer: {
-    marginLeft: 8,
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    flexGrow: 1,
+    marginTop: 4,
   },
-  assetNumber: {
-    fontSize: 8,
-    fontWeight: "bold",
-    color: "#000",
-    marginBottom: 1,
-  },
-  divider: {
-    width: "100%",
-    height: 1,
-    backgroundColor: "#000",
+  textRow: {
+    flexDirection: "row",
     marginBottom: 2,
   },
-  product: {
-    fontSize: 7,
-    color: "#000",
-    marginBottom: 1,
+  textLabel: {
+    fontSize: 8,
+    width: "28%",
+    fontWeight: "bold",
   },
-  location: {
-    fontSize: 7,
-    color: "#000",
-    marginBottom: 1,
+  textValue: {
+    fontSize: 8,
+    width: "73%",
   },
-  employee: {
+  footer: {
+    borderTopWidth: 0.5,
+    borderTopColor: "#000",
+    paddingTop: 2,
+  },
+  footerText: {
     fontSize: 7,
-    color: "#000",
+    textAlign: "left",
   },
 });
 
-const LabelPDF: React.FC<LabelPDFProps> = ({ asset, qrCodeUrl }) => (
+const LabelPDF: React.FC<LabelPDFProps> = ({ asset, barcodeUrl }) => (
   <Document>
     <Page size={{ width: LABEL_WIDTH, height: LABEL_HEIGHT }} style={styles.page}>
-      {/* Header dengan border tipis */}
-      <Text style={styles.header}>Asset milik PT. Grafindo Mitrasemesta</Text>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text>Asset milik PT. Grafindo Mitrasemesta</Text>
+      </View>
 
-      <View style={styles.content}>
-        {/* QR Code */}
-        <View style={styles.qrCodeContainer}>
-          <Image src={qrCodeUrl} style={styles.qrCode} />
-        </View>
+      {/* Barcode 1D Full Lebar */}
+      <View style={styles.barcodeContainer}>
+        {barcodeUrl ? (
+          <Image src={barcodeUrl} style={styles.barcode} />
+        ) : (
+          <Text style={{ fontSize: 8 }}>Barcode tidak tersedia</Text>
+        )}
+      </View>
 
-        {/* Informasi Asset */}
-        <View style={styles.textContainer}>
-          <Text style={styles.assetNumber}>{asset.assetNumber}</Text>
-          <View style={styles.divider} />
-          <Text style={styles.product}>{asset.product.part_number}</Text>
-          <Text style={styles.location}>{asset.location || "Unknown"}</Text>
-          <Text style={styles.employee}>User: {asset.employee.name || "-"}</Text>
+      {/* Informasi Asset dengan tampilan kolom */}
+      <View style={styles.textContainer}>
+        <View style={styles.textRow}>
+          <Text style={styles.textLabel}>Asset Number</Text>
+          <Text style={styles.textValue}>: {asset.assetNumber}</Text>
         </View>
+        <View style={styles.textRow}>
+          <Text style={styles.textLabel}>Asset Name</Text>
+          <Text style={styles.textValue}>: {asset.product.part_number}</Text>
+        </View>
+        <View style={styles.textRow}>
+          <Text style={styles.textLabel}>Location</Text>
+          <Text style={styles.textValue}>: {asset.location || "Unknown"}</Text>
+        </View>
+        <View style={styles.textRow}>
+          <Text style={styles.textLabel}>User</Text>
+          <Text style={styles.textValue}>: {asset.employee.name || "-"}</Text>
+        </View>
+        <View style={styles.textRow}>
+          <Text style={styles.textLabel}>Dept</Text>
+          <Text style={styles.textValue}>: {asset.department.dept_name || "-"}</Text>
+        </View>
+      </View>
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>- Aset Perusahaan – Tidak Untuk Dijual</Text>
+        <Text style={styles.footerText}>- Harap Kembalikan ke Perusahaan Jika Tidak Digunakan</Text>
       </View>
     </Page>
   </Document>
@@ -144,123 +150,144 @@ const LabelPDF: React.FC<LabelPDFProps> = ({ asset, qrCodeUrl }) => (
 export default LabelPDF;
 
 
-
 // /* eslint-disable jsx-a11y/alt-text */
-
 // import React from "react";
 // import { Page, Text, View, Document, StyleSheet, Image } from "@react-pdf/renderer";
 
 // interface Asset {
-//     id: string;
-//     assetNumber: string;
-//     status: string;
-//     location?: string;
-//     purchaseDate?: string;
-//     purchaseCost?: number;
-//     residualValue?: number;
-//     usefulLife?: number;
-//     assetTypeId: string;
-//     departmentId: string;
-//     productId: string;
-//     employeeId?: string;
-//     assetImage1?: string;
-//     product: {
-//         part_number: string
-//     }
-//     employee: {
-//         name: string
-//     }
+//   id: string;
+//   assetNumber: string;
+//   status: string;
+//   location?: string;
+//   purchaseDate?: string;
+//   purchaseCost?: number;
+//   residualValue?: number;
+//   usefulLife?: number;
+//   assetTypeId: string;
+//   departmentId: string;
+//   productId: string;
+//   employeeId?: string;
+//   assetImage1?: string;
+//   product: {
+//     part_number: string;
+//   };
+//   employee: {
+//     name: string;
+//   };
+//   department: {
+//     dept_name: string;
+//   };
 // }
 
 // interface LabelPDFProps {
-//     asset: Asset; 
-//     qrCodeUrl: string;
+//   asset: Asset;
+//   qrCodeUrl: string;
 // }
 
-// const LABEL_WIDTH = 60 * 2.8346; // ≈ 156pt
-// const LABEL_HEIGHT = 30 * 2.8346; // ≈ 71pt
+// const LABEL_WIDTH = 78 * 2.8346;  // 78 mm
+// const LABEL_HEIGHT = 60 * 2.8346; // 60 mm
 
 // const styles = StyleSheet.create({
-//     page: {
-//         width: LABEL_WIDTH,
-//         height: LABEL_HEIGHT,
-//         padding: 2, // Kurangi padding agar tidak overflow
-//         display: "flex",
-//         flexDirection: "column",
-//         alignItems: "center",
-//         justifyContent: "center",
-//         border: "1px solid black",
-//         position: "relative", // Pastikan elemen tetap di dalam satu halaman
-//     },
-//     headerText: {
-//         fontSize: 7, // Kecilkan font agar muat
-//         fontWeight: "bold",
-//         textAlign: "center",
-//         width: "100%",
-//         position: "absolute", // Pastikan tetap di dalam halaman
-//         top: 2, // Geser ke atas agar tidak bentrok
-//     },
-//     section: {
-//         marginLeft: "auto",
-//         marginRight: "auto",
-//         paddingLeft: 2,
-//         paddingRight: 2,
-//         paddingBottom: 2,
-//         paddingTop:0,
-//         border: "1px solid black",
-//         width: "55mm",
-//         height: "24mm",
-//         display: "flex",
-//         flexDirection: "row",
-//         alignItems: "center",
-//         justifyContent: "flex-start",
-//         marginTop: 5, // Beri jarak agar teks atas tidak menambah halaman
-//     },
-//     qrCode: {
-//         width: "20mm",
-//         height: "20mm",
-//     },
-//     textContainer: {
-//         display: "flex",
-//         flexDirection: "column",
-//         marginLeft: 3,
-//         maxWidth: "35mm",
-//     },
-//     assetNumber: {
-//         fontSize: 8,
-//         textAlign: "center",
-//         fontWeight: "bold",
-//         maxWidth: "54mm",
-//         textWrap: "wrap",
-//         overflow: "hidden",
-//     },
-//     text: {
-//         fontSize: 8,
-//         textAlign: "left",
-//         textWrap: "wrap",
-//         overflow: "hidden",
-//     },
+//   page: {
+//     width: LABEL_WIDTH,
+//     height: LABEL_HEIGHT,
+//     padding: 4,
+//     borderRadius: 4,
+//     border: "1px solid #000",
+//     display: "flex",
+//     flexDirection: "column",
+//     justifyContent: "space-between",
+//   },
+//   header: {
+//     fontSize: 8,
+//     fontWeight: "bold",
+//     textAlign: "center",
+//     borderBottomWidth: 0.5,
+//     borderBottomColor: "#000",
+//     paddingBottom: 2,
+//   },
+//   content: {
+//     flex: 1,
+//     flexDirection: "row",
+//     marginTop: 4,
+//     marginBottom: 4,
+//   },
+//   qrCodeContainer: {
+//     width: 60,
+//     height: 60,
+//     border: "1px solid #000",
+//     borderRadius: 3,
+//     display: "flex",
+//     alignItems: "center",
+//     justifyContent: "center",
+//   },
+//   qrCode: {
+//     width: 59,
+//     height: 59,
+//   },
+//   textContainer: {
+//     marginLeft: 8,
+//     display: "flex",
+//     flexDirection: "column",
+//     justifyContent: "space-around",
+//     flexGrow: 1,
+//   },
+//   assetNumber: {
+//     fontSize: 9,
+//     fontWeight: "bold",
+//     marginBottom: 1,
+//   },
+//   product: {
+//     fontSize: 8,
+//     marginBottom: 1,
+//   },
+//   location: {
+//     fontSize: 8,
+//     marginBottom: 1,
+//   },
+//   employee: {
+//     fontSize: 8,
+//   },
+//   footer: {
+//     borderTopWidth: 0.5,
+//     borderTopColor: "#000",
+//     paddingTop: 2,
+//   },
+//   footerText: {
+//     fontSize: 7,
+//     textAlign: "center",
+//   },
 // });
 
-// const LabelPDF: React.FC<LabelPDFProps> = ({ asset, qrCodeUrl }: LabelPDFProps) => (
-//     <Document>
-//         <Page size={{ width: LABEL_WIDTH, height: LABEL_HEIGHT }} style={styles.page}>
-            
-//             {/* ✅ Header tidak menambah halaman */}
-//             <Text style={styles.headerText}>Asset milik PT. Grafindo Mitrasemesta</Text>
+// const LabelPDF: React.FC<LabelPDFProps> = ({ asset, qrCodeUrl }) => (
+//   <Document>
+//     <Page size={{ width: LABEL_WIDTH, height: LABEL_HEIGHT }} style={styles.page}>
+//       {/* Header */}
+//       <View style={styles.header}>
+//         <Text>Asset milik PT. Grafindo Mitrasemesta</Text>
+//       </View>
 
-//             <View style={styles.section}>
-//                 <Image src={qrCodeUrl} style={styles.qrCode} />
+//       {/* Konten Utama: QR Code dan Detail Asset */}
+//       <View style={styles.content}>
+//         <View style={styles.qrCodeContainer}>
+//           <Image src={qrCodeUrl} style={styles.qrCode} />
+//         </View>
+//         <View style={styles.textContainer}>
+//           <Text style={styles.assetNumber}>{asset.assetNumber}</Text>
+//           <Text style={styles.product}>{asset.product.part_number}</Text>
+//           <Text style={styles.location}>{asset.location || "Unknown"}</Text>
+//           <Text style={styles.employee}>User: {asset.employee.name || "-"}</Text>
+//         </View>
+//       </View>
 
-//                 <View style={styles.textContainer}>
-//                     <Text style={styles.assetNumber}>{asset.assetNumber}</Text>
-//                     <Text style={styles.text}>{asset.product.part_number}</Text>
-//                     <Text style={styles.text}>{asset.location || "Unknown"}</Text>
-//                     <Text style={styles.text}>User: {asset.employee.name || "-"}</Text>
-//                 </View>
-//             </View>
-//         </Page>
-//     </Document>
+//       {/* Footer: Menampilkan Dept dan ketentuan standar */}
+//       <View style={styles.footer}>
+//         <Text style={styles.footerText}>
+//           Dept: {asset.department.dept_name} - Ketentuan standar untuk asset perusahaan
+//         </Text>
+//       </View>
+//     </Page>
+//   </Document>
 // );
 
 // export default LabelPDF;
