@@ -19,30 +19,47 @@ import {
   // Shield,
   // Database,
 } from "lucide-react";
-import { IconType } from 'react-icons';
+// import { IconType } from 'react-icons';
+import { FaHistory, FaSignOutAlt, FaTicketAlt } from "react-icons/fa";
+import { ComponentType, SVGProps } from 'react';
 
-type Submenu = {
+export type Submenu = {
   href: string;
   label: string;
   active: boolean;
-  disabled?: boolean;
 };
 
-type Menu = {
+export type Menu = {
   href: string;
   label: string;
   active: boolean;
-  icon: IconType;
+  icon: ComponentType<SVGProps<SVGSVGElement>>; // Menggunakan `any` untuk kompatibilitas dengan ikon dari library berbeda
   submenus: Submenu[];
   disabled?: boolean;
 };
 
-type Group = {
+export type Group = {
   groupLabel: string;
   menus: Menu[];
 };
 
 export function getMenuList(pathname: string, role: string): Group[] {
+  const additionalMenuItems: Menu[] = [
+    { href: '/dashboard/maintenance/ticket/create', label: 'Create Ticket', active: pathname === '/dashboard/maintenance/ticket/create', icon: FaTicketAlt, submenus: [] },
+    // { href: '/dashboard/meter-services/enduser/overview/kwh-meter/create', label: 'Electricity Token', active: pathname === '/dashboard/meter-services/enduser/overview/kwh-meter/create', icon: FaBolt, submenus: [] },
+    // { href: '/dashboard/meter-services/enduser/overview/gas-meter/create', label: 'Gas Token', active: pathname === '/dashboard/meter-services/enduser/overview/gas-meter/create', icon: FaFire, submenus: [] },
+    { href: '/dashboard/maintenance/ticket', label: 'Ticket History', active: pathname === '/dashboard/maintenance/ticket', icon: FaHistory, submenus: [] },
+    { href: '/auth/login',label: 'Sign Out',active: pathname === '/auth/login',icon: FaSignOutAlt,submenus: [] },
+  ];
+
+  if (role === "USER") {
+    return [
+      {
+        groupLabel: "ADDITIONAL SERVICES",
+        menus: additionalMenuItems,
+      },
+    ];
+  }
   return [
     {
       groupLabel: "",
@@ -170,16 +187,16 @@ export function getMenuList(pathname: string, role: string): Group[] {
               label: "Maintenance Tickets",
               active: pathname === "/dashboard/maintenance/ticket",
             },
-            {
-              href: "/dashboard/assets/maintenance/schedule",
-              label: "Maintenance Schedule",
-              active: pathname === "/dashboard/assets/maintenance/schedule",
-            },
-            {
-              href: "/dashboard/assets/maintenance/history",
-              label: "Maintenance History",
-              active: pathname === "/dashboard/assets/maintenance/history",
-            },
+            // {
+            //   href: "/dashboard/assets/maintenance/schedule",
+            //   label: "Maintenance Schedule",
+            //   active: pathname === "/dashboard/assets/maintenance/schedule",
+            // },
+            // {
+            //   href: "/dashboard/assets/maintenance/history",
+            //   label: "Maintenance History",
+            //   active: pathname === "/dashboard/assets/maintenance/history",
+            // },
           ],
         },
         {

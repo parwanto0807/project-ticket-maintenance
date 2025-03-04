@@ -160,8 +160,8 @@ export const fetchTicketListHistory = async (query: string, currentPage: number)
     }
 }
 
-export const fetchTicketList = async (query: string, currentPage: number) => {
-    noStore()
+export const fetchTicketList = async (query: string, currentPage: number, email: string) => {
+    noStore();
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_TICKET;
     try {
         const ticketFind = await db.ticketMaintenance.findMany({
@@ -172,28 +172,34 @@ export const fetchTicketList = async (query: string, currentPage: number) => {
                 technician: true,
                 asset: {
                     include: {
-                        product: true
-                    }
+                        product: true,
+                    },
                 },
             },
             orderBy: {
-                updatedAt: 'desc'
+                updatedAt: 'desc',
             },
             where: {
-                OR: [
-                    { ticketNumber: { contains: query, mode: 'insensitive' } },
-                    { analisaDescription: { contains: query, mode: 'insensitive' } },
-                    { troubleUser: { contains: query, mode: 'insensitive' } },
-                    { actionDescription: { contains: query, mode: 'insensitive' } },
-                ]
-            }
-        })
+                AND: [
+                    { employee: { email: email } },
+                    {
+                        OR: [
+                            { ticketNumber: { contains: query, mode: 'insensitive' } },
+                            { analisaDescription: { contains: query, mode: 'insensitive' } },
+                            { troubleUser: { contains: query, mode: 'insensitive' } },
+                            { actionDescription: { contains: query, mode: 'insensitive' } },
+                        ],
+                    },
+                ],
+            },
+        });
         return ticketFind;
     } catch (error) {
-        console.error("Filed fetch ticket list", error)
-        throw new Error("Files fetch ticket list")
+        console.error("Failed fetch ticket list", error);
+        throw new Error("Failed fetch ticket list");
     }
 }
+
 
 export const fetchTicketListPages = async (query: string) => {
     noStore();
