@@ -69,7 +69,7 @@ export function Menu({ isOpen }: MenuProps) { // Menggunakan role dari props
                                 <span
                                   className={cn(isOpen === false ? "" : "mr-4")}
                                 >
-                                  <Icon size={18} />
+                                  <Icon width={18} height={18} />
                                 </span>
                                 <p
                                   className={cn(
