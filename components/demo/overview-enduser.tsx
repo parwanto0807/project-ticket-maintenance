@@ -2,12 +2,13 @@
 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { FaSignOutAlt, FaWhatsappSquare } from 'react-icons/fa';
+import { FaSignOutAlt } from 'react-icons/fa';
 import { Group, Menu } from '@/lib/menu-list';
 import { getMenuList } from '@/lib/menu-list';
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
 import InstallButton from './installButton';
+import WhatsAppButton from "@/components/whatsappButton"; // Pastikan path ini sesuai
 
 export default function DashboardOverviewPage() {
   const user = useCurrentUser();
@@ -15,37 +16,24 @@ export default function DashboardOverviewPage() {
   const role = user?.role || 'USER';
   const menuGroups = getMenuList(pathname, role);
 
-  // Fungsi untuk mendapatkan ucapan berdasarkan waktu
-  const getTimeBasedGreeting = () => {
-    const hours = new Date().getHours();
-    if (hours >= 5 && hours < 12) return "Selamat pagi";
-    if (hours >= 12 && hours < 16) return "Selamat siang";
-    if (hours >= 16 && hours < 19) return "Selamat sore";
-    return "Selamat malam";
-  };
+  // Daftar nomor WhatsApp
+  const whatsappNumbers = [
+    { id: 1, label: "Teknisi 1 Parwanto", phone: "6281280212068" },
+    { id: 2, label: "Teknisi 2 Agung", phone: "6281280660953" }
+  ];
 
-  const whatsappNumber = "6281280212068"; // Ganti dengan nomor WhatsApp tujuan
-  const message = `${getTimeBasedGreeting()} - Saya telah membuka ticket maintenance mohon di cek`;
-  const encodedMessage = encodeURIComponent(message);
+    // Fungsi mendapatkan ucapan berdasarkan waktu
+    const getTimeBasedGreeting = () => {
+      const hours = new Date().getHours();
+      if (hours >= 5 && hours < 12) return "Selamat pagi";
+      if (hours >= 12 && hours < 16) return "Selamat siang";
+      if (hours >= 16 && hours < 19) return "Selamat sore";
+      return "Selamat malam";
+    };
 
-  // Fungsi untuk membuka WhatsApp dengan deteksi otomatis
-  const openWhatsApp = () => {
-    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
-    
-    if (isDesktop) {
-      // Coba buka di WhatsApp Desktop
-      const desktopWhatsApp = `whatsapp://send?phone=${whatsappNumber}&text=${encodedMessage}`;
-      window.location.href = desktopWhatsApp;
+     // Message yang akan dikirim ke WhatsApp, bisa dinamis berdasarkan data
+  const message = `${getTimeBasedGreeting()} - Saya telah membuka ticket maintenance mohon di cek.`;
 
-      // Jika gagal, fallback ke WhatsApp Web setelah 1 detik
-      setTimeout(() => {
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank");
-      }, 1000);
-    } else {
-      // Mobile langsung buka WhatsApp
-      window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank");
-    }
-  };
 
   // Fungsi logout
   const handleSignOut = () => {
@@ -54,19 +42,22 @@ export default function DashboardOverviewPage() {
   };
 
   return (
-    <ScrollArea className="h-full w-full">
+    <ScrollArea className="h-full w-full relative">
       <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
+        {/* Header Welcome */}
         <div className="flex items-center justify-center p-4 rounded-xl space-y-2 bg-gradient-to-b from-orange-300 to-orange-600 dark:bg-gradient-to-b dark:from-orange-500 dark:to-slate-800 dark:text-white">
           <h2 className="text-1xl text-center font-bold tracking-tight">
             <p>Hi, Welcome back <br /> {user?.name}👋</p>
           </h2>
         </div>
+
+        {/* Install Button */}
         <div className='flex justify-center items-center w-full'>
           <InstallButton />
         </div>
 
+        {/* Konten Utama */}
         <div className="min-h-screen rounded-lg bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-300 dark:to-slate-600 dark:text-black">
-          {/* Header */}
           <div className="p-4 text-center">
             <h1 className="text-2xl font-bold">Ticket Maintenance</h1>
             <p className="text-sm">Manage your ticket maintenance easily</p>
@@ -103,13 +94,8 @@ export default function DashboardOverviewPage() {
         </div>
       </div>
 
-      {/* WhatsApp Floating Button */}
-      <button
-        onClick={openWhatsApp}
-        className="fixed bottom-6 right-6 p-4 rounded-full bg-green-500/80 text-white shadow-lg cursor-pointer hover:bg-green-500/100 transition"
-      >
-        <FaWhatsappSquare size={40} />
-      </button>
+      {/* Floating WhatsApp Button */}
+      <WhatsAppButton numbers={whatsappNumbers} message={message} />
     </ScrollArea>
   );
 }
