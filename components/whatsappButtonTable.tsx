@@ -9,9 +9,14 @@ interface WhatsAppLinkButtonProps {
   disabled?: boolean;
 }
 
-const WhatsAppLinkButtonTable: React.FC<WhatsAppLinkButtonProps> = ({ numbers, message, disabled = false }) => {
+const WhatsAppLinkButton: React.FC<WhatsAppLinkButtonProps> = ({
+  numbers,
+  message,
+  disabled = false,
+}) => {
   const [showModal, setShowModal] = useState(false);
 
+  // Fungsi mendapatkan ucapan berdasarkan waktu
   const getTimeBasedGreeting = () => {
     const hours = new Date().getHours();
     if (hours >= 5 && hours < 12) return "Selamat pagi";
@@ -20,33 +25,44 @@ const WhatsAppLinkButtonTable: React.FC<WhatsAppLinkButtonProps> = ({ numbers, m
     return "Selamat malam";
   };
 
-  // Fungsi membuka WhatsApp dengan nomor yang dipilih dan menyertakan label ke dalam pesan
+  // Fungsi membuka WhatsApp dengan nomor yang dipilih dan menyertakan label di pesan
   const openWhatsApp = (selectedNumber: { phone: string; label: string }) => {
-    // Pesan dinamis: gabungkan greeting, label nomor, dan pesan yang sudah diberikan
+    // Gabungkan greeting, label teknisi, dan pesan yang sudah diberikan
     const dynamicMessage = `${getTimeBasedGreeting()} ${selectedNumber.label} - ${message}`;
     const encodedMessage = encodeURIComponent(dynamicMessage);
-    const whatsappUrl = `https://wa.me/${selectedNumber.phone}?text=${encodedMessage}`;
-    window.open(whatsappUrl, "_blank");
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+
+    if (isDesktop) {
+      // Pada desktop, coba buka WhatsApp Desktop terlebih dahulu
+      const desktopWhatsApp = `whatsapp://send?phone=${selectedNumber.phone}&text=${encodedMessage}`;
+      window.location.href = desktopWhatsApp;
+
+      // Fallback ke WhatsApp Web jika tidak berhasil
+      setTimeout(() => {
+        window.open(`https://wa.me/${selectedNumber.phone}?text=${encodedMessage}`, "_blank");
+      }, 1000);
+    } else {
+      // Pada smartphone, langsung buka aplikasi WhatsApp
+      window.location.href = `whatsapp://send?phone=${selectedNumber.phone}&text=${encodedMessage}`;
+    }
     setShowModal(false);
   };
 
   return (
     <>
-      {/* Tombol untuk memunculkan dialog pilihan nomor */}
+      {/* Tombol untuk memunculkan modal dialog */}
       <button
         onClick={() => !disabled && setShowModal(true)}
         disabled={disabled}
         className={`flex items-center space-x-2 transition font-medium ${
-          disabled
-            ? "text-gray-400 opacity-50 cursor-not-allowed"
-            : "text-green-600 hover:text-green-700"
+          disabled ? "text-gray-400 opacity-50 cursor-not-allowed" : "text-green-600 hover:text-green-700"
         }`}
       >
         <FaWhatsappSquare size={20} />
         <span>Kirim Pesan</span>
       </button>
 
-      {/* Modal Dialog untuk memilih nomor WhatsApp */}
+      {/* Modal dialog pilihan nomor WhatsApp */}
       {showModal && !disabled && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg w-80">
@@ -77,4 +93,4 @@ const WhatsAppLinkButtonTable: React.FC<WhatsAppLinkButtonProps> = ({ numbers, m
   );
 };
 
-export default WhatsAppLinkButtonTable;
+export default WhatsAppLinkButton;
