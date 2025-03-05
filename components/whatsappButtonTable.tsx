@@ -16,7 +16,6 @@ const WhatsAppLinkButton: React.FC<WhatsAppLinkButtonProps> = ({
 }) => {
   const [showModal, setShowModal] = useState(false);
 
-  // Fungsi mendapatkan ucapan berdasarkan waktu
   const getTimeBasedGreeting = () => {
     const hours = new Date().getHours();
     if (hours >= 5 && hours < 12) return "Selamat pagi";
@@ -25,32 +24,31 @@ const WhatsAppLinkButton: React.FC<WhatsAppLinkButtonProps> = ({
     return "Selamat malam";
   };
 
-  // Fungsi membuka WhatsApp dengan nomor yang dipilih dan menyertakan label di pesan
   const openWhatsApp = (selectedNumber: { phone: string; label: string }) => {
-    // Gabungkan greeting, label teknisi, dan pesan yang sudah diberikan
     const dynamicMessage = `${getTimeBasedGreeting()} ${selectedNumber.label} - ${message}`;
     const encodedMessage = encodeURIComponent(dynamicMessage);
     const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
 
     if (isDesktop) {
-      // Pada desktop, coba buka WhatsApp Desktop terlebih dahulu
       const desktopWhatsApp = `whatsapp://send?phone=${selectedNumber.phone}&text=${encodedMessage}`;
       window.location.href = desktopWhatsApp;
 
-      // Fallback ke WhatsApp Web jika tidak berhasil
       setTimeout(() => {
         window.open(`https://wa.me/${selectedNumber.phone}?text=${encodedMessage}`, "_blank");
       }, 1000);
     } else {
-      // Pada smartphone, langsung buka aplikasi WhatsApp
+      // Di mobile, coba buka aplikasi WhatsApp
       window.location.href = `whatsapp://send?phone=${selectedNumber.phone}&text=${encodedMessage}`;
+      // Fallback: jika aplikasi tidak terbuka, buka WhatsApp Web setelah delay
+      setTimeout(() => {
+        window.open(`https://wa.me/${selectedNumber.phone}?text=${encodedMessage}`, "_blank");
+      }, 2000);
     }
     setShowModal(false);
   };
 
   return (
     <>
-      {/* Tombol untuk memunculkan modal dialog */}
       <button
         onClick={() => !disabled && setShowModal(true)}
         disabled={disabled}
@@ -62,7 +60,6 @@ const WhatsAppLinkButton: React.FC<WhatsAppLinkButtonProps> = ({
         <span>Kirim Pesan</span>
       </button>
 
-      {/* Modal dialog pilihan nomor WhatsApp */}
       {showModal && !disabled && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg w-80">
