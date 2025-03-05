@@ -33,16 +33,16 @@ const WhatsAppLinkButton: React.FC<WhatsAppLinkButtonProps> = ({
       const desktopWhatsApp = `whatsapp://send?phone=${selectedNumber.phone}&text=${encodedMessage}`;
       window.location.href = desktopWhatsApp;
 
-      setTimeout(() => {
-        window.open(`https://wa.me/${selectedNumber.phone}?text=${encodedMessage}`, "_blank");
-      }, 1000);
+      // setTimeout(() => {
+      //   window.open(`https://wa.me/${selectedNumber.phone}?text=${encodedMessage}`, "_blank");
+      // }, 1000);
     } else {
       // Di mobile, coba buka aplikasi WhatsApp
       window.location.href = `whatsapp://send?phone=${selectedNumber.phone}&text=${encodedMessage}`;
       // Fallback: jika aplikasi tidak terbuka, buka WhatsApp Web setelah delay
-      setTimeout(() => {
-        window.open(`https://wa.me/${selectedNumber.phone}?text=${encodedMessage}`, "_blank");
-      }, 2000);
+      // setTimeout(() => {
+      //   window.open(`https://wa.me/${selectedNumber.phone}?text=${encodedMessage}`, "_blank");
+      // }, 2000);
     }
     setShowModal(false);
   };
