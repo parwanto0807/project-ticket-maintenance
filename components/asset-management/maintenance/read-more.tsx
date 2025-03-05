@@ -4,11 +4,11 @@ import { useState } from "react";
 export default function ReadMoreText({ text }: { text: string }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  if (text.length <= 20) return <>{text}</>;
+  if (text.length <= 60) return <>{text}</>;
 
   return (
     <>
-      {isExpanded ? text : `${text.slice(0, 20)}... `}
+      {isExpanded ? text : `${text.slice(0, 60)}... `}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className={`ml-2 hover:underline ${
