@@ -6,12 +6,12 @@ import { FaWhatsappSquare } from "react-icons/fa";
 interface WhatsAppLinkButtonProps {
   numbers: { id: number; label: string; phone: string }[];
   message: string;
+  disabled?: boolean;
 }
 
-const WhatsAppLinkButton: React.FC<WhatsAppLinkButtonProps> = ({ numbers, message }) => {
+const WhatsAppLinkButtonTable: React.FC<WhatsAppLinkButtonProps> = ({ numbers, message, disabled = false }) => {
   const [showModal, setShowModal] = useState(false);
 
-  // Fungsi untuk mendapatkan ucapan berdasarkan waktu
   const getTimeBasedGreeting = () => {
     const hours = new Date().getHours();
     if (hours >= 5 && hours < 12) return "Selamat pagi";
@@ -34,15 +34,20 @@ const WhatsAppLinkButton: React.FC<WhatsAppLinkButtonProps> = ({ numbers, messag
     <>
       {/* Tombol untuk memunculkan dialog pilihan nomor */}
       <button
-        onClick={() => setShowModal(true)}
-        className="flex items-center space-x-2 text-green-600 hover:text-green-700 transition font-medium"
+        onClick={() => !disabled && setShowModal(true)}
+        disabled={disabled}
+        className={`flex items-center space-x-2 transition font-medium ${
+          disabled
+            ? "text-gray-400 opacity-50 cursor-not-allowed"
+            : "text-green-600 hover:text-green-700"
+        }`}
       >
         <FaWhatsappSquare size={20} />
         <span>Kirim Pesan</span>
       </button>
 
       {/* Modal Dialog untuk memilih nomor WhatsApp */}
-      {showModal && (
+      {showModal && !disabled && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg w-80">
             <h2 className="text-lg font-semibold text-center mb-4 text-gray-800 dark:text-white">
@@ -72,4 +77,4 @@ const WhatsAppLinkButton: React.FC<WhatsAppLinkButtonProps> = ({ numbers, messag
   );
 };
 
-export default WhatsAppLinkButton;
+export default WhatsAppLinkButtonTable;
