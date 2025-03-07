@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface CardItem {
   title: string;
@@ -8,12 +9,53 @@ interface CardItem {
 }
 
 const DashboardCards = () => {
-  // Data statis contoh; nantinya bisa digantikan dengan data dari API
+  const user = useCurrentUser();
+  const [totalAssetUser, setTotalAssetUser] = useState<number | null>(null);
+  const [totalTicketUser, setTotalTicketUser] = useState<number | null>(null);
+  const [openTicketUser, setOpenTicketUser] = useState<number | null>(null);
+  const [totalPurchaseCost, setTotalPurchaseCost] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (user?.email) {
+      fetchTotalAsset(user.email);
+      fetchTotalTicket(user.email);
+    }
+  }, [user?.email]);
+
+  // Fungsi untuk mengambil total asset dari API
+  const fetchTotalAsset = async (email: string) => {
+    try {
+      const response = await fetch(`/api/asset/dashboard/${email}`);
+      const data = await response.json();
+      setTotalAssetUser(data.total || 0);
+      setTotalPurchaseCost(data.totalPurchaseCost || 0);
+    } catch (error) {
+      console.error("Error fetching total assets:", error);
+      setTotalAssetUser(0); // Jika error, set default ke 0
+      setTotalPurchaseCost(0);
+    }
+  };
+
+    // Fungsi untuk mengambil total asset dari API
+    const fetchTotalTicket = async (email: string) => {
+      try {
+        const response = await fetch(`/api/ticket/dashboard/${email}`);
+        const data = await response.json();
+        setTotalTicketUser(data.total || 0);
+        setOpenTicketUser(data.open || 0);
+      } catch (error) {
+        console.error("Error fetching total assets:", error);
+        setTotalTicketUser(0); // Jika error, set default ke 0
+        setOpenTicketUser(0);
+      }
+    };
+
+  // Data statis untuk kartu lainnya
   const cardData: CardItem[] = [
-    { title: "Total Asset User", value: 120 },
-    { title: "Total Ticket Maintenance", value: 45 },
-    { title: "Ticket Open", value: 10 },
-    { title: "Total Purchase Asset", value: 75 },
+    { title: "Total Asset User", value: `${totalAssetUser ?? "Loading..." } Set`},
+    { title: "Total Ticket Maintenance", value: `${totalTicketUser ?? " Loading..."} Ticket`},
+    { title: "Ticket Open", value: `${openTicketUser ?? " Loading..."} Ticket`},
+    { title: "Total Purchase Cost", value: `Rp ${(totalPurchaseCost ?? 0).toLocaleString()}` },
   ];
 
   return (
@@ -26,7 +68,7 @@ const DashboardCards = () => {
           <div className="text-gray-700 text-sm font-semibold dark:text-white">
             {card.title}
           </div>
-          <div className="mt-2 text-3xl font-bold text-orange-700">
+          <div className="mt-2 text-3xl font-bold text-orange-700 dark:text-white">
             {card.value}
           </div>
         </div>
