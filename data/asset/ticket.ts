@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { unstable_noStore as noStore } from "next/cache";
 
 const ITEMS_PER_PAGE_TICKET = 15;
+const ITEMS_PER_PAGE_TICKET_USER = 10;
 
 export async function generateTicketNumber() {
     try {
@@ -162,11 +163,11 @@ export const fetchTicketListHistory = async (query: string, currentPage: number)
 
 export const fetchTicketList = async (query: string, currentPage: number, email: string) => {
     noStore();
-    const offset = (currentPage - 1) * ITEMS_PER_PAGE_TICKET;
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE_TICKET_USER;
     try {
         const ticketFind = await db.ticketMaintenance.findMany({
             skip: offset,
-            take: ITEMS_PER_PAGE_TICKET,
+            take: ITEMS_PER_PAGE_TICKET_USER,
             include: {
                 employee: true,
                 technician: true,
@@ -200,6 +201,32 @@ export const fetchTicketList = async (query: string, currentPage: number, email:
     }
 }
 
+export const fetchTicketListPagesUser = async (query: string) => {
+    noStore();
+
+    try {
+        const ticketCount = await db.ticketMaintenance.count({
+            where: {
+                OR: [
+
+                    { ticketNumber: { contains: query, mode: 'insensitive' } },
+                    { analisaDescription: { contains: query, mode: 'insensitive' } },
+                    { troubleUser: { contains: query, mode: 'insensitive' } },
+                    { actionDescription: { contains: query, mode: 'insensitive' } },
+                ]
+            },
+            orderBy: {
+                updatedAt: 'desc'
+            }
+        });
+        // const totalPagesTicket = Math.ceil(ticketCount / ITEMS_PER_PAGE_TICKET);
+        const totalPagesTicket = Math.min(1, Math.ceil(ticketCount / ITEMS_PER_PAGE_TICKET));
+        return totalPagesTicket;
+    } catch (error) {
+        console.error('Error fetching ticket', error)
+        throw new Error('Error fetching ticket');
+    }
+}
 
 export const fetchTicketListPages = async (query: string) => {
     noStore();

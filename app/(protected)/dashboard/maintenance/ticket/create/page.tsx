@@ -12,6 +12,7 @@ import {
 import { getEmployeesFindData } from "@/data/master/employee";
 import CreateTicketForm from "@/components/asset-management/maintenance/create-ticket-form";
 import { AssetStatus, AssetType, Department, Employee, Product } from "@prisma/client";
+import { Badge } from "@/components/ui/badge";
 
 interface Asset {
     id: string;
@@ -40,41 +41,49 @@ interface Asset {
 const RegisterTicket = async () => {
 
     const assetFind = await fetchAssetListForData() || [];
-    const validAssetFind = Array.isArray(assetFind) ? assetFind : []; 
+    const validAssetFind = Array.isArray(assetFind) ? assetFind : [];
 
     const employeeFind = await getEmployeesFindData() || [];
     const validEmployeeFind = Array.isArray(employeeFind) ? employeeFind : [];
 
     return (
         <ContentLayout title="Register Asset">
-            <Breadcrumb>
+            <Breadcrumb className="mb-4">
                 <BreadcrumbList>
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link href="/dashboard">Dashboard</Link>
+                            <Badge className="items-center justify-center text-center" variant="outline">
+                                <Link href="/dashboard">Dashboard</Link>
+                            </Badge>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link href="/dashboard">Maintenance</Link>
+                            <Badge className="items-center justify-center text-center" variant="outline">
+                                <Link href="/dashboard">Maintenance</Link>
+                            </Badge>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link href="/dashboard/maintenance/ticket">Ticket Maintenance</Link>
+                            <Badge className="items-center justify-center text-center" variant="outline">
+                                <Link href="/dashboard/maintenance/ticket">Ticket List</Link>
+                            </Badge>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Create</BreadcrumbPage>
+                        <Badge className="items-center justify-center text-center" variant="outline">
+                            <BreadcrumbPage>Create</BreadcrumbPage>
+                        </Badge>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
             <CreateTicketForm
                 assetFind={validAssetFind as Asset[]}
-                employeeDataFind={validEmployeeFind }
+                employeeDataFind={validEmployeeFind}
             />
         </ContentLayout>
     );
