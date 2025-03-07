@@ -13,7 +13,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import { fetchTicketListPages } from "@/data/asset/ticket";
+import {  fetchTicketListPagesUser } from "@/data/asset/ticket";
 import TicketTable from "@/components/asset-management/maintenance/tabel";
 import { CreateTicketButton } from "@/components/asset-management/maintenance/buttons";
 
@@ -27,7 +27,7 @@ const TicketPage = async ({
 }) => {
   const { query = "", page } = await searchParams || { query: "", page: "1" };
   const currentPage = Number(page) || 1;
-  const totalPages = await fetchTicketListPages(query || "");
+  const totalPages = await fetchTicketListPagesUser(query);
 
   return (
     <ContentLayout title="Maintenance Ticket">

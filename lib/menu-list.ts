@@ -45,10 +45,10 @@ export type Group = {
 
 export function getMenuList(pathname: string, role: string): Group[] {
   const additionalMenuItems: Menu[] = [
+    { href: '/dashboard/maintenance/ticket', label: 'Ticket History', active: pathname === '/dashboard/maintenance/ticket', icon: FaHistory, submenus: [] },
     { href: '/dashboard/maintenance/ticket/create', label: 'Create Ticket', active: pathname === '/dashboard/maintenance/ticket/create', icon: FaTicketAlt, submenus: [] },
     // { href: '/dashboard/meter-services/enduser/overview/kwh-meter/create', label: 'Electricity Token', active: pathname === '/dashboard/meter-services/enduser/overview/kwh-meter/create', icon: FaBolt, submenus: [] },
     // { href: '/dashboard/meter-services/enduser/overview/gas-meter/create', label: 'Gas Token', active: pathname === '/dashboard/meter-services/enduser/overview/gas-meter/create', icon: FaFire, submenus: [] },
-    { href: '/dashboard/maintenance/ticket', label: 'Ticket History', active: pathname === '/dashboard/maintenance/ticket', icon: FaHistory, submenus: [] },
     { href: '/auth/login',label: 'Sign Out',active: pathname === '/auth/login',icon: FaSignOutAlt,submenus: [] },
   ];
 

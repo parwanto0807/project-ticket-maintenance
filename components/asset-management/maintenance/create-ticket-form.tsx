@@ -239,9 +239,9 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-3xl mx-auto bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-4xl mx-auto bg-white dark:bg-gray-900 p-2 rounded-xl shadow-lg space-y-6 max-h-[80vh] overflow-y-auto mb-20">
                 <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 text-center">Create Ticket</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {/* Ticket Number */}
                     <FormField
                         control={form.control}
@@ -417,7 +417,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                         {...field}
                                         value={field.value ?? ""}
                                         placeholder="Enter action description"
-                                        className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white"
+                                        className="w-full p-0 border rounded-md dark:bg-gray-800 dark:text-white"
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -440,9 +440,9 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                     />
                     {/* Input File untuk Ticket Image 3 */}
                     <div>
-                        <label htmlFor="ticketImage3" className="block text-sm font-medium text-gray-700">
-                            Ticket Image from user complain
-                        </label>
+                        {/* <label htmlFor="ticketImage3" className="block text-sm font-medium text-gray-700">
+                            Image from user complain
+                        </label> */}
                         <input
                             id="ticketImage1"
                             type="file"

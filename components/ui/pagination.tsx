@@ -33,7 +33,7 @@ export default function Pagination ({totalPages}: {totalPages: number}) {
         {
             "rounded-l-sm" : position ==="first" || position === "single",
             "rounded-r-sm" : position ==="last" || position === "single",
-            "z-10 bg-blue-800 border-blue-500 text-white" : isActive,
+            "z-0 bg-blue-800 border-blue-500 text-white" : isActive,
             "hover:bg-gray-800": !isActive && position !=="middle",
             "text-gray-300 pointer-event-none": position === "middle" 
     });
@@ -75,7 +75,7 @@ export default function Pagination ({totalPages}: {totalPages: number}) {
     };
 
     return(
-        <div className="inline-flex">
+        <div className="inline-flex mb-20">
             <PaginationArrow
                 direction="left"
                 href={createPageURL(currentPage - 1)}

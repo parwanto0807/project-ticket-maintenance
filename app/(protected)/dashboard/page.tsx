@@ -29,23 +29,21 @@ export default function DashboardPage() {
 
   return (
     <ContentLayout title="Dashboard">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbPage>Dashboard</BreadcrumbPage>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-        </BreadcrumbList>
-      </Breadcrumb>
+      {role === "ADMIN" ? (
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbPage>Dashboard</BreadcrumbPage>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+          </BreadcrumbList>
+        </Breadcrumb>
+      ) : null}
 
       {role === "ADMIN" ? (
         <PlaceholderContent />
-      ) : role === "USER" ? (
-        <DashboardOverviewPage />
       ) : (
-        <div className="flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-        </div>
+        <DashboardOverviewPage />
       )}
     </ContentLayout>
   );
