@@ -88,7 +88,7 @@ export default function AssetUserTable({ query, currentPage }: DashboardDataProp
                       <div className="flex items-left justify-start gap-4">
                         <Badge
                           variant="secondary"
-                          className="font-mono tracking-widest text-[14px] uppercase h-8 border-orange-500 flex items-center gap-2"
+                          className="font-mono tracking-widest text-[10px] uppercase h-8 border-orange-500 flex items-center gap-2"
                         >
                           <FaArchive className="w-4 h-4" />
                           {item.assetNumber}
