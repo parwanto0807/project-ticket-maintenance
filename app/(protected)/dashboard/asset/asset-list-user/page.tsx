@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { fetchAssetListPages } from "@/data/asset/asset";
 import AssetUserTable from "@/components/asset-management/asset/tabel-user";
+import { Badge } from "@/components/ui/badge";
 
 const AssetList = async ({
   searchParams
@@ -24,7 +25,7 @@ const AssetList = async ({
     page?: string;
   }
 }) => {
-  const { query = "", page } =  searchParams || { query: "", page: "1" };
+  const { query = "", page } = searchParams || { query: "", page: "1" };
   const currentPage = Number(page) || 1;
   const totalPages = await fetchAssetListPages(query || "");
 
@@ -34,18 +35,24 @@ const AssetList = async ({
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/dashboard">Dashboard</Link>
+              <Badge className="items-center justify-center text-center" variant="outline">
+                <Link href="/dashboard">Dashboard</Link>
+              </Badge>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/dashboard">Asset</Link>
+              <Badge className="items-center justify-center text-center" variant="outline">
+                <Link href="/dashboard">Asset</Link>
+              </Badge>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Asset List User</BreadcrumbPage>
+            <Badge className="items-center justify-center text-center" variant="outline">
+              <BreadcrumbPage>Asset List User</BreadcrumbPage>
+            </Badge>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
