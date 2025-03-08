@@ -115,7 +115,7 @@ const DashboardCards = () => {
                 </div>
 
                 {/* Tampilkan Nilai atau Spinner Jika Masih Loading */}
-                <div className="mt-2 text-3xl font-bold text-orange-700 dark:text-white flex justify-center">
+                <div className="mt-2 text-3xl font-bold text-orange-700 dark:text-white flex justify-left">
                   {card.value}
                 </div>
               </motion.div>
