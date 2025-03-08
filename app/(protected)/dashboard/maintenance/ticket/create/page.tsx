@@ -47,7 +47,7 @@ const RegisterTicket = async () => {
     const validEmployeeFind = Array.isArray(employeeFind) ? employeeFind : [];
 
     return (
-        <ContentLayout title="Register Asset">
+        <ContentLayout title="Register Ticket">
             <Breadcrumb className="mb-4">
                 <BreadcrumbList>
                     <BreadcrumbItem>

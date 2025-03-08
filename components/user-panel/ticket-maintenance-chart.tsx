@@ -1,31 +1,30 @@
 "use client";
 
-import React from "react";
-import { ResponsiveContainer, BarChart, XAxis, YAxis, Bar } from "recharts";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
+import React, { useEffect, useState } from "react";
+import {
+  ResponsiveContainer,
+  BarChart,
+  XAxis,
+  YAxis,
+  Bar,
+  Tooltip,
+} from "recharts";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
-// Dummy data untuk grafik overview dan recent sales
-const overviewChartData = [
-  { name: "Jan", total: 5000 },
-  { name: "Feb", total: 8000 },
-  { name: "Mar", total: 7500 },
-  { name: "Apr", total: 9000 },
-  { name: "May", total: 8500 },
-  { name: "Jun", total: 10000 },
-  { name: "Jul", total: 9500 },
-  { name: "Aug", total: 11000 },
-  { name: "Sep", total: 10500 },
-  { name: "Oct", total: 11500 },
-  { name: "Nov", total: 12000 },
-  { name: "Dec", total: 12500 },
-];
-
-const salesData = [
-  { name: "Alice", email: "alice@example.com", amount: "Rp 1,200,000" },
-  { name: "Bob", email: "bob@example.com", amount: "Rp 950,000" },
-  { name: "Charlie", email: "charlie@example.com", amount: "Rp 1,500,000" },
-];
+interface TicketRecord {
+  name: string;
+  email: string;
+  amount: string;
+  createdAt: string;
+}
 
 function initials(name: string) {
   return name
@@ -35,7 +34,90 @@ function initials(name: string) {
     .toUpperCase();
 }
 
+// Definisikan tipe untuk CustomTooltip props
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: { name: string; value: number;[key: string]: string | number }[];
+  label?: string;
+}
+
+// Komponen Tooltip Custom
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+        <p className="font-semibold text-sm">{label}</p>
+        <p className="text-sm text-orange-500">{`Total: ${payload[0].value} Ticket`}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function DashboardChartSection() {
+  const [overviewChartData, setOverviewChartData] = useState<{ name: string; total: number }[]>([]);
+  const [ticketData, setTicketData] = useState<{ name: string; email: string; assetName: string }[]>([]);
+
+  const user = useCurrentUser();
+  const email = user?.email;
+
+  // const data: TicketRecord[] = await response.json();
+
+  // console.log(ticketData);
+
+  useEffect(() => {
+    async function fetchOverviewData() {
+      if (!email) return;
+      try {
+        const response = await fetch(
+          `/api/ticket/dashboard-chart/${encodeURIComponent(email)}`
+        );
+        const data = await response.json();
+        setOverviewChartData(data);
+      } catch (error) {
+        console.error("Error fetching overview data:", error);
+      }
+    }
+    fetchOverviewData();
+  }, [user, email]);
+
+  // Fetch recent tickets data (untuk semua tiket)
+  useEffect(() => {
+    const controller = new AbortController();
+    async function fetchRecentTickets() {
+      try {
+        const response = await fetch(`/api/ticket/dashboard-ticket`);
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data tiket");
+        }
+        // Karena API mengembalikan objek dengan properti langsung,
+        // kita gunakan tipe data yang sesuai
+        const data = await response.json();
+
+        // Urutkan berdasarkan createdAt terbaru, ambil 10 record terbaru, dan map ke format yang diinginkan
+        const recentTickets = data
+          .sort(
+            (a: TicketRecord, b: TicketRecord) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+          .slice(0, 10)
+          .map((ticket: TicketRecord) => ({
+            name: ticket.name || "No Name",
+            email: ticket.email || "No Email",
+            assetName: ticket.amount || "No Asset",
+          }));
+
+        setTicketData(recentTickets);
+      } catch (error) {
+        console.error("Error fetching recent tickets:", error);
+      }
+    }
+
+    fetchRecentTickets();
+    return () => controller.abort();
+  }, []);
+
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
       {/* Card Overview dengan Chart */}
@@ -65,32 +147,38 @@ export default function DashboardChartSection() {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `Rp ${value}`}
+                tickFormatter={(value) => `${value} Ticket`}
               />
-              <Bar dataKey="total" fill="url(#orangeGradient)" radius={[4, 4, 0, 0]} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: "#FED7AA" }} /> {/* Efek hover */}
+              <Bar
+                dataKey="total"
+                fill="url(#orangeGradient)"
+                radius={[4, 4, 0, 0]}
+                animationDuration={1500} // Animasi
+              />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      {/* Card Recent Sales */}
+      {/* Card Recent tickets */}
       <Card className="col-span-2 lg:col-span-3 bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply mb-20">
         <CardHeader>
-          <CardTitle>Recent Sales</CardTitle>
-          <CardDescription>You made 265 sales this month.</CardDescription>
+          <CardTitle>Recent tickets</CardTitle>
+          <CardDescription>You made 5 tickets this month from all user.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-8">
-            {salesData.map((sale) => (
-              <div key={sale.name} className="flex items-center">
+            {ticketData.map((ticket, index) => (
+              <div key={index} className="flex items-center">
                 <Avatar className="size-9">
-                  <AvatarFallback>{initials(sale.name)}</AvatarFallback>
+                  <AvatarFallback>{initials(ticket.name)}</AvatarFallback>
                 </Avatar>
                 <div className="ml-4 space-y-1">
-                  <p className="text-sm font-medium leading-none">{sale.name}</p>
-                  <p className="text-xs text-muted-foreground md:text-sm">{sale.email}</p>
+                  <p className="text-sm font-medium leading-none">{ticket.name}</p>
+                  <p className="text-xs text-muted-foreground md:text-sm">{ticket.email}</p>
                 </div>
-                <div className="ml-auto font-medium">{sale.amount}</div>
+                <div className="ml-auto font-medium">{ticket.assetName}</div>
               </div>
             ))}
           </div>

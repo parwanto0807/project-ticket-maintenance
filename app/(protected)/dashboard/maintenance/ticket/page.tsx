@@ -13,9 +13,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import {  fetchTicketListPagesUser } from "@/data/asset/ticket";
-import TicketTable from "@/components/asset-management/maintenance/tabel";
+import { fetchTicketListPagesUser } from "@/data/asset/ticket";
 import { CreateTicketButton } from "@/components/asset-management/maintenance/buttons";
+import { Badge } from "@/components/ui/badge";
+import TicketTableUser from "@/components/asset-management/maintenance/tabel-user";
 
 const TicketPage = async ({
   searchParams
@@ -35,18 +36,24 @@ const TicketPage = async ({
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/dashboard">Dashboard</Link>
+              <Badge className="items-center justify-center text-center" variant="outline">
+                <Link href="/dashboard">Dashboard</Link>
+              </Badge>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/dashboard">Master</Link>
+              <Badge className="items-center justify-center text-center" variant="outline">
+                <Link href="/dashboard">Master</Link>
+              </Badge>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Maintenance Ticket</BreadcrumbPage>
+            <Badge className="items-center justify-center text-center" variant="outline">
+              <BreadcrumbPage>Maintenance Ticket</BreadcrumbPage>
+            </Badge>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -58,7 +65,7 @@ const TicketPage = async ({
           </div>
 
           <div className="w-full">
-            <TicketTable query={query} currentPage={currentPage} />
+            <TicketTableUser query={query} currentPage={currentPage} />
           </div>
 
           <div className="flex justify-center mt-4">
