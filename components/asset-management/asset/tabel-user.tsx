@@ -82,7 +82,7 @@ export default function AssetUserTable({ query, currentPage }: DashboardDataProp
           <div className="md:hidden grid grid-cols-1 gap-4">
             {Array.isArray(data) &&
               data.map((item) => (
-                <Card key={item.id} className="mb-2 rounded-md border bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950 shadow-md hover:shadow-lg transition-shadow">
+                <Card key={item.id} className="mb-0 rounded-md border bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950 shadow-md hover:shadow-lg transition-shadow">
                   <CardHeader className="pb-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-left justify-start gap-4">
