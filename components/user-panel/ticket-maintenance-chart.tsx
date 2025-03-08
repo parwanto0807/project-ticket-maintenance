@@ -80,7 +80,6 @@ export default function DashboardChartSection() {
 
   // Fetch recent tickets data (untuk semua tiket)
   useEffect(() => {
-    const controller = new AbortController();
     async function fetchRecentTickets() {
       try {
         const response = await fetch(`/api/ticket/dashboard-ticket`);
@@ -109,7 +108,6 @@ export default function DashboardChartSection() {
     }
 
     fetchRecentTickets();
-    return () => controller.abort();
   }, []);
 
 
