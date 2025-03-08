@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { startOfMonth, addMonths, format } from "date-fns";
+import { unstable_noStore as noStore } from 'next/cache';
 
 export async function GET(
   req: Request,
   { params }: { params: { email: string } }
 ) {
+    noStore();
   try {
     const { email } = params;
 
