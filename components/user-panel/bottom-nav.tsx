@@ -1,7 +1,5 @@
-"use client";
-
 import Link from "next/link";
-import { FaSignOutAlt, FaWhatsappSquare } from "react-icons/fa";
+import { FaSignOutAlt } from "react-icons/fa";
 import { signOut } from "next-auth/react";
 
 interface Menu {
@@ -20,19 +18,6 @@ export default function BottomNav({ menus }: BottomNavProps) {
   const handleSignOut = () => {
     signOut();
     window.location.href = "/auth/login";
-  };
-
-  // Fungsi membuka WhatsApp (sesuaikan jika diperlukan)
-  const openWhatsApp = () => {
-    const selectedNumber = { phone: "6281280212068" };
-    const encodedMessage = encodeURIComponent("Pesan WhatsApp Anda");
-    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
-    if (isDesktop) {
-      const whatsappUrl = `https://wa.me/${selectedNumber.phone}?text=${encodedMessage}`;
-      window.open(whatsappUrl, "_blank");
-    } else {
-      window.location.href = `whatsapp://send?phone=${selectedNumber.phone}&text=${encodedMessage}`;
-    }
   };
 
   // Jika menus kosong, jangan tampilkan apa-apa
@@ -104,7 +89,7 @@ export default function BottomNav({ menus }: BottomNavProps) {
         )}
       </div>
 
-      {/* Bagian Kanan: Grup kanan + Tombol WhatsApp */}
+      {/* Bagian Kanan: Grup kanan + Tombol Sign Out */}
       <div className="flex items-center gap-4">
         {rightMenus.map((menu, index) => {
           if (menu.disabled) return null;
@@ -135,12 +120,13 @@ export default function BottomNav({ menus }: BottomNavProps) {
             </Link>
           );
         })}
+        {/* Ganti tombol WhatsApp dengan tombol Sign Out */}
         <button
-          onClick={openWhatsApp}
-          className="flex flex-col items-center justify-center text-green-500 hover:scale-105 transition-transform duration-200"
+          onClick={handleSignOut}
+          className="flex flex-col items-center justify-center text-orange-600 hover:scale-105 transition-transform duration-200"
         >
-          <FaWhatsappSquare className="text-2xl mt-3" />
-          <span className="text-xs">WhatsApp</span>
+          <FaSignOutAlt className="text-2xl mt-3" />
+          <span className="text-xs">Sign Out</span>
         </button>
       </div>
     </nav>
