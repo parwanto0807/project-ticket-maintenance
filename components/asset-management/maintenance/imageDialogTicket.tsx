@@ -20,7 +20,7 @@ export default function ImageDialogTicket({ src, alt }: ImageDialogProps) {
         <Image
           src={imageSrc}
           alt={alt}
-          width={50}
+          width={40}
           height={30}
           className="rounded-lg cursor-pointer w-auto h-auto max-w-full max-h-full hover:scale-110 transition-transform duration-300"
         />

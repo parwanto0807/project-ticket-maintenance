@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db"; // Pastikan path koneksi database benar
+import { db } from "@/lib/db"; 
 
 export async function GET() {
   try {
-    // Ambil 10 record tiket maintenance terakhir, diurutkan berdasarkan createdAt secara descending
+
     const tickets = await db.ticketMaintenance.findMany({
       orderBy: {
         createdAt: 'desc'
@@ -14,17 +14,12 @@ export async function GET() {
         asset: true,
       },
     });
-
-    // Map data ke format yang diinginkan:
-    // - name: employee.name
-    // - email: employee.email
-    // - amount: asset.name (menggantikan amount)
     const salesData = tickets.map((ticket) => ({
       name: ticket.employee.name,
       email: ticket.troubleUser,
       amount: ticket.ticketNumber,
+      status: ticket.status,
     }));
-    console.log(salesData)
 
     return NextResponse.json(salesData);
   } catch (error) {

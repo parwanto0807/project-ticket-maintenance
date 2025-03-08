@@ -24,6 +24,7 @@ interface TicketRecord {
   email: string;
   amount: string;
   createdAt: string;
+  status: string;
 }
 
 function initials(name: string) {
@@ -56,14 +57,10 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
 
 export default function DashboardChartSection() {
   const [overviewChartData, setOverviewChartData] = useState<{ name: string; total: number }[]>([]);
-  const [ticketData, setTicketData] = useState<{ name: string; email: string; assetName: string }[]>([]);
+  const [ticketData, setTicketData] = useState<{ name: string; email: string; assetName: string; status: string }[]>([]);
 
   const user = useCurrentUser();
   const email = user?.email;
-
-  // const data: TicketRecord[] = await response.json();
-
-  // console.log(ticketData);
 
   useEffect(() => {
     async function fetchOverviewData() {
@@ -90,11 +87,8 @@ export default function DashboardChartSection() {
         if (!response.ok) {
           throw new Error("Gagal mengambil data tiket");
         }
-        // Karena API mengembalikan objek dengan properti langsung,
-        // kita gunakan tipe data yang sesuai
         const data = await response.json();
 
-        // Urutkan berdasarkan createdAt terbaru, ambil 10 record terbaru, dan map ke format yang diinginkan
         const recentTickets = data
           .sort(
             (a: TicketRecord, b: TicketRecord) =>
@@ -105,6 +99,7 @@ export default function DashboardChartSection() {
             name: ticket.name || "No Name",
             email: ticket.email || "No Email",
             assetName: ticket.amount || "No Asset",
+            status: ticket.status || "",
           }));
 
         setTicketData(recentTickets);
@@ -178,7 +173,20 @@ export default function DashboardChartSection() {
                   <p className="text-sm font-medium leading-none">{ticket.name}</p>
                   <p className="text-xs text-muted-foreground md:text-sm">{ticket.email}</p>
                 </div>
-                <div className="ml-auto font-medium">{ticket.assetName}</div>
+                <div className={`ml-auto font-medium px-2 py-1 text-xs rounded-md ${ticket.status === "Pending"
+                  ? "bg-red-100 text-red-500"
+                  : ticket.status === "Assigned"
+                    ? "bg-blue-100 text-blue-500"
+                    : ticket.status === "In_Progress"
+                      ? "bg-orange-100 text-orange-500"
+                      : ticket.status === "Completed"
+                        ? "bg-green-100 text-green-500"
+                        : ticket.status === "Canceled"
+                          ? "bg-red-100 text-red-500"
+                          : "bg-gray-100 text-gray-500"
+                  }`}>
+                  {ticket.assetName}
+                </div>
               </div>
             ))}
           </div>
