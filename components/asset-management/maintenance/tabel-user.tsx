@@ -75,11 +75,7 @@ export default function TicketTableUser({ query, currentPage }: TicketTableProps
         async function fetchData() {
             try {
                 setLoading(true);
-                const res = await fetch(
-                    `/api/ticket-list?query=${encodeURIComponent(
-                        query
-                    )}&currentPage=${currentPage}&email=${encodeURIComponent(email)}`
-                );
+                const res = await fetch(`/api/ticket-list?query=${encodeURIComponent(query)}&currentPage=${currentPage}&email=${encodeURIComponent(email)}`);
                 if (!res.ok) {
                     throw new Error("Gagal mengambil data tiket");
                 }

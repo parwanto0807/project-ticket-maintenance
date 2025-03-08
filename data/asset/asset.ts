@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { unstable_noStore as noStore } from 'next/cache';
 
-const ITEMS_PER_PAGE_ASSET = 15;
+export const ITEMS_PER_PAGE_ASSET = 15;
 
 export async function generateAssetNumber(id: string) {
     try {
@@ -31,16 +31,16 @@ export async function generateAssetNumber(id: string) {
 
         // Gunakan kode dari AssetType sebagai prefix
         const newAssetNumber = `${assetType.kode}-${String(newIdNumber).padStart(6, '0')}`;
-        return {assetNumber: newAssetNumber, countNumber: newIdNumber};
+        return { assetNumber: newAssetNumber, countNumber: newIdNumber };
     } catch (error) {
         console.error("Failed to generate asset number", error);
         throw new Error("Failed to fetch asset number");
     }
 }
 
-export const fetchAssetList = async(query: string, currentPage: number) => {
-noStore();
-const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET;
+export const fetchAssetList = async (query: string, currentPage: number) => {
+    noStore();
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET;
     try {
         const assetFind = await db.asset.findMany({
             skip: offset,
@@ -52,16 +52,16 @@ const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET;
                 department: true,
             },
             orderBy: {
-                updatedAt:'desc'
+                updatedAt: 'desc'
             },
             where: {
                 OR: [
                     { location: { contains: query, mode: 'insensitive' } },
                     { assetNumber: { contains: query, mode: 'insensitive' } },
-                    { product : { part_name: { contains: query, mode: 'insensitive' } } },
-                    { product : { part_number: { contains: query, mode: 'insensitive' } } },
-                    { assetType : { name : { contains: query, mode: 'insensitive' } } },
-                    { employee : { name: { contains: query, mode: 'insensitive' } } },
+                    { product: { part_name: { contains: query, mode: 'insensitive' } } },
+                    { product: { part_number: { contains: query, mode: 'insensitive' } } },
+                    { assetType: { name: { contains: query, mode: 'insensitive' } } },
+                    { employee: { name: { contains: query, mode: 'insensitive' } } },
                 ]
             }
         })
@@ -72,40 +72,40 @@ const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET;
     }
 }
 
-export const fetchAssetListForData = async() => {
+export const fetchAssetListForData = async () => {
     noStore();
-        try {
-            const assetFind = await db.asset.findMany({
-                include: {
-                    employee: true,
-                    product: true,
-                    assetType: true,
-                    department: true,
-                },
-                orderBy: {
-                    assetNumber:'desc'
-                },
-            })
-            return assetFind;
-        } catch (error) {
-            console.error('Can not find Asset List', error);
-            return { error: 'Can not find Asset List' };
-        }
+    try {
+        const assetFind = await db.asset.findMany({
+            include: {
+                employee: true,
+                product: true,
+                assetType: true,
+                department: true,
+            },
+            orderBy: {
+                assetNumber: 'desc'
+            },
+        })
+        return assetFind;
+    } catch (error) {
+        console.error('Can not find Asset List', error);
+        return { error: 'Can not find Asset List' };
     }
+}
 
-export const fetchAssetListPages = async(query: string) => {
+export const fetchAssetListPages = async (query: string) => {
     noStore();
 
     try {
         const assetCount = await db.asset.count({
-            where: { 
+            where: {
                 OR: [
 
                     { location: { contains: query, mode: 'insensitive' } },
                 ]
-            }, 
+            },
             orderBy: {
-                updatedAt:'desc'
+                updatedAt: 'desc'
             }
         });
         const totalPagesAsset = Math.ceil(assetCount / ITEMS_PER_PAGE_ASSET);
@@ -116,12 +116,12 @@ export const fetchAssetListPages = async(query: string) => {
     }
 }
 
-export const fetchAssetType = async() => {
+export const fetchAssetType = async () => {
     noStore();
     try {
         const assetTypeFind = await db.assetType.findMany({
-            orderBy:{
-                name:'asc'
+            orderBy: {
+                name: 'asc'
             }
         })
         return assetTypeFind;
@@ -131,11 +131,11 @@ export const fetchAssetType = async() => {
     }
 }
 
-export const fetchAssetById = async(id: string) => {
+export const fetchAssetById = async (id: string) => {
     noStore();
     try {
         const findAssetById = await db.asset.findUnique({
-            where: {id: id},
+            where: { id: id },
             include: {
                 assetType: true,
                 department: true,
@@ -146,6 +146,45 @@ export const fetchAssetById = async(id: string) => {
         return findAssetById
     } catch (error) {
         console.error('Error fetch asset by ID', error)
-        return { error: 'Error fetching asset by ID'}
+        return { error: 'Error fetching asset by ID' }
+    }
+}
+
+export const fetchAssetListByEmail = async (query: string, currentPage: number, email: string) => {
+    noStore();
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET;
+    try {
+        const assetFind = await db.asset.findMany({
+            skip: offset,
+            take: ITEMS_PER_PAGE_ASSET,
+            include: {
+                employee: true,
+                product: true,
+                assetType: true,
+                department: true,
+            },
+            orderBy: {
+                updatedAt: 'desc'
+            },
+            where: {
+                AND: [
+                    { employee: { email: email } },
+                    {
+                        OR: [
+                            { location: { contains: query, mode: 'insensitive' } },
+                            { assetNumber: { contains: query, mode: 'insensitive' } },
+                            { product: { part_name: { contains: query, mode: 'insensitive' } } },
+                            { product: { part_number: { contains: query, mode: 'insensitive' } } },
+                            { assetType: { name: { contains: query, mode: 'insensitive' } } },
+                            { employee: { name: { contains: query, mode: 'insensitive' } } },
+                        ]
+                    },
+                ],
+            },
+        })
+        return assetFind;
+    } catch (error) {
+        console.error('Can not find Asset List', error);
+        return { error: 'Can not find Asset List' };
     }
 }

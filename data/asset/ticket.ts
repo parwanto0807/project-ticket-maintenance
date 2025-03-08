@@ -5,6 +5,7 @@ const ITEMS_PER_PAGE_TICKET = 15;
 const ITEMS_PER_PAGE_TICKET_USER = 10;
 
 export async function generateTicketNumber() {
+    noStore();
     try {
         // Dapatkan tanggal saat ini
         const now = new Date();

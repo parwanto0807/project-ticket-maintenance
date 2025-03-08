@@ -20,7 +20,7 @@ import {
   // Database,
 } from "lucide-react";
 // import { IconType } from 'react-icons';
-import { FaHistory, FaSignOutAlt, FaTicketAlt } from "react-icons/fa";
+import { FaHistory, FaTicketAlt, FaArchive } from "react-icons/fa";
 import { ComponentType, SVGProps } from 'react';
 
 export type Submenu = {
@@ -49,7 +49,7 @@ export function getMenuList(pathname: string, role: string): Group[] {
     { href: '/dashboard/maintenance/ticket/create', label: 'Create Ticket', active: pathname === '/dashboard/maintenance/ticket/create', icon: FaTicketAlt, submenus: [] },
     // { href: '/dashboard/meter-services/enduser/overview/kwh-meter/create', label: 'Electricity Token', active: pathname === '/dashboard/meter-services/enduser/overview/kwh-meter/create', icon: FaBolt, submenus: [] },
     // { href: '/dashboard/meter-services/enduser/overview/gas-meter/create', label: 'Gas Token', active: pathname === '/dashboard/meter-services/enduser/overview/gas-meter/create', icon: FaFire, submenus: [] },
-    { href: '/auth/login',label: 'Sign Out',active: pathname === '/auth/login',icon: FaSignOutAlt,submenus: [] },
+    { href: '/dashboard/asset/asset-list-user',label: 'User Asset',active: pathname === '/dashboard/asset/asset-list-user',icon: FaArchive,submenus: [] },
   ];
 
   if (role === "USER") {
