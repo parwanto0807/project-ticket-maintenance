@@ -2,8 +2,11 @@
 
 import { NextResponse } from "next/server";
 import { fetchTicketList } from "@/data/asset/ticket"; // Pastikan path-nya sesuai
+import { unstable_noStore as noStore } from 'next/cache';
 
 export async function GET(req: Request) {
+  noStore();
+  
   const url = new URL(req.url);
   const query = url.searchParams.get("query") || "";
   const currentPageStr = url.searchParams.get("currentPage") || "1";

@@ -3,11 +3,13 @@ import { db } from "@/lib/db"; // Pastikan path koneksi database benar
 import { startOfMonth } from "date-fns";
 import { addMonths } from "date-fns";
 import { format } from "date-fns";
+import { unstable_noStore as noStore } from 'next/cache';
 
 export async function GET(
   req: Request,
   { params }: { params: { email: string } }
 ) {
+  noStore();
   try {
     const { email } = params;
     if (!email) {

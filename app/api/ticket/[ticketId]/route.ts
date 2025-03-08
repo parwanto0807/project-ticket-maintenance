@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db"; // Pastikan path sesuai dengan setup Prisma Anda
+import { unstable_noStore as noStore } from 'next/cache';
 
 export async function PUT(req: Request, { params }: { params: { ticketId: string } }) {
+  noStore();
   try {
     const body = await req.json();
     const { technicianId, scheduledDate } = body;
