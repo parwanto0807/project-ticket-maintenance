@@ -18,6 +18,8 @@ import ImageDialogTicket from "./imageDialogTicket";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { Card } from "@/components/ui/card";
 import WhatsAppLinkButtonTable from "@/components/whatsappButtonTable";
+import { FaTicketAlt, FaExclamationCircle, FaCalendarAlt, FaUser } from "react-icons/fa"; // Ikon untuk card
+import { motion } from "framer-motion"; // Animasi
 
 const ITEMS_PER_PAGE_PRODUCT = 10;
 
@@ -69,12 +71,10 @@ export default function TicketTableUser({ query, currentPage }: TicketTableProps
         { id: 2, label: "Teknisi 2 Agung", phone: "6281280660953" },
     ];
 
-
     useEffect(() => {
         async function fetchData() {
             try {
                 setLoading(true);
-                // Contoh endpoint API, sesuaikan dengan implementasi backend Anda
                 const res = await fetch(
                     `/api/ticket-list?query=${encodeURIComponent(
                         query
@@ -107,30 +107,29 @@ export default function TicketTableUser({ query, currentPage }: TicketTableProps
                     <div className="md:hidden">
                         {Array.isArray(data) &&
                             data.map((item) => {
-                                // Pesan dinamis untuk setiap tiket
                                 const dynamicMessage = `Saya telah membuka ticket maintenance mohon di cek.
 Ticket Number: ${item.ticketNumber}
 Asset Name: ${item.asset.product.part_name}`;
 
                                 return (
-                                    <Card
+                                    <motion.div
                                         key={item.id}
-                                        className="mb-2 w-full rounded-md p-2 bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950"
+                                        whileHover={{ scale: 1.02 }} // Animasi hover
+                                        transition={{ type: "spring", stiffness: 300 }}
                                     >
-                                        <div className="grid grid-cols-1 items-center justify-between border-b pb-1">
-                                            <div>
-                                                <div className="mb-2 flex items-center justify-between font-bold text-black dark:text-white">
+                                        <Card className="mb-4 w-full rounded-lg p-4 bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950 shadow-md hover:shadow-lg transition-shadow">
+                                            <div className="flex flex-col gap-3">
+                                                {/* Header Card */}
+                                                <div className="flex justify-between items-center">
                                                     <Badge
                                                         variant="secondary"
-                                                        className="font-mono tracking-widest uppercase h-10 border-orange-500"
+                                                        className="font-mono tracking-widest uppercase h-8 border-orange-500 flex items-center gap-2"
                                                     >
+                                                        <FaTicketAlt className="w-4 h-4" />
                                                         {item.ticketNumber}
                                                     </Badge>
-                                                    &nbsp;
                                                     <Badge
-                                                        className={`
-                              absolute right-8 font-mono tracking-widest uppercase
-                              ${item.status === "Pending"
+                                                        className={`font-mono tracking-widest uppercase h-8 ${item.status === "Pending"
                                                                 ? "bg-red-100 text-red-500"
                                                                 : item.status === "Assigned"
                                                                     ? "bg-blue-100 text-blue-500"
@@ -141,45 +140,46 @@ Asset Name: ${item.asset.product.part_name}`;
                                                                             : item.status === "Canceled"
                                                                                 ? "bg-red-100 text-red-500"
                                                                                 : "bg-gray-100 text-gray-500"
-                                                            }
-                            `}
+                                                            }`}
                                                     >
                                                         {item.status.replace("_", " ")}
                                                     </Badge>
-                                                    &nbsp;
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm pt-1">
-                                                        {item.asset.product.part_name} &nbsp;
-                                                    </p>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <p className="flex-none text-sm">
-                                                        {item.priorityStatus}
-                                                    </p>
-                                                    &nbsp;
-                                                    <p className="flex-none text-sm font-bold text-gray-500">
-                                                        {item.employee?.name}
-                                                    </p>
-                                                </div>
-                                                <div className="flex flex-row items-center gap-2">
-                                                    <p className="flex-none text-sm text-gray-500">
-                                                        {item.scheduledDate
-                                                            ? new Date(item.scheduledDate).toDateString()
-                                                            : ""}
-                                                    </p>
-                                                </div>
-                                                <div className="w-12 h-12 overflow-hidden rounded">
-                                                    <div className="w-12 h-12 overflow-hidden rounded">
-                                                        <ImageDialogTicket
-                                                            src={item.ticketImage1 || "/noImage.jpg"}
-                                                            alt={`${item.ticketImage1} Asset Image`}
-                                                        />
+
+                                                {/* Konten Card */}
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <FaExclamationCircle className="w-4 h-4 text-orange-500" />
+                                                        <p className="text-sm font-semibold">
+                                                            {item.asset.product.part_name}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <FaUser className="w-4 h-4 text-orange-500" />
+                                                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                                                            {item.employee?.name}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <FaCalendarAlt className="w-4 h-4 text-orange-500" />
+                                                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                                                            {item.scheduledDate
+                                                                ? new Date(item.scheduledDate).toDateString()
+                                                                : "No Schedule"}
+                                                        </p>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div className="w-full items-center justify-between pt-2">
-                                                <div className="flex items-center justify-end gap-2">
+
+                                                {/* Gambar Tiket */}
+                                                <div className="w-full h-32 overflow-hidden rounded-lg">
+                                                    <ImageDialogTicket
+                                                        src={item.ticketImage1 || "/noImage.jpg"}
+                                                        alt={`${item.ticketImage1} Asset Image`}
+                                                    />
+                                                </div>
+
+                                                {/* Action Buttons */}
+                                                <div className="flex justify-end gap-2">
                                                     {item.completedDate ? (
                                                         <WhatsAppLinkButtonTable
                                                             numbers={whatsappNumbers}
@@ -192,7 +192,6 @@ Asset Name: ${item.asset.product.part_name}`;
                                                             message={dynamicMessage}
                                                         />
                                                     )}
-
                                                     {item.scheduledDate ? (
                                                         <DeleteAlertTicket id={item.id} disabled />
                                                     ) : (
@@ -201,8 +200,8 @@ Asset Name: ${item.asset.product.part_name}`;
                                                     <TicketDialog ticket={item} />
                                                 </div>
                                             </div>
-                                        </div>
-                                    </Card>
+                                        </Card>
+                                    </motion.div>
                                 );
                             })}
                     </div>

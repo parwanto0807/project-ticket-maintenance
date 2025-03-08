@@ -10,7 +10,8 @@ export async function PUT(req: Request, { params }: { params: { ticketId: string
     const updatedTicket = await db.ticketMaintenance.update({
       where: { id: params.ticketId },
       data: {
-        status: status, // Set status ke "Assigned"
+        status: status, 
+        completedDate: new Date(),
       },
     });
     return NextResponse.json(updatedTicket);
