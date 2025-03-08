@@ -10,11 +10,11 @@ import {
   FaExclamationCircle,
   FaMoneyBillWave,
   FaSpinner,
-} from "react-icons/fa"; // Ikon untuk card
+} from "react-icons/fa";
 
 interface CardItem {
   title: string;
-  value: React.ReactNode; // 🔥 Ubah ke React.ReactNode agar bisa menampilkan Spinner
+  value: React.ReactNode; // Mengizinkan string, number, atau komponen (misalnya, spinner)
   tooltip?: string;
   icon: React.ReactNode;
 }
@@ -86,8 +86,9 @@ const DashboardCards = () => {
     },
     {
       title: "Total Purchase Cost",
-      value:
-        totalPurchaseCost !== null ? `Rp ${(totalPurchaseCost ?? 0).toLocaleString()}` : (
+      value: totalPurchaseCost !== null
+        ? `Rp ${(totalPurchaseCost).toLocaleString()}`
+        : (
           <FaSpinner className="animate-spin text-orange-500 mx-auto" />
         ),
       tooltip: "Total biaya pembelian asset",
@@ -98,7 +99,9 @@ const DashboardCards = () => {
   return (
     <Tooltip.Provider delayDuration={200}>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {cardData.map((card, index) => (
+        {cardData
+        .filter((card) => card.title !== "Total Purchase Cost")
+        .map((card, index) => (
           <Tooltip.Root key={index}>
             <Tooltip.Trigger asChild>
               <motion.div
@@ -106,22 +109,18 @@ const DashboardCards = () => {
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                {/* Ikon */}
+                {/* Icon */}
                 <div className="absolute top-4 right-4 opacity-90">{card.icon}</div>
-
                 {/* Konten Card */}
                 <div className="text-gray-700 text-sm font-semibold dark:text-white">
                   {card.title}
                 </div>
-
                 {/* Tampilkan Nilai atau Spinner Jika Masih Loading */}
-                <div className="mt-2 text-3xl font-bold text-orange-700 dark:text-white flex justify-left">
+                <div className="mt-2 text-3xl font-bold text-orange-700 dark:text-white flex justify-start">
                   {card.value}
                 </div>
               </motion.div>
             </Tooltip.Trigger>
-
-            {/* Tooltip Muncul Jika Ada Keterangan */}
             {card.tooltip && (
               <Tooltip.Portal>
                 <Tooltip.Content
