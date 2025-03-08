@@ -34,7 +34,7 @@ export default function ImageDialogTicket({ src, alt }: ImageDialogProps) {
         <Image
           src={src}
           alt={alt}
-          width={500}
+          width={400}
           height={300}
           className="rounded-lg w-auto h-auto max-w-full max-h-full"
         />
