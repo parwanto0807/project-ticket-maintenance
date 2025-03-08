@@ -130,16 +130,16 @@ Asset Name: ${item.asset.product.part_name}`;
                                                     </Badge>
                                                     <Badge
                                                         className={`font-mono tracking-widest uppercase h-8 ${item.status === "Pending"
-                                                                ? "bg-red-100 text-red-500"
-                                                                : item.status === "Assigned"
-                                                                    ? "bg-blue-100 text-blue-500"
-                                                                    : item.status === "In_Progress"
-                                                                        ? "bg-orange-100 text-orange-500"
-                                                                        : item.status === "Completed"
-                                                                            ? "bg-green-100 text-green-500"
-                                                                            : item.status === "Canceled"
-                                                                                ? "bg-red-100 text-red-500"
-                                                                                : "bg-gray-100 text-gray-500"
+                                                            ? "bg-red-100 text-red-500"
+                                                            : item.status === "Assigned"
+                                                                ? "bg-blue-100 text-blue-500"
+                                                                : item.status === "In_Progress"
+                                                                    ? "bg-orange-100 text-orange-500"
+                                                                    : item.status === "Completed"
+                                                                        ? "bg-green-100 text-green-500"
+                                                                        : item.status === "Canceled"
+                                                                            ? "bg-red-100 text-red-500"
+                                                                            : "bg-gray-100 text-gray-500"
                                                             }`}
                                                     >
                                                         {item.status.replace("_", " ")}
@@ -171,10 +171,18 @@ Asset Name: ${item.asset.product.part_name}`;
                                                 </div>
 
                                                 {/* Gambar Tiket */}
-                                                <div className="w-full h-32 overflow-hidden rounded-lg">
+                                                <div className="flex full max-h-16 overflow-hidden rounded-lg gap-2">
                                                     <ImageDialogTicket
                                                         src={item.ticketImage1 || "/noImage.jpg"}
                                                         alt={`${item.ticketImage1} Asset Image`}
+                                                    />
+                                                    <ImageDialogTicket
+                                                        src={item.ticketImage2 || "/noImage.jpg"}
+                                                        alt={`${item.ticketImage2} Asset Image`}
+                                                    />
+                                                    <ImageDialogTicket
+                                                        src={item.ticketImage3 || "/noImage.jpg"}
+                                                        alt={`${item.ticketImage3} Asset Image`}
                                                     />
                                                 </div>
 
@@ -221,9 +229,11 @@ Asset Name: ${item.asset.product.part_name}`;
                                 <TableHead className="text-black dark:text-white">
                                     Analisa Technician
                                 </TableHead>
+                                <TableHead></TableHead>
                                 <TableHead className="text-black dark:text-white">
                                     Action Technician
                                 </TableHead>
+                                <TableHead></TableHead>
                                 <TableHead className="text-black dark:text-white">
                                     Priority Status
                                 </TableHead>
@@ -278,8 +288,24 @@ Asset Name: ${item.asset.product.part_name}`;
                                             <TableCell>
                                                 <ReadMoreText text={item.analisaDescription ?? ""} />
                                             </TableCell>
+                                            <TableCell>
+                                                <div className="w-12 h-12 overflow-hidden rounded">
+                                                    <ImageDialogTicket
+                                                        src={item.ticketImage2 || "/noImage.jpg"}
+                                                        alt={`${item.ticketImage2} Asset Image`}
+                                                    />
+                                                </div>
+                                            </TableCell>
                                             <TableCell className="text-center">
                                                 <ReadMoreText text={item.actionDescription ?? ""} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="w-12 h-12 overflow-hidden rounded">
+                                                    <ImageDialogTicket
+                                                        src={item.ticketImage3 || "/noImage.jpg"}
+                                                        alt={`${item.ticketImage3} Asset Image`}
+                                                    />
+                                                </div>
                                             </TableCell>
                                             <TableCell className="text-center">
                                                 {item.priorityStatus}
@@ -329,10 +355,18 @@ Asset Name: ${item.asset.product.part_name}`;
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center justify-center object-center gap-2">
-                                                    <WhatsAppLinkButtonTable
-                                                        numbers={whatsappNumbers}
-                                                        message={dynamicMessage}
-                                                    />
+                                                    {item.completedDate ? (
+                                                        <WhatsAppLinkButtonTable
+                                                            numbers={whatsappNumbers}
+                                                            message={dynamicMessage}
+                                                            disabled
+                                                        />
+                                                    ) : (
+                                                        <WhatsAppLinkButtonTable
+                                                            numbers={whatsappNumbers}
+                                                            message={dynamicMessage}
+                                                        />
+                                                    )}
                                                     {item.scheduledDate ? (
                                                         <DeleteAlertTicket id={item.id} disabled />
                                                     ) : (
