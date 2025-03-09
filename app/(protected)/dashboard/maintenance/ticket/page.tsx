@@ -45,14 +45,14 @@ const TicketPage = async ({
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Badge className="items-center justify-center text-center" variant="outline">
-                <Link href="/dashboard">Master</Link>
+                <Link href="/dashboard">Maintenance</Link>
               </Badge>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <Badge className="items-center justify-center text-center" variant="outline">
-              <BreadcrumbPage>Maintenance Ticket</BreadcrumbPage>
+              <BreadcrumbPage>Ticket List</BreadcrumbPage>
             </Badge>
           </BreadcrumbItem>
         </BreadcrumbList>

@@ -117,8 +117,6 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
     const departmentEmployees = employeeDataFind?.filter((emp) => emp.department?.id === departmentId);
     const departmentByAsset = assetFind?.filter((ass) => ass.departmentId === departmentId);
 
-
-
     // Inisialisasi form dengan useForm
     const form = useForm<z.infer<typeof CreateTicketMaintenanceSchema>>({
         resolver: zodResolver(CreateTicketMaintenanceSchema),
@@ -161,14 +159,11 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
 
         fetchTicketNumber();
     }, [form]);
-    // State untuk input file gambar
+
     const [ticketImage1, setTicketImage1] = useState<File | null>(null);
-
-    // State untuk preview image
     const [previewImage1, setPreviewImage1] = useState<string>("");
-
-    // Deteksi perangkat mobile
     const [isMobile, setIsMobile] = useState(false);
+
     useEffect(() => {
         if (typeof window !== "undefined") {
             setIsMobile(window.matchMedia("(pointer: coarse)").matches);
@@ -192,7 +187,6 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
         }
     };
 
-    // Fungsi onSubmit untuk mengirim data
     const onSubmit = (values: z.infer<typeof CreateTicketMaintenanceSchema>) => {
         setLoading(true);
         const formData = new FormData();
@@ -213,11 +207,9 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
             formData.append("completedDate", values.completedDate.toISOString());
         }
 
-        // Tambahkan timestamp
         formData.append("createdAt", new Date().toISOString());
         formData.append("updatedAt", new Date().toISOString());
 
-        // Tambahkan file gambar: Hanya Ticket Image 1 (input) untuk preview disini
         if (ticketImage1) {
             formData.append("ticketImage1", ticketImage1);
         }
@@ -239,15 +231,15 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-4xl mx-auto bg-white dark:bg-gray-900 p-2 rounded-xl shadow-lg space-y-6 max-h-[70vh] overflow-y-auto mb-20">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-4xl mx-auto bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg space-y-6 overflow-y-auto max-h-[80vh]">
                 <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 text-center">Create Ticket</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Ticket Number */}
                     <FormField
                         control={form.control}
                         name="ticketNumber"
                         render={({ field }) => (
-                            <FormItem className="col-span-2 w-full md:col-span-1 md:w-auto">
+                            <FormItem className="col-span-2 md:col-span-1">
                                 <FormLabel>🎫 Ticket Number</FormLabel>
                                 <FormControl>
                                     <Input
@@ -296,8 +288,8 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                         )}
                     />
                     {selectedDepartmentName && (
-                        <div>
-                            <p>🚪 Department: {selectedDepartmentName.dept_name}</p>
+                        <div className="col-span-2">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">🚪 Department: {selectedDepartmentName.dept_name}</p>
                         </div>
                     )}
                     {/* Asset Name */}
@@ -333,11 +325,11 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                         )}
                     />
                     {selectedAsset && (
-                        <div className="hidden">
-                            <h3>Selected Asset</h3>
-                            <p>Asset ID: {selectedAsset.id}</p>
-                            <p>Asset Number: {selectedAsset.assetNumber}</p>
-                            <p>Status: {selectedAsset.status}</p>
+                        <div className="col-span-2 hidden">
+                            <h3 className="text-lg font-semibold">Selected Asset</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Asset ID: {selectedAsset.id}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Asset Number: {selectedAsset.assetNumber}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Status: {selectedAsset.status}</p>
                         </div>
                     )}
                     {/* Trouble User */}
@@ -359,7 +351,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                         control={form.control}
                         name="priorityStatus"
                         render={({ field }) => (
-                            <FormItem className="col-span-2 w-full md:col-span-1 md:w-auto">
+                            <FormItem className="col-span-2 md:col-span-1">
                                 <FormLabel>⚠️ Priority Status</FormLabel>
                                 <FormControl>
                                     <select {...field} className="w-full p-2 border rounded-md dark:bg-gray-800 dark:text-white">
@@ -378,7 +370,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                         control={form.control}
                         name="status"
                         render={({ field }) => (
-                            <FormItem className="col-span-2 w-full md:col-span-1 md:w-auto">
+                            <FormItem className="col-span-2 md:col-span-1">
                                 <FormLabel>📌 Status</FormLabel>
                                 <FormControl>
                                     <Input {...field} disabled={isPending} readOnly />
@@ -438,11 +430,11 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                             </FormItem>
                         )}
                     />
-                    {/* Input File untuk Ticket Image 3 */}
-                    <div>
-                        {/* <label htmlFor="ticketImage3" className="block text-sm font-medium text-gray-700">
+                    {/* Input File untuk Ticket Image 1 */}
+                    <div className="col-span-2">
+                        <label htmlFor="ticketImage1" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Image from user complain
-                        </label> */}
+                        </label>
                         <input
                             id="ticketImage1"
                             type="file"
@@ -466,24 +458,26 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                 <Image
                                     src={previewImage1}
                                     alt="Preview Ticket Image 1"
-                                    width={96}
-                                    height={96}
+                                    width={200}
+                                    height={200}
                                     className="object-cover rounded"
+                                    style={{ width: "200px", height: "auto" }}
                                 />
                             </div>
                         )}
                     </div>
                 </div>
-                <div className="flex items-end justify-end gap-4">
-                    <Button type="submit" className="w-full md:w-auto px-6 py-2 text-lg" disabled={loading}>
-                        {loading ? "Submitting..." : "Submit"}
-                    </Button>
+                <div className="sticky bottom-0 bg-white dark:bg-gray-900 py-10 flex justify-end gap-4">
                     <Button
                         variant="destructive"
                         type="button"
                         onClick={() => router.push("/dashboard")}
+                        className="px-6 py-2 text-lg"
                     >
                         Back
+                    </Button>
+                    <Button type="submit" className="px-6 py-2 text-lg" disabled={loading}>
+                        {loading ? "Submitting..." : "Submit"}
                     </Button>
                 </div>
             </form>
