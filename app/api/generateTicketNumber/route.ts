@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";// Sesuaikan path ke prisma instance
+import { unstable_noStore as no_store } from "next/cache";
 
 export async function GET() {
+    no_store();
     try {
         // Dapatkan tanggal saat ini
         const now = new Date();
