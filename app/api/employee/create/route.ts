@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
+import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid"; // Generate nama unik untuk gambar
 import { db } from "@/lib/db";
@@ -25,13 +26,23 @@ export async function POST(req: Request) {
         const ext = path.extname(file.name);
         const uniqueFileName = `${uuidv4()}${ext}`;
 
-        // Path penyimpanan gambar
-        const filePath = path.join(process.cwd(), "public/uploads", uniqueFileName);
+        // Path penyimpanan gambar di `/var/www/uploads/`
+        const uploadDir = "/var/www/uploads";
 
-        // Simpan gambar ke server (folder /public/uploads)
+        // Pastikan folder `/var/www/uploads/` ada
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const filePath = path.join(uploadDir, uniqueFileName);
+
+        // Simpan gambar ke server
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
         await writeFile(filePath, buffer);
+
+        // Set kepemilikan file agar bisa diakses oleh Apache
+        fs.chownSync(filePath, 33, 33); // UID & GID 33 = www-data
 
         // Simpan data ke database menggunakan Prisma
         const newEmployee = await db.employee.create({

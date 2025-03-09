@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { writeFile, unlink } from "fs/promises";
+import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "@/lib/db";
@@ -31,13 +32,16 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         }
 
         let imageUrl = existingEmployee.picture;
+        const uploadDir = "/var/www/uploads";
 
         if (file) {
             // Hapus gambar lama jika ada
             if (existingEmployee.picture) {
-                const oldImagePath = path.join(process.cwd(), "public", existingEmployee.picture);
+                const oldImagePath = path.join(uploadDir, path.basename(existingEmployee.picture));
                 try {
-                    await unlink(oldImagePath);
+                    if (fs.existsSync(oldImagePath)) {
+                        await unlink(oldImagePath);
+                    }
                 } catch (error) {
                     console.error("Gagal menghapus gambar lama:", error);
                 }
@@ -46,10 +50,21 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
             // Simpan gambar baru
             const ext = path.extname(file.name);
             const uniqueFileName = `${uuidv4()}${ext}`;
-            const filePath = path.join(process.cwd(), "public/uploads", uniqueFileName);
+            const filePath = path.join(uploadDir, uniqueFileName);
+
+            // Pastikan folder /var/www/uploads ada
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+
+            // Simpan file ke /var/www/uploads/
             const bytes = await file.arrayBuffer();
             await writeFile(filePath, Buffer.from(bytes));
 
+            // Set kepemilikan file agar bisa diakses oleh Apache
+            fs.chownSync(filePath, 33, 33); // UID & GID 33 = www-data
+
+            // Update URL gambar baru
             imageUrl = `/uploads/${uniqueFileName}`;
         }
 
