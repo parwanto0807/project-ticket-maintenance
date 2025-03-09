@@ -12,6 +12,7 @@ export async function getEmployeesFindWithId (id: string) {
                 id: true,
                 name: true,
                 email: true,
+                emailCorporate: true,
                 address: true,
                 picture: true,
                 userDept:true,
