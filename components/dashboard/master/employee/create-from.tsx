@@ -23,7 +23,6 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { createEmployee } from "@/action/master/employees";
 import { Input } from "@/components/ui/input";
 import { Department } from "@prisma/client";
 import { EmployeeSchemaCreate } from "@/schemas";
@@ -44,12 +43,13 @@ const CreateEmployeeForm = ({ deptFind }: { deptFind: Department[] }) => {
     defaultValues: {
       name: "",
       email: "",
+      emailCorporate: "",
       address: "",
       userDept: "",
       picture: undefined,
     },
   });
-  console.log('Default Value:', form.control._formValues);
+  // console.log('Default Value:', form.control._formValues);
 
   const { setValue } = form;
 
@@ -70,6 +70,7 @@ const CreateEmployeeForm = ({ deptFind }: { deptFind: Department[] }) => {
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("email", values.email);
+    formData.append("emailCorporate", values.emailCorporate || "");
     formData.append("address", values.address);
     formData.append("userDept", values.userDept);
 
@@ -78,15 +79,21 @@ const CreateEmployeeForm = ({ deptFind }: { deptFind: Department[] }) => {
     }
 
     try {
-      const data = await createEmployee(formData); // Kirim FormData ke backend
+      // Langsung panggil API di sini tanpa action terpisah
+      const response = await fetch("/api/employee/create", {
+        method: "POST",
+        body: formData,
+      });
 
-      if (data?.error) {
-        toast.error(data.error);
-      } else {
-        toast.success(data.success);
-        form.reset();
-        router.push("/dashboard/master/employees");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal menyimpan data");
       }
+
+      toast.success("Employee berhasil ditambahkan!");
+      form.reset();
+      router.push("/dashboard/master/employees");
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Terjadi kesalahan!");
@@ -94,6 +101,7 @@ const CreateEmployeeForm = ({ deptFind }: { deptFind: Department[] }) => {
       setLoading(false);
     }
   };
+
 
 
   return (
@@ -137,12 +145,31 @@ const CreateEmployeeForm = ({ deptFind }: { deptFind: Department[] }) => {
                 name='email'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Employee Email</FormLabel>
+                    <FormLabel>Acoount Email for Register App</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         disabled={isPending}
                         placeholder="Employee email"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className='w-full space-y-6 items-center justify-center'>
+              <FormField
+                control={form.control}
+                name='emailCorporate'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Corporate Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder="Corporate email"
                       />
                     </FormControl>
                     <FormMessage />
