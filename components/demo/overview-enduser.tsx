@@ -12,7 +12,7 @@ export default function DashboardOverviewPage() {
     <div className="relative min-h-screen bg-orange-100 dark:bg-slate-900">
       {/* Header dengan tema orange Sky */}
       <header className="py-8 px-2 bg-gradient-to-t from-orange-200 to-orange-300 text-gray-800 flex flex-col items-center justify-center shadow-lg rounded-md dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950 dark:text-white">
-        <h1 className="text-xl font-bold text-center">Hi, Welcome back {user?.name}👋</h1>
+        <h1 className="text-xl font-bold text-center">Hi, Welcome back <br/> {user?.name}👋</h1>
       </header>
       {/* Tombol Install (opsional) */}
       <div className="absolute top-4 right-4">
