@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader, DialogDescription } from "@/components/ui/dialog";
-import Image from "next/image";
+
+// 🔥 Gunakan `dynamic()` agar gambar hanya dirender di client-side (CSR)
+const DynamicImage = dynamic(() => import("next/image"), { ssr: false });
 
 interface ImageDialogProps {
   src: string;
@@ -12,20 +15,19 @@ interface ImageDialogProps {
 export default function ImageDialogEmployee({ src, alt }: ImageDialogProps) {
   const [open, setOpen] = useState(false);
 
-  // 🔥 Tambahkan timestamp agar gambar terbaru selalu dimuat
+  // 🔥 Tambahkan timestamp agar cache dihindari
   const imageSrc = `${src}?t=${new Date().getTime()}`;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Image
-          src={imageSrc} // 🔥 Gunakan cache bypass pada gambar kecil
+        <DynamicImage
+          src={imageSrc} // 🔥 Cache Bypass
           alt={alt}
           width={50}
           height={30}
-          style={{ width: "auto", height: "auto" }}
+          unoptimized={true} // ✅ Hindari optimasi Next.js (Fix error 400)
           className="rounded-lg cursor-pointer w-auto h-auto max-w-full max-h-full hover:scale-110 transition-transform duration-300"
-          priority={false} // ✅ Tidak perlu priority untuk gambar kecil
         />
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center">
@@ -34,14 +36,13 @@ export default function ImageDialogEmployee({ src, alt }: ImageDialogProps) {
           <DialogDescription>{alt}</DialogDescription>
         </DialogHeader>
 
-        <Image
-          src={imageSrc} // 🔥 Gunakan cache bypass pada gambar besar
+        <DynamicImage
+          src={imageSrc} // 🔥 Cache Bypass
           alt={alt}
           width={500}
           height={300}
-          style={{ width: "auto", height: "auto" }}
+          unoptimized={true} // ✅ Hindari optimasi Next.js (Fix error 400)
           className="rounded-lg w-auto h-auto max-w-full max-h-full"
-          priority={true} // ✅ Priority hanya untuk gambar modal
         />
       </DialogContent>
     </Dialog>
