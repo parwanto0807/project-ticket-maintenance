@@ -34,10 +34,14 @@ const withPWA = nextPWA({
 
 const nextConfig = withPWA({
   images: {
+    domains: [
+      "https://solusiit.net", // 🔥 Ganti dengan domain VPS Anda
+      "https://2pwk5zmnkgubtogq.public.blob.vercel-storage.com", // 🔥 Jika menggunakan storage Vercel
+    ],
     remotePatterns: [
       {
         protocol: "https",
-        hostname: ["solusiit.net", "2pwk5zmnkgubtogq.public.blob.vercel-storage.com"],
+        hostname: "2pwk5zmnkgubtogq.public.blob.vercel-storage.com",
       },
     ],
   },
