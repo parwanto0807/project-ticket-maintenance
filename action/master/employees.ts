@@ -25,6 +25,7 @@ export const updateEmployee = async (id: string, formData: FormData) => {
     try {
         const name = formData.get("name") as string;
         const email = formData.get("email") as string;
+        const emailCorporate = formData.get("emailCorporate") as string;
         const address = formData.get("address") as string;
         const userDept = formData.get("userDept") as string;
         const picture = formData.get("picture") as File | null;
@@ -61,6 +62,7 @@ export const updateEmployee = async (id: string, formData: FormData) => {
             data: {
                 name,
                 email,
+                emailCorporate,
                 address,
                 userDept,
                 ...(imageUrl ? { picture: imageUrl } : {}),
@@ -82,6 +84,7 @@ export const createEmployee = async (formData: FormData) => {
         userDept: formData.get("userDept") as string,
         name: formData.get("name") as string,
         email: formData.get("email") as string,
+        emailCorporate: formData.get("emailCorporate") as string,
         address: formData.get("address") as string,
         picture: formData.get("picture") as File | null | string,
     };
@@ -93,7 +96,7 @@ export const createEmployee = async (formData: FormData) => {
         return { error: "Invalid input data" };
     }
 
-    const { name, userDept, address, email, picture } = validatedFieldDept.data;
+    const { name, userDept, address, email, picture, emailCorporate } = validatedFieldDept.data;
     try {
         let imageUrl = "";
 
@@ -115,6 +118,7 @@ export const createEmployee = async (formData: FormData) => {
                 userDept,
                 address,
                 email,
+                emailCorporate,
                 name,
                 picture: imageUrl, // Simpan URL gambar jika ada
                 createdAt: now,

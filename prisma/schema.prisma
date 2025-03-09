@@ -98,12 +98,13 @@ model AccountEmail {
 }
 
 model Employee {
-  id          String  @id @default(uuid()) @map("_id")
-  name        String
-  email       String
-  address     String
-  picture     String
-  signInvoice Boolean @default(false)
+  id             String  @id @default(uuid()) @map("_id")
+  name           String
+  email          String
+  emailCorporate String?
+  address        String
+  picture        String
+  signInvoice    Boolean @default(false)
 
   userDept  String   @map("user_dept")
   createdAt DateTime @default(now())
@@ -344,9 +345,9 @@ model TicketMaintenance {
   employeeId         String
   assetId            String
   technicianId       String?
-  ticketImage1       String?       
-  ticketImage2       String?       
-  ticketImage3       String?       
+  ticketImage1       String?
+  ticketImage2       String?
+  ticketImage3       String?
 
   employee   Employee              @relation(fields: [employeeId], references: [id])
   asset      Asset                 @relation(fields: [assetId], references: [id])

@@ -20,7 +20,9 @@ export default function ImageDialogEmployee({ src, alt }: ImageDialogProps) {
           alt={alt}
           width={50}
           height={30}
+          style={{ width: "auto", height: "auto" }}
           className="rounded-lg cursor-pointer w-auto h-auto max-w-full max-h-full hover:scale-110 transition-transform duration-300"
+          priority={true}
         />
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center">
@@ -34,7 +36,9 @@ export default function ImageDialogEmployee({ src, alt }: ImageDialogProps) {
           alt={alt}
           width={500}
           height={300}
+          style={{ width: "auto", height: "auto" }}
           className="rounded-lg w-auto h-auto max-w-full max-h-full"
+          priority={true}
         />
       </DialogContent>
     </Dialog>

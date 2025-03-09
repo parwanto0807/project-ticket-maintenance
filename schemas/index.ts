@@ -208,6 +208,7 @@ export const EmployeeSchema = z.object({
         message: "Address is required"
     }),
     picture: z.union([z.instanceof(File), z.null(), z.undefined()]).optional(),
+    emailCorporate: z.string().optional(),
     userDept: z.string().min(3, {
         message: "Depteartment is required"
     }),
@@ -224,6 +225,7 @@ export const EmployeeSchemaCreate = z.object({
     userDept: z.string().min(3, {
         message: "Depteartment is required"
     }),
+    emailCorporate: z.string().optional(),
     picture:z.union([z.instanceof(File), z.null(), z.undefined()]).optional(),
 })
 
