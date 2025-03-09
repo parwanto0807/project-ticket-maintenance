@@ -117,6 +117,8 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
     const departmentEmployees = employeeDataFind?.filter((emp) => emp.department?.id === departmentId);
     const departmentByAsset = assetFind?.filter((ass) => ass.departmentId === departmentId);
 
+
+
     // Inisialisasi form dengan useForm
     const form = useForm<z.infer<typeof CreateTicketMaintenanceSchema>>({
         resolver: zodResolver(CreateTicketMaintenanceSchema),
@@ -136,7 +138,25 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
             countNumber: countNumber,
         },
     });
-
+    
+    useEffect(() => {
+        form.reset({
+          troubleUser: "",
+          analisaDescription: "",
+          actionDescription: "",
+          priorityStatus: "Low",
+          status: "Pending",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          scheduledDate: undefined,
+          completedDate: undefined,
+          employeeId: "",
+          assetId: "",
+          ticketNumber: ticketNumber, // Akan mengikuti nilai ticketNumber state
+          countNumber: countNumber,
+        });
+      }, [ticketNumber, countNumber, form]);
+      
     useEffect(() => {
         const fetchTicketNumber = async () => {
             try {
