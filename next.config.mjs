@@ -44,6 +44,7 @@ const nextConfig = withPWA({
         hostname: "2pwk5zmnkgubtogq.public.blob.vercel-storage.com",
       },
     ],
+    minimumCacheTTL: 1, // 🔥 Hindari cache lama
   },
 });
 
