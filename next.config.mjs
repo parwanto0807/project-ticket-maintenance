@@ -37,7 +37,7 @@ const nextConfig = withPWA({
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "2pwk5zmnkgubtogq.public.blob.vercel-storage.com",
+        hostname: ["solusiit.net", "2pwk5zmnkgubtogq.public.blob.vercel-storage.com"],
       },
     ],
   },
