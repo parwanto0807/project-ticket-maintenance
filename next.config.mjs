@@ -45,7 +45,6 @@ const nextConfig = withPWA({
       },
     ],
     minimumCacheTTL: 1, // 🔥 Hindari cache lama
-    unoptimized: true,
   },
 });
 

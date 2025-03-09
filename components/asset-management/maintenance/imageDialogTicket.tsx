@@ -23,6 +23,7 @@ export default function ImageDialogTicket({ src, alt }: ImageDialogProps) {
           width={40}
           height={30}
           className="rounded-lg cursor-pointer w-auto h-auto max-w-full max-h-full hover:scale-110 transition-transform duration-300"
+        
         />
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center">
