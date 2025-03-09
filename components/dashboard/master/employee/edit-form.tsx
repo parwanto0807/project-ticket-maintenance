@@ -35,7 +35,7 @@ type Employee = {
   id: string;
   name: string;
   email: string;
-  emailCorporate: string;
+  emailCorporate: string | null;
   address: string;
   userDept: string;
   picture: string | null; // Picture bisa null
