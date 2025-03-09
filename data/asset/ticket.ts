@@ -23,8 +23,6 @@ export async function generateTicketNumber() {
             select: { countNumber: true },
         });
 
-        console.log("Last Ticket:", lastTicket);
-
         // Jika ada tiket sebelumnya, tingkatkan nomornya
         const newIdNumber = lastTicket ? lastTicket.countNumber + 1 : 1;
 
