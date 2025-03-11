@@ -11,8 +11,8 @@ import {
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 import { fetchTicketListPages } from "@/data/asset/ticket";
-// import { CreateTicketButtonAssign } from "@/components/asset-management/technician/assign/buttons";
-import AssignTaskList from "@/components/asset-management/technician/schedule/tabel";
+import { Badge } from "@/components/ui/badge";
+import TechnicianScheduleTable from "@/components/asset-management/technician/schedule/tabel-technician";
 
 const TicketPage = async ({
   searchParams
@@ -32,18 +32,24 @@ const TicketPage = async ({
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/dashboard">Dashboard</Link>
+              <Badge className="items-center justify-center text-center" variant="outline">
+                <Link href="/dashboard">Dashboard</Link>
+              </Badge>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/dashboard">Technician</Link>
+              <Badge className="items-center justify-center text-center" variant="outline">
+                <Link href="/dashboard">Technician</Link>
+              </Badge>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Technician Schedule</BreadcrumbPage>
+            <Badge className="items-center justify-center text-center" variant="outline">
+              <BreadcrumbPage>Technician Schedule</BreadcrumbPage>
+            </Badge>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -55,7 +61,7 @@ const TicketPage = async ({
           </div>
 
           <div className="w-full">
-            <AssignTaskList query={query} currentPage={currentPage} />
+            <TechnicianScheduleTable query={query} currentPage={currentPage} />
           </div>
 
           <div className="flex justify-center mt-4">

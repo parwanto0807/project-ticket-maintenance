@@ -15,6 +15,7 @@ import {
     AlertOctagon,
     AlertTriangle,
     ArrowDownCircle,
+    ArrowLeft,
     CheckCircle,
     Clock,
     Loader2,
@@ -34,6 +35,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Ticket } from "@/types/ticket"; // Import the updated Ticket type
+import Link from "next/link";
 
 export default function HistoryTableClient({
     data = [],
@@ -219,6 +221,9 @@ export default function HistoryTableClient({
                                         Ticket
                                     </TableHead>
                                     <TableHead className="text-black dark:text-white">Title</TableHead>
+                                    <TableHead className="text-black dark:text-white">
+                                        Technician
+                                    </TableHead>
                                     <TableHead className="text-black dark:text-white text-center">
                                         Status
                                     </TableHead>
@@ -229,7 +234,7 @@ export default function HistoryTableClient({
                                         Schedule Action
                                     </TableHead>
                                     <TableHead className="text-black dark:text-white text-center">
-                                        Action
+                                        Detail
                                     </TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -277,6 +282,7 @@ export default function HistoryTableClient({
                                             &nbsp;
                                             <ReadMoreText text={ticket.troubleUser} />
                                         </TableCell>
+                                        <TableCell>{ticket.technician.name}</TableCell>
                                         <TableCell className="text-center">
                                             <div className="flex items-center justify-center gap-1">
                                                 {ticket.status === "Pending" && (
@@ -330,6 +336,14 @@ export default function HistoryTableClient({
                         </Table>
                     </CardContent>
                 </Card>
+                <div className="flex justify-end items-end w-full pt-2">
+                    <Link href="/dashboard">
+                        <Button variant="destructive" className="flex items-center gap-2">
+                            <ArrowLeft className="w-4 h-4" />
+                            Back to Dashboard
+                        </Button>
+                    </Link>
+                </div>
             </div>
         </div>
     );

@@ -118,6 +118,7 @@ export const fetchTicketListSchedule = async (query: string, currentPage: number
         throw new Error("Files fetch ticket list")
     }
 }
+
 export const fetchTicketListHistory = async (query: string, currentPage: number) => {
     noStore()
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_TICKET;
@@ -190,6 +191,49 @@ export const fetchTicketList = async (query: string, currentPage: number, email:
                             { actionDescription: { contains: query, mode: 'insensitive' } },
                         ],
                     },
+                ],
+            },
+        });
+        return ticketFind;
+    } catch (error) {
+        console.error("Failed fetch ticket list", error);
+        throw new Error("Failed fetch ticket list");
+    }
+}
+
+export const fetchTicketListTechnician = async (query: string, currentPage: number, email: string) => {
+    noStore();
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE_TICKET_USER;
+    try {
+        const ticketFind = await db.ticketMaintenance.findMany({
+            skip: offset,
+            take: ITEMS_PER_PAGE_TICKET_USER,
+            include: {
+                employee: true,
+                technician: true,
+                asset: {
+                    include: {
+                        product: true,
+                    },
+                },
+            },
+            orderBy: {
+                updatedAt: 'desc',
+            },
+            where: {
+                AND: [
+                    { technician: { email: email } },
+                    {
+                        OR: [
+                            { ticketNumber: { contains: query, mode: 'insensitive' } },
+                            { analisaDescription: { contains: query, mode: 'insensitive' } },
+                            { troubleUser: { contains: query, mode: 'insensitive' } },
+                            { actionDescription: { contains: query, mode: 'insensitive' } },
+                        ],
+                    },
+                    {
+                        NOT: { status: { in: ["Pending", "Completed", "Canceled"] } }
+                    }
                 ],
             },
         });

@@ -7,6 +7,7 @@ import UserPanelLayout from "@/components/user-panel/user-panel-layout";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import TechnicianPanelLayout from "@/components/technician-panel/technician-panel-layout";
 
 export default function DemoLayout({ children }: { children: React.ReactNode }) {
   const user = useCurrentUser();
@@ -26,7 +27,7 @@ export default function DemoLayout({ children }: { children: React.ReactNode }) 
             {children}
           </ThemeProvider>
         </AdminPanelLayout>
-      ) : (
+      ) : role === "USER" ? (
         <UserPanelLayout>
           <ThemeProvider
             attribute="class"
@@ -38,7 +39,19 @@ export default function DemoLayout({ children }: { children: React.ReactNode }) 
             {children}
           </ThemeProvider>
         </UserPanelLayout>
-      )}
+      ) : role === "TECHNICIAN" ? (
+          <TechnicianPanelLayout>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Toaster />
+              {children}
+            </ThemeProvider>
+          </TechnicianPanelLayout>
+        ) : null}
     </div>
   );
 }

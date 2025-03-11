@@ -12,6 +12,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import DashboardOverviewPage from "@/components/demo/overview-enduser";
+import DashboardTechnicianPage from "@/components/technician-panel/overview-technician";
 
 export default function DashboardPage() {
   const [role, setRole] = useState<string | null>(null);
@@ -44,6 +45,8 @@ export default function DashboardPage() {
         <PlaceholderContent />
       ) : role === "USER" ? (
         <DashboardOverviewPage />
+      ) : role === "TECHNICIAN" ? (
+        <DashboardTechnicianPage />
       ) : null}
     </ContentLayout>
   );

@@ -7,10 +7,10 @@ import { Group, Menu } from '@/lib/menu-list';
 import { getMenuList } from '@/lib/menu-list';
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
-import InstallButton from './installButton';
+import InstallButton from '../demo/installButton';
 import WhatsAppButton from "@/components/whatsappButton"; // Pastikan path ini sesuai
 
-export default function DashboardOverviewPage() {
+export default function DashboardTechnicianPage() {
   const user = useCurrentUser();
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
   const role = user?.role || 'USER';
@@ -47,7 +47,7 @@ export default function DashboardOverviewPage() {
         {/* Header Welcome */}
         <div className="flex items-center justify-center p-4 rounded-xl space-y-2 bg-gradient-to-b from-orange-300 to-orange-600 dark:bg-gradient-to-b dark:from-orange-500 dark:to-slate-800 dark:text-white">
           <h2 className="text-1xl text-center font-bold tracking-tight">
-            <p>Hi, Welcome back <br /> {user?.name}👋</p>
+            <p>Hi, Welcome back Technician <br /> {user?.name}👋</p>
           </h2>
         </div>
 
@@ -59,7 +59,7 @@ export default function DashboardOverviewPage() {
         {/* Konten Utama */}
         <div className="min-h-screen rounded-lg bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-300 dark:to-slate-600 dark:text-black">
           <div className="p-4 text-center">
-            <h1 className="text-2xl font-bold">Ticket Maintenance</h1>
+            <h1 className="text-2xl font-bold">Technician Dashboard</h1>
             <p className="text-sm">Manage your ticket maintenance easily</p>
           </div>
 
