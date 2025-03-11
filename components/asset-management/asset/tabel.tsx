@@ -78,7 +78,7 @@ export default async function AssetTable({ query, currentPage }: { query: string
 
                     <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                         <TableHeader>
-                            <TableRow>
+                            <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                                 <TableHead className="text-black py-8 items-center dark:text-white font-bold uppercase">No</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Asste Number</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Part Name</TableHead>

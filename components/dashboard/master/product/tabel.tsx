@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table"
 import { ProductDialog } from "./dialog-product-detail";
 import ReadMoreText from "@/components/asset-management/maintenance/read-more";
+import { Card } from "@/components/ui/card";
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
 export default async function ProductsTable({ query, currentPage }: { query: string; currentPage: number; }) {
@@ -24,9 +25,9 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                 <div className="rounded-lg p-2 md:pt-0 md:table  bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                     <div className="md:hidden">
                         {products.map((products) => (
-                            <div
+                            <Card
                                 key={products.id}
-                                className="grid grid-cols-1 gap-1 mb-2 w-full  border-b pb-1 rounded-md p-2"
+                                className="grid grid-cols-1 gap-1 mb-2 w-full border-b pb-1 rounded-md p-2 bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950"
                             >
                                 <div className="flex items-center justify-between">
                                     <div>
@@ -56,13 +57,13 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                                         <ProductDialog product = {products}/>
                                     </div>
                                 </div>
-                            </div>
+                            </Card>
                         ))}
                     </div>
 
-                    <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+                    <Table className="hidden w-full max-w-full mt-2 md:table  bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                         <TableHeader>
-                            <TableRow>
+                            <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                                 <TableHead className="text-black py-8 items-center dark:text-white font-bold uppercase">No</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Part Number</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Part Name</TableHead>

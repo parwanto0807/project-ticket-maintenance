@@ -73,7 +73,7 @@ const PriceTable = async ({ query, currentPage }: { query: string; currentPage: 
 
                     <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                         <TableHeader className="border text-[12px]">
-                            <TableRow>
+                            <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                                 <TableHead className="px-4 py-4 font-medium items-center uppercase">No</TableHead>
                                 <TableHead className="px-2 font-medium uppercase">Part Number</TableHead>
                                 <TableHead className="px-2 font-medium uppercase">Group Name</TableHead>

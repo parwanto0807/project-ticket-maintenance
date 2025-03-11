@@ -14,9 +14,12 @@ interface ImageDialogProps {
 
 export default function ImageDialogEmployee({ src, alt }: ImageDialogProps) {
   const [open, setOpen] = useState(false);
+  const [imageSrc, setImageSrc] = useState(`${src}?t=${new Date().getTime()}`);
 
-  // 🔥 Tambahkan timestamp agar cache dihindari
-  const imageSrc = `${src}?t=${new Date().getTime()}`;
+  // 🔥 Fungsi untuk menangani error saat gambar gagal dimuat
+  const handleError = () => {
+    setImageSrc("/noImage.jpg");
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -27,6 +30,7 @@ export default function ImageDialogEmployee({ src, alt }: ImageDialogProps) {
           width={50}
           height={30}
           unoptimized={true} // ✅ Hindari optimasi Next.js (Fix error 400)
+          onError={handleError} // ✅ Ganti gambar jika gagal dimuat
           className="rounded-lg cursor-pointer w-auto h-auto max-w-full max-h-full hover:scale-110 transition-transform duration-300"
         />
       </DialogTrigger>
@@ -42,6 +46,7 @@ export default function ImageDialogEmployee({ src, alt }: ImageDialogProps) {
           width={500}
           height={300}
           unoptimized={true} // ✅ Hindari optimasi Next.js (Fix error 400)
+          onError={handleError} // ✅ Ganti gambar jika gagal dimuat
           className="rounded-lg w-auto h-auto max-w-full max-h-full"
         />
       </DialogContent>
