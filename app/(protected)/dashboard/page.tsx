@@ -42,9 +42,10 @@ export default function DashboardPage() {
 
       {role === "ADMIN" ? (
         <PlaceholderContent />
-      ) : (
+      ) : role === "USER" ? (
         <DashboardOverviewPage />
-      )}
+      ) : null}
     </ContentLayout>
   );
+
 }

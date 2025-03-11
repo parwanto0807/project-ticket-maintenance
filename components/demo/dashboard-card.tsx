@@ -19,7 +19,7 @@ interface CardItem {
   icon: React.ReactNode;
 }
 
-const DashboardCards = () => {
+const DashboardCardsAdmin = () => {
   const user = useCurrentUser();
   const [totalAssetUser, setTotalAssetUser] = useState<number | null>(null);
   const [totalTicketUser, setTotalTicketUser] = useState<number | null>(null);
@@ -28,14 +28,14 @@ const DashboardCards = () => {
 
   useEffect(() => {
     if (user?.email) {
-      fetchTotalAsset(user.email);
-      fetchTotalTicket(user.email);
+      fetchTotalAsset();
+      fetchTotalTicket();
     }
   }, [user?.email]);
 
-  const fetchTotalAsset = async (email: string) => {
+  const fetchTotalAsset = async () => {
     try {
-      const response = await fetch(`/api/asset/dashboard/${email}`);
+      const response = await fetch(`/api/dashboard-admin/asset`);
       const data = await response.json();
       setTotalAssetUser(data.total || 0);
       setTotalPurchaseCost(data.totalPurchaseCost || 0);
@@ -46,10 +46,12 @@ const DashboardCards = () => {
     }
   };
 
-  const fetchTotalTicket = async (email: string) => {
+  const fetchTotalTicket = async () => {
     try {
-      const response = await fetch(`/api/ticket/dashboard/${email}`);
+      const response = await fetch(`/api/dashboard-admin/card/ticket`);
       const data = await response.json();
+      console.log(data.total);
+
       setTotalTicketUser(data.total || 0);
       setOpenTicketUser(data.open || 0);
     } catch (error) {
@@ -85,7 +87,7 @@ const DashboardCards = () => {
       icon: <FaExclamationCircle className="w-6 h-6 text-orange-500" />,
     },
     {
-      title: "Total Purchase Cost",
+      title: "Total Asset Purchase Cost",
       value: totalPurchaseCost !== null
         ? `Rp ${(totalPurchaseCost).toLocaleString()}`
         : (
@@ -100,7 +102,7 @@ const DashboardCards = () => {
     <Tooltip.Provider delayDuration={200}>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {cardData
-        .filter((card) => card.title !== "Total Purchase Cost")
+        // .filter((card) => card.title !== "Total Purchase Cost")
         .map((card, index) => (
           <Tooltip.Root key={index}>
             <Tooltip.Trigger asChild>
@@ -140,4 +142,4 @@ const DashboardCards = () => {
   );
 };
 
-export default DashboardCards;
+export default DashboardCardsAdmin;

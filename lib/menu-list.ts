@@ -6,7 +6,7 @@ import {
   Boxes,
   // Omega,
   HardDrive,
-  Wrench,
+  // Wrench,
   // FileText,
   // BarChart,
   // Scan,
@@ -176,29 +176,29 @@ export function getMenuList(pathname: string, role: string): Group[] {
     {
       groupLabel: "MAINTENANCE MANAGEMENT",
       menus: [
-        {
-          href: "#",
-          label: "MAINTENANCE",
-          active: pathname.includes("#"),
-          icon: Wrench,
-          submenus: [
-            {
-              href: "/dashboard/maintenance/ticket",
-              label: "Maintenance Tickets",
-              active: pathname === "/dashboard/maintenance/ticket",
-            },
-            // {
-            //   href: "/dashboard/assets/maintenance/schedule",
-            //   label: "Maintenance Schedule",
-            //   active: pathname === "/dashboard/assets/maintenance/schedule",
-            // },
-            // {
-            //   href: "/dashboard/assets/maintenance/history",
-            //   label: "Maintenance History",
-            //   active: pathname === "/dashboard/assets/maintenance/history",
-            // },
-          ],
-        },
+        // {
+        //   href: "#",
+        //   label: "MAINTENANCE",
+        //   active: pathname.includes("#"),
+        //   icon: Wrench,
+        //   submenus: [
+        //     {
+        //       href: "/dashboard/maintenance/ticket",
+        //       label: "Maintenance Tickets",
+        //       active: pathname === "/dashboard/maintenance/ticket",
+        //     },
+        //     // {
+        //     //   href: "/dashboard/assets/maintenance/schedule",
+        //     //   label: "Maintenance Schedule",
+        //     //   active: pathname === "/dashboard/assets/maintenance/schedule",
+        //     // },
+        //     // {
+        //     //   href: "/dashboard/assets/maintenance/history",
+        //     //   label: "Maintenance History",
+        //     //   active: pathname === "/dashboard/assets/maintenance/history",
+        //     // },
+        //   ],
+        // },
         {
           href: "#",
           label: "TECHNICIAN",

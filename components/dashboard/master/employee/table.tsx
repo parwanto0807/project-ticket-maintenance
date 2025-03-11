@@ -68,7 +68,7 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
 
                     <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                         <TableHeader className="rounded-lg text-left text-sm font-normal">
-                            <TableRow>
+                            <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                                 <TableHead scope="col" className="px-3 py-5 font-medium uppercase">No</TableHead>
                                 <TableHead scope="col" className="px-4 py-5 font-medium sm:pl-6 uppercase"># </TableHead>
                                 <TableHead scope="col" className="px-4 py-5 font-medium sm:pl-6 uppercase">Employee </TableHead>
@@ -92,7 +92,7 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="whitespace-nowrap px-3 py-3">{employees.name}</TableCell>
+                                    <TableCell className="whitespace-nowrap px-3 py-3 font-bold">{employees.name}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3">{employees.address}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3">{employees.department.dept_name}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3">{formatDate(employees.createdAt.toString())}</TableCell>

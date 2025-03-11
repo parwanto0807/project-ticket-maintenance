@@ -171,7 +171,6 @@ export default function AssetUserTable({ query, currentPage }: DashboardDataProp
                       <TableHead className="text-black dark:text-white font-bold uppercase">Date Purchase</TableHead>
                       <TableHead className="text-black dark:text-white font-bold uppercase">Status</TableHead>
                       <TableHead className="text-black dark:text-white font-bold uppercase">Asset Image</TableHead>
-                      <TableHead className="text-black dark:text-white font-bold uppercase">Action</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody className="text-[12px]">
