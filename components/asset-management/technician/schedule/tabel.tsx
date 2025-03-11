@@ -16,11 +16,15 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, AlertOctagon, AlertTriangle, ArrowDownCircle, CheckCircle, Clock, FileEdit, Loader2, UserCheck, XCircle } from "lucide-react";
 import ReadMoreText from "./read-more";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
 export default async function AssignTable({ query, currentPage }: { query: string; currentPage: number; }) {
-    const data = await fetchTicketListSchedule(query, currentPage);
+
+    const dataSource = await fetchTicketListSchedule(query, currentPage);
+    const data = Array.isArray(dataSource) ? dataSource : [];
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_PRODUCT;
 
     return (
@@ -90,6 +94,10 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                                     <TicketMaintenanceUpdateSheet
                                                         ticketId={data.id}
                                                         technicians={data.technician ? [data.technician] : []}
+                                                        initialTicketImage1={data.ticketImage1 ?? undefined}
+                                                        initialTicketImage2={data.ticketImage2 ?? undefined}
+                                                        initialTicketImage3={data.ticketImage3 ?? undefined}
+                                                        initialTroubleUser={data.troubleUser}
                                                         initialTechnicianId={data.technicianId ? data.technicianId : ""}
                                                         initialScheduledDate={
                                                             data.scheduledDate
@@ -242,6 +250,14 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                         </Table>
                     </CardContent>
                 </Card>
+                <div className="flex justify-end items-end w-full p-2">
+                    <Link href="/dashboard">
+                        <Button variant="destructive" className="flex items-center gap-2">
+                            <ArrowLeft className="w-4 h-4" />
+                            Back to Dashboard
+                        </Button>
+                    </Link>
+                </div>
             </div>
         </div>
     )

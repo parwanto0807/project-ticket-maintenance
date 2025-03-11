@@ -12,7 +12,7 @@ import {
   // Scan,
   // Bell,
   // ClipboardList,
-     Users,
+  Users,
   // Tool,
   // Calendar,
   // Archive,
@@ -47,9 +47,7 @@ export function getMenuList(pathname: string, role: string): Group[] {
   const additionalMenuItems: Menu[] = [
     { href: '/dashboard/maintenance/ticket', label: 'Ticket History', active: pathname === '/dashboard/maintenance/ticket', icon: FaHistory, submenus: [] },
     { href: '/dashboard/maintenance/ticket/create', label: 'Create Ticket', active: pathname === '/dashboard/maintenance/ticket/create', icon: FaTicketAlt, submenus: [] },
-    // { href: '/dashboard/meter-services/enduser/overview/kwh-meter/create', label: 'Electricity Token', active: pathname === '/dashboard/meter-services/enduser/overview/kwh-meter/create', icon: FaBolt, submenus: [] },
-    // { href: '/dashboard/meter-services/enduser/overview/gas-meter/create', label: 'Gas Token', active: pathname === '/dashboard/meter-services/enduser/overview/gas-meter/create', icon: FaFire, submenus: [] },
-    { href: '/dashboard/asset/asset-list-user',label: 'User Asset',active: pathname === '/dashboard/asset/asset-list-user',icon: FaArchive,submenus: [] },
+    { href: '/dashboard/asset/asset-list-user', label: 'User Asset', active: pathname === '/dashboard/asset/asset-list-user', icon: FaArchive, submenus: [] },
   ];
 
   if (role === "USER") {
@@ -57,6 +55,21 @@ export function getMenuList(pathname: string, role: string): Group[] {
       {
         groupLabel: "ADDITIONAL SERVICES",
         menus: additionalMenuItems,
+      },
+    ];
+  }
+
+  const additionalMenuItemsTecnician: Menu[] = [
+    { href: '/dashboard/technician/schedule', label: 'Technician Schedule', active: pathname === '/dashboard/technician/schedule', icon: FaHistory, submenus: [] },
+    { href: '/dashboard/technician/history', label: 'History Maintenance', active: pathname === '/dashboard/technician/history', icon: FaTicketAlt, submenus: [] },
+    // { href: '/dashboard/asset/asset-list-user', label: 'User Asset', active: pathname === '/dashboard/asset/asset-list-user', icon: FaArchive, submenus: [] },
+  ];
+
+  if (role === "TECHNICIAN") {
+    return [
+      {
+        groupLabel: "ADDITIONAL SERVICES TECHNICIAN",
+        menus: additionalMenuItemsTecnician,
       },
     ];
   }

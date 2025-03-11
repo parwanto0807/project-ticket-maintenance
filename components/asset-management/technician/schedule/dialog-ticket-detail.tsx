@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 // import { Badge } from "@/components/ui/badge";
-import { TicketMaintenance } from "@prisma/client";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import ReadMoreText from "../../maintenance/read-more";
 import Image from "next/image";
+import { TicketMaintenance } from "@prisma/client";
 
 export function TicketDialog({ ticket }: { ticket: TicketMaintenance }) {
     // Pastikan URL gambar tidak kosong, gunakan fallback "/noImage.jpg"
@@ -75,22 +75,37 @@ export function TicketDialog({ ticket }: { ticket: TicketMaintenance }) {
                             <Image
                                 src={imageSrc1}
                                 alt="Ticket Image 1"
-                                width={96}
-                                height={96}
+                                width={76}
+                                height={76}
+                                style={{
+                                    border: "1px solid #ccc", // Memberikan border ringan
+                                    padding: "4px", // Sedikit padding agar terlihat rapi
+                                    backgroundColor: "#f8f8f8", // Latar belakang abu-abu muda untuk estetika
+                                  }}
                                 className="object-cover rounded"
                             />
                             <Image
                                 src={imageSrc2}
                                 alt="Ticket Image 2"
-                                width={96}
-                                height={96}
+                                width={76}
+                                height={76}
+                                style={{
+                                    border: "1px solid #ccc", // Memberikan border ringan
+                                    padding: "4px", // Sedikit padding agar terlihat rapi
+                                    backgroundColor: "#f8f8f8", // Latar belakang abu-abu muda untuk estetika
+                                  }}
                                 className="object-cover rounded"
                             />
                             <Image
                                 src={imageSrc3}
                                 alt="Ticket Image 3"
-                                width={96}
-                                height={96}
+                                width={76}
+                                height={76}
+                                style={{
+                                    border: "1px solid #ccc", // Memberikan border ringan
+                                    padding: "4px", // Sedikit padding agar terlihat rapi
+                                    backgroundColor: "#f8f8f8", // Latar belakang abu-abu muda untuk estetika
+                                  }}
                                 className="object-cover rounded"
                             />
                         </div>

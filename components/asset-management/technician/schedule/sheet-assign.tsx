@@ -71,16 +71,15 @@ interface TicketMaintenanceUpdateSheetProps {
 const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> = ({
   ticketId,
   technicians,
-  initialTroubleUser = "",
+  initialTroubleUser,
   initialTechnicianId = "",
   initialScheduledDate = "",
   initialAnalisaDescription = "",
   initialActionDescription = "",
-  // Default actualCheckDate adalah hari ini jika tidak diberikan
   initialActualCheckDate = new Date().toISOString().split("T")[0],
-  initialTicketImage1 = "",
-  initialTicketImage2 = "",
-  initialTicketImage3 = "",
+  initialTicketImage1,
+  initialTicketImage2,
+  initialTicketImage3,
   onUpdate,
   children,
 }) => {
@@ -123,7 +122,7 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
       setAnalisaDescription(initialAnalisaDescription);
       setActionDescription(initialActionDescription);
       setActualCheckDate(initialActualCheckDate);
-      setPreviewImage1(initialTicketImage1 || ""); // Preview hanya dari data awal
+      setPreviewImage1(initialTicketImage1 || "");
       setPreviewImage2(initialTicketImage2 || "");
       setPreviewImage3(initialTicketImage3 || "");
     }
@@ -179,7 +178,7 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
       formData.append("status", status);
       formData.append("actualCheckDate", new Date(actualCheckDate).toISOString());
       // Trouble user diinput sebagai readonly, tetapi jika perlu dikirim:
-      formData.append("troubleUser", troubleUser);
+      formData.append("troubleUser", troubleUser || "");
 
       // Hanya input file untuk Ticket Image 2 dan Ticket Image 3
       if (ticketImage2) {
@@ -228,7 +227,7 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
           <SheetDescription>Detail tiket dan aksi update:</SheetDescription>
         </SheetHeader>
         {/* Container scroll agar tombol submit tetap terlihat */}
-        <div className="max-h-[80vh] overflow-y-auto pr-2">
+        <div className="max-h-[80vh] overflow-y-auto pr-2 dark: text-black">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Readonly Technician */}
             <div>
@@ -266,7 +265,7 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 type="date"
                 value={actualCheckDate}
                 onChange={(e) => setActualCheckDate(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-white"
               />
             </div>
             {/* Readonly Trouble User */}
@@ -279,7 +278,7 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 rows={3}
                 value={troubleUser}
                 readOnly
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 dark:bg-white"
               />
             </div>
             {/* Preview untuk Ticket Image 1 (tidak ada input file) */}
@@ -294,6 +293,11 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                     alt="Preview Ticket Image 1"
                     width={96}
                     height={96}
+                    style={{
+                      border: "1px solid #ccc", // Memberikan border ringan
+                      padding: "4px", // Sedikit padding agar terlihat rapi
+                      backgroundColor: "#f8f8f8", // Latar belakang abu-abu muda untuk estetika
+                    }}
                     className="object-cover rounded"
                   />
                 </div>
@@ -310,7 +314,7 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 id="analisaDescription"
                 value={analisaDescription}
                 onChange={(e) => setAnalisaDescription(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2  dark:bg-white"
                 placeholder="Enter analisa description..."
                 rows={3}
               />
@@ -345,6 +349,11 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                     alt="Preview Ticket Image 2"
                     width={96}
                     height={96}
+                    style={{
+                      border: "1px solid #ccc", // Memberikan border ringan
+                      padding: "4px", // Sedikit padding agar terlihat rapi
+                      backgroundColor: "#f8f8f8", // Latar belakang abu-abu muda untuk estetika
+                    }}
                     className="object-cover rounded"
                   />
                 </div>
@@ -359,7 +368,7 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 id="actionDescription"
                 value={actionDescription}
                 onChange={(e) => setActionDescription(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2  dark:bg-white"
                 placeholder="Enter action description..."
                 rows={3}
               />
@@ -394,6 +403,11 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                     alt="Preview Ticket Image 3"
                     width={96}
                     height={96}
+                    style={{
+                      border: "1px solid #ccc", // Memberikan border ringan
+                      padding: "4px", // Sedikit padding agar terlihat rapi
+                      backgroundColor: "#f8f8f8", // Latar belakang abu-abu muda untuk estetika
+                    }}
                     className="object-cover rounded"
                   />
                 </div>
