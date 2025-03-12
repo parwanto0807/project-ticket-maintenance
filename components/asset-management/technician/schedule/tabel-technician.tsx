@@ -189,7 +189,7 @@ export default function TechnicianScheduleTable({
                                                 </div>
                                                 <div className="flex datas-center gap-2">
                                                     <FaUser className="w-4 h-4 text-orange-500" />
-                                                    <p className="font-bold text-sm items-center justify-center">User Complain  :</p>
+                                                    <p className="font-bold text-sm items-center justify-center text-nowrap">User Complain  :</p>
                                                     <p className="text-sm text-gray-600 dark:text-gray-300">
                                                         {data.employee?.name}
                                                     </p>
@@ -202,7 +202,7 @@ export default function TechnicianScheduleTable({
                                                 </div>
                                                 <div className="flex datas-center gap-2">
                                                     <FaCalendarAlt className="w-4 h-4 text-orange-500" />
-                                                    <p className="font-bold text-sm items-center justify-center">Schedule Action :</p>
+                                                    <p className="font-bold text-sm items-center justify-center text-nowrap">Schedule Action :</p>
                                                     <p className="text-sm text-gray-600 dark:text-gray-300">
                                                         {data.scheduledDate
                                                             ? new Date(data.scheduledDate).toDateString()
