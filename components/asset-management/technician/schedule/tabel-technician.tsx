@@ -153,9 +153,10 @@ export default function TechnicianScheduleTable({
                         {/* Tampilan Mobile */}
                         <div className="md:hidden">
                             {Array.isArray(tickets) && tickets.map((data) => {
-                                const dynamicMessage = `Saya telah mengerjakan.
-                                    Ticket Number: ${data.ticketNumber}
-                                    Asset Name: ${data.asset.product.part_name} mohon di cek dan di Closing`;
+                                const dynamicMessage = 
+                                `Saya telah mengerjakan Ticket Number: ${data.ticketNumber} 
+        Asset Name: ${data.asset.product.part_name} mohon di cek dan di Closing , 
+        Cek detail ticket di sini: https://solusiit.net/dashboard/technician/assign?ticket=${data.ticketNumber}`;
                                 return (
                                     <Card
                                         key={data.id}
@@ -317,9 +318,10 @@ export default function TechnicianScheduleTable({
                             </TableHeader>
                             <TableBody className="text-[12px] border-none">
                                 {Array.isArray(tickets) && tickets.map((data, index) => {
-                                    const dynamicMessage = `Saya telah mengerjakan.
-Ticket Number: ${data.ticketNumber}
-Asset Name: ${data.asset.product.part_name} mohon di cek dan di Closing`;
+                                const dynamicMessage = 
+                                `Saya telah mengerjakan Ticket Number: ${data.ticketNumber} 
+        Asset Name: ${data.asset.product.part_name} mohon di cek dan di Closing , 
+        Cek detail ticket di sini: https://solusiit.net/dashboard/technician/assign?ticket=${data.ticketNumber}`;
 
                                     return (
                                         <TableRow key={data.id}>

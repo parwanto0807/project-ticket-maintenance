@@ -15,6 +15,7 @@ import ImageDialog from "./imageDialog";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PrinterIcon } from "@heroicons/react/24/outline";
+import { Card } from "@/components/ui/card";
 
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
@@ -27,9 +28,9 @@ export default async function AssetTable({ query, currentPage }: { query: string
                 <div className="rounded-lg p-2 md:pt-0 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                     <div className="md:hidden">
                         {Array.isArray(data) && data.map((data) => (
-                            <div
+                            <Card
                                 key={data.id}
-                                className="mb-2 w-full rounded-md p-4"
+                                className="mb-2 w-full rounded-md p-4 bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950"
                             >
                                 <div className="grid grid-cols-1 items-center justify-between border-b pb-1">
                                     <div>
@@ -72,7 +73,7 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Card>
                         ))}
                     </div>
 
