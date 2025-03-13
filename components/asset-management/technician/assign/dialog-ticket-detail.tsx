@@ -39,7 +39,7 @@ export function TicketDialog({ ticket }: { ticket: TicketMaintenance }) {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="text-gray-600 rounded-md border p-2 hover:bg-green-800 h-8 text-center hover:text-white flex justify-center items-center"
+          className= "rounded-md border p-2 bg-green-500 text-white hover:bg-green-600 h-8 text-center hover:text-white flex justify-center items-center"
         >
           <MagnifyingGlassIcon className="w-4" />
         </Button>

@@ -195,7 +195,7 @@ export default function HistoryTableTechnician({ offset, searchParams }: { offse
                                                         {ticket.ticketNumber}
                                                     </Badge>
                                                     <Badge
-                                                        className={`font-mono tracking-widest uppercase ${ticket.status === "Pending" ? "bg-red-100 text-red-500"
+                                                        className={`absolute right-10 font-mono tracking-widest uppercase ${ticket.status === "Pending" ? "bg-red-100 text-red-500"
                                                             : ticket.status === "Assigned" ? "bg-blue-100 text-blue-500"
                                                                 : ticket.status === "In_Progress" ? "bg-orange-100 text-orange-500"
                                                                     : ticket.status === "Completed" ? "bg-green-100 text-green-500"
