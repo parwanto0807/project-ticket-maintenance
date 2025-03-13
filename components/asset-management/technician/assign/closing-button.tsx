@@ -15,13 +15,13 @@ import { useRouter } from "next/navigation";
 
 interface TicketCompleteDialogProps {
   ticketId: string;
-  status: string; // Contoh: "In_Progress", dsb.
+  disabled?: boolean;
   onUpdate?: () => void;
 }
 
 const TicketCompleteDialog: React.FC<TicketCompleteDialogProps> = ({
   ticketId,
-  status,
+  disabled,
   onUpdate,
 }) => {
   const router = useRouter();
@@ -61,7 +61,7 @@ const TicketCompleteDialog: React.FC<TicketCompleteDialogProps> = ({
         <Button
           variant="outline"
           size="sm"
-          disabled={status !== "In_Progress"}
+          disabled={disabled}
           className="text-green-500 border border-green-500 hover:bg-green-500 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Closing Ticket

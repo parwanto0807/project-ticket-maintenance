@@ -87,7 +87,7 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                         <span className="font-bold text-gray-700">Technician</span> &nbsp;
                                         <span>{data.technician?.name}</span>
                                         <div className="flex items-center justify-end gap-2 ">
-                                            <TicketCompleteDialog ticketId={data.id} status={data.status} />
+                                            <TicketCompleteDialog ticketId={data.id} />
                                             <div>
                                                 {data.technician ? (
                                                     <div className="flex items-center justify-between w-full">
@@ -229,8 +229,8 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                     <TableCell >{data.scheduledDate?.toDateString()}</TableCell>
                                     <TableCell >{data.completedDate?.toDateString()}</TableCell>
                                     <TableCell >
-                                    <Badge variant="destructive">
-                                        {data.employee.name}
+                                        <Badge variant="destructive">
+                                            {data.employee.name}
                                         </Badge>
                                     </TableCell>
                                     <TableCell>
@@ -292,7 +292,18 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                                 <DeleteAlertTicket id={data.id} />
                                             )}
                                             <TicketDialog ticket={data} />
-                                            <TicketCompleteDialog ticketId={data.id} status={data.status} />
+
+                                            {data.actionDescription && data.actionDescription.trim() !== "" ?(
+                                                <TicketCompleteDialog
+                                                    ticketId={data.id}
+                                                />
+                                            ) : (
+                                                <TicketCompleteDialog 
+                                                ticketId={data.id} 
+                                                disabled
+                                            />
+                                            )}
+
                                         </div>
                                     </TableCell>
 
