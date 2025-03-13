@@ -43,13 +43,14 @@ const TicketCompleteDialog: React.FC<TicketCompleteDialogProps> = ({
       if (!response.ok) {
         throw new Error("Failed to update status");
       }
-      router.refresh();
       if (onUpdate) onUpdate();
+      router.push("/dashboard/technician/assign"); // Navigasi ke halaman dashboard technician
+      router.refresh();
+      
     } catch (error) {
       console.error("Error updating status:", error);
     } finally {
       setLoading(false);
-      // Tutup dialog segera setelah proses selesai
       setDialogOpen(false);
     }
   };
