@@ -46,7 +46,8 @@ export function TicketDialog({ ticket }: { ticket: Ticket }) {
             <DialogContent className="max-w-lg max-h-[70vh] overflow-y-auto rounded-lg shadow-lg">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-bold text-gray-800 dark:text-white">
-                        {ticket.ticketNumber} - {ticket.createdAt.toDateString()}
+                        {ticket.ticketNumber} - {ticket.createdAt ? new Date(ticket.createdAt).toDateString() : "-"}
+
                     </DialogTitle>
                     <DialogDescription className="text-sm text-gray-600 dark:text-gray-300">
                         Detail lengkap ticket maintenance

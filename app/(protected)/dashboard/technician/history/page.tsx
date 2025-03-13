@@ -10,10 +10,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import { fetchTicketListHistory, fetchTicketListPages } from "@/data/asset/ticket";
-import HistoryTable from "@/components/asset-management/technician/history/tabel";
-import { Ticket } from "@/types/ticket";
+import { fetchTicketListPages } from "@/data/asset/ticket";
+// import HistoryTable from "@/components/asset-management/technician/history/tabel";
+// import { Ticket } from "@/types/ticket";
 import { Badge } from "@/components/ui/badge";
+import HistoryTableTechnician from "@/components/asset-management/technician/history/tabel-history-technician";
 
 const TicketPage = async ({ searchParams }: { searchParams: { query?: string; page?: string } }) => {
   // const { query = "", page } = await searchParams || { query: "", page: "1" };
@@ -23,7 +24,7 @@ const TicketPage = async ({ searchParams }: { searchParams: { query?: string; pa
   const query = searchParams.query || "";
   const currentPage = parseInt(searchParams.page || "1", 10);
   const totalPages = await fetchTicketListPages(query || "");
-  const tickets = await fetchTicketListHistory(query, currentPage);
+  // const tickets = await fetchTicketListHistory(query, currentPage);
   const offset = (currentPage - 1);
 
   return (
@@ -61,7 +62,7 @@ const TicketPage = async ({ searchParams }: { searchParams: { query?: string; pa
           </div>
 
           <div className="w-full">
-            <HistoryTable data={tickets as Ticket[]} offset={offset} />
+            <HistoryTableTechnician  offset={offset} searchParams={searchParams} />
           </div>
 
           <div className="flex justify-center mt-4">

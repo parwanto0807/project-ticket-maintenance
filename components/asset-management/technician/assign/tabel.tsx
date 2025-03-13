@@ -228,7 +228,11 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                     </TableCell>
                                     <TableCell >{data.scheduledDate?.toDateString()}</TableCell>
                                     <TableCell >{data.completedDate?.toDateString()}</TableCell>
-                                    <TableCell >{data.employee.name}</TableCell>
+                                    <TableCell >
+                                    <Badge variant="destructive">
+                                        {data.employee.name}
+                                        </Badge>
+                                    </TableCell>
                                     <TableCell>
                                         {data.technician ? (
                                             <div className="flex items-center justify-between w-full">

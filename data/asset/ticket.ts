@@ -161,6 +161,48 @@ export const fetchTicketListHistory = async (query: string, currentPage: number)
     }
 }
 
+export const fetchTicketListHistoryTechnician = async (query: string, currentPage: number, email: string) => {
+    noStore()
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE_TICKET;
+    try {
+        const ticketFind = await db.ticketMaintenance.findMany({
+            skip: offset,
+            take: ITEMS_PER_PAGE_TICKET,
+            include: {
+                employee: true,
+                technician: true,
+                asset: {
+                    include: {
+                        product: true
+                    }
+                },
+            },
+            orderBy: {
+                updatedAt: 'desc'
+            },
+            where: {
+                AND: [
+                    {technician: { email: email}},
+                    {
+                        OR: [
+                            { ticketNumber: { contains: query, mode: 'insensitive' } },
+                            { analisaDescription: { contains: query, mode: 'insensitive' } },
+                            { troubleUser: { contains: query, mode: 'insensitive' } },
+                            { actionDescription: { contains: query, mode: 'insensitive' } },
+                        ]
+                    },
+                    {
+                        NOT: { status: { in: ["Pending", "Assigned", "In_Progress"] } }
+                    }
+                ]
+            }
+        })
+        return ticketFind;
+    } catch (error) {
+        console.error("Filed fetch ticket list", error)
+        throw new Error("Files fetch ticket list")
+    }
+}
 export const fetchTicketList = async (query: string, currentPage: number, email: string) => {
     noStore();
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_TICKET_USER;

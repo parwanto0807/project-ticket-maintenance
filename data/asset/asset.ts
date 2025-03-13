@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { unstable_noStore as noStore } from 'next/cache';
 
-export const ITEMS_PER_PAGE_ASSET = 15;
+export const ITEMS_PER_PAGE_ASSET = 5;
 
 export async function generateAssetNumber(id: string) {
     try {
@@ -153,7 +153,31 @@ export const fetchAssetById = async (id: string) => {
 export const fetchAssetListByEmail = async (query: string, currentPage: number, email: string) => {
     noStore();
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET;
+
     try {
+        // 🔹 1. Hitung total jumlah aset yang cocok dengan filter
+        const assetCount = await db.asset.count({
+            where: {
+                AND: [
+                    { employee: { email: email } },
+                    {
+                        OR: [
+                            { location: { contains: query, mode: 'insensitive' } },
+                            { assetNumber: { contains: query, mode: 'insensitive' } },
+                            { product: { part_name: { contains: query, mode: 'insensitive' } } },
+                            { product: { part_number: { contains: query, mode: 'insensitive' } } },
+                            { assetType: { name: { contains: query, mode: 'insensitive' } } },
+                            { employee: { name: { contains: query, mode: 'insensitive' } } },
+                        ]
+                    },
+                ],
+            },
+        });
+
+        // 🔹 2. Hitung total halaman
+        const totalPagesAsset = Math.ceil(assetCount / ITEMS_PER_PAGE_ASSET);
+
+        // 🔹 3. Ambil daftar aset untuk halaman saat ini
         const assetFind = await db.asset.findMany({
             skip: offset,
             take: ITEMS_PER_PAGE_ASSET,
@@ -181,10 +205,51 @@ export const fetchAssetListByEmail = async (query: string, currentPage: number, 
                     },
                 ],
             },
-        })
-        return assetFind;
+        });
+
+        console.log("Total Assets:", assetCount, "| Total Pages:", totalPagesAsset);
+
+        return { assets: assetFind, totalPages: totalPagesAsset };
     } catch (error) {
-        console.error('Can not find Asset List', error);
+        console.error('❌ Error fetching Asset List:', error);
         return { error: 'Can not find Asset List' };
+    }
+};
+
+
+export const fetchAssetListPagesByEmail = async (query: string, email: string) => {
+    noStore();
+
+    try {
+        if (!email) {
+            console.warn("⚠️ Email kosong! Tidak dapat mengambil data aset.");
+            return 0;
+        }
+        const assetCount = await db.asset.count({
+            where: {
+                AND: [
+                    { employee: { email: email } },
+                    {
+                        OR: [
+
+                            { location: { contains: query, mode: 'insensitive' } },
+                        ]
+                    }
+                ],
+            },
+            orderBy: {
+                updatedAt: 'desc'
+            }
+        });
+        const totalPagesAsset = Math.ceil(assetCount / ITEMS_PER_PAGE_ASSET);
+        console.log("Total Backend", totalPagesAsset)
+        console.log("Email yang dicari:", email);
+        console.log("Query pencarian:", query);
+        console.log("Jumlah data ditemukan:", assetCount);
+
+        return totalPagesAsset;
+    } catch (error) {
+        console.error('Error fetching asset', error)
+        throw new Error('Error fetching asset');
     }
 }

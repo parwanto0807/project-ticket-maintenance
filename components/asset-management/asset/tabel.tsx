@@ -16,12 +16,15 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PrinterIcon } from "@heroicons/react/24/outline";
 import { Card } from "@/components/ui/card";
+import Pagination from "@/components/ui/pagination";
 
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
 export default async function AssetTable({ query, currentPage }: { query: string; currentPage: number; }) {
     const data = await fetchAssetList(query, currentPage);
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_PRODUCT;
+    const totalPages = currentPage;
+
     return (
         <div className="mt-6 flow-root">
             <div className="inline-block min-w-full align-middle">
@@ -137,6 +140,9 @@ export default async function AssetTable({ query, currentPage }: { query: string
 
                         </TableBody>
                     </Table>
+                </div>
+                <div className="flex justify-center mt-4">
+                    <Pagination totalPages={totalPages} />
                 </div>
             </div>
         </div>

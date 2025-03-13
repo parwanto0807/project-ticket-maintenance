@@ -3,7 +3,7 @@ import Link from "next/link"
 //import PageProduct from "@/components/demo/products-content";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import Search from "@/components/ui/search";
-import Pagination from "@/components/ui/pagination";
+// import Pagination from "@/components/ui/pagination";
 
 import {
   Breadcrumb,
@@ -13,7 +13,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import { fetchAssetListPages } from "@/data/asset/asset";
+// import { fetchAssetListPagesByEmail } from "@/data/asset/asset";
 import AssetUserTable from "@/components/asset-management/asset/tabel-user";
 import { Badge } from "@/components/ui/badge";
 
@@ -25,9 +25,10 @@ const AssetList = async ({
     page?: string;
   }
 }) => {
+
   const { query = "", page } = searchParams || { query: "", page: "1" };
   const currentPage = Number(page) || 1;
-  const totalPages = await fetchAssetListPages(query || "");
+  // const totalPages = await fetchAssetListPagesByEmail(query || "", email || "");
 
   return (
     <ContentLayout title="Asset List">
@@ -65,10 +66,10 @@ const AssetList = async ({
           <div className="w-full">
             <AssetUserTable query={query} currentPage={currentPage} />
           </div>
-
+          {/* 
           <div className="flex justify-center mt-4">
             <Pagination totalPages={totalPages} />
-          </div>
+          </div> */}
         </div>
       </div>
     </ContentLayout>
