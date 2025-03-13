@@ -2,7 +2,7 @@ import Link from "next/link"
 //import PageProduct from "@/components/demo/products-content";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import Search from "@/components/ui/search";
-import Pagination from "@/components/ui/pagination";
+// import Pagination from "@/components/ui/pagination";
 
 
 import {
@@ -13,7 +13,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import { fetchTicketListPagesUser } from "@/data/asset/ticket";
+// import { fetchTicketListPagesUser } from "@/data/asset/ticket";
 import { CreateTicketButton } from "@/components/asset-management/maintenance/buttons";
 import { Badge } from "@/components/ui/badge";
 import TicketTableUser from "@/components/asset-management/maintenance/tabel-user";
@@ -28,7 +28,7 @@ const TicketPage = async ({
 }) => {
   const { query = "", page } = await searchParams || { query: "", page: "1" };
   const currentPage = Number(page) || 1;
-  const totalPages = await fetchTicketListPagesUser(query);
+  // const totalPages = await fetchTicketListPagesUser(query);
 
   return (
     <ContentLayout title="Maintenance Ticket">
@@ -67,10 +67,10 @@ const TicketPage = async ({
           <div className="w-full">
             <TicketTableUser query={query} currentPage={currentPage} />
           </div>
-
+{/* 
           <div className="flex justify-center mt-4">
             <Pagination totalPages={totalPages} />
-          </div>
+          </div> */}
         </div>
       </div>
     </ContentLayout>

@@ -1,5 +1,3 @@
-// app/api/ticket-list/route.ts
-
 import { NextResponse } from "next/server";
 import { unstable_noStore as noStore } from 'next/cache';
 import { fetchAssetListByEmail } from "@/data/asset/asset";
@@ -18,15 +16,15 @@ export async function GET(req: Request) {
   }
 
   try {
-    const tickets = await fetchAssetListByEmail(query, currentPage, email);
-    if (Array.isArray(tickets) && tickets.length === 0) {
-      return NextResponse.json({ message: "Data tidak ditemukan" }, { status: 200 });
-    }
-    return NextResponse.json(tickets, { status: 200 });
+    const { assets, totalPages } = await fetchAssetListByEmail(query, currentPage, email);
+
+    // ✅ Pastikan data yang dikembalikan dalam bentuk objek dengan totalPages
+    return NextResponse.json({ assets, totalPages }, { status: 200 });
+
   } catch (error) {
-    console.error("Error fetching ticket list:", error);
+    console.error("❌ Error fetching asset list:", error);
     return NextResponse.json(
-      { message: "Terjadi kesalahan saat mengambil data" },
+      { message: "Terjadi kesalahan saat mengambil data", error: error },
       { status: 500 }
     );
   }

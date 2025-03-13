@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { FaArchive } from "react-icons/fa";
 import ImageDialog from "./imageDialog";
 import { formatCurrencyQtt } from "@/lib/utils";
+import Pagination from "@/components/ui/pagination";
 
 interface AssetData {
   id: string;
@@ -41,14 +42,18 @@ interface DashboardDataProps {
   query: string;
   currentPage: number;
 }
-const ITEMS_PER_PAGE_ASSET = 10;
+const ITEMS_PER_PAGE_ASSET = 5;
 
 export default function AssetUserTable({ query, currentPage }: DashboardDataProps) {
   const user = useCurrentUser();
   const email = user?.email || "";
   const [data, setData] = useState<AssetData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [totalPages, setTotalPages] = useState<number>(1);
+
   const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET;
+  // console.log("Total Pages", totalPages)
+  // console.log("Offset", offset)
 
   useEffect(() => {
     async function fetchData() {
@@ -58,8 +63,9 @@ export default function AssetUserTable({ query, currentPage }: DashboardDataProp
         if (!res.ok) {
           throw new Error("Gagal mengambil data asset");
         }
-        const json = await res.json();
-        setData(json);
+        const json  = await res.json();
+        setData(json.assets ||[]);
+        setTotalPages(json.totalPages && json.totalPages > 0 ? json.totalPages : 1); 
       } catch (error) {
         console.error("Error fetching asset list:", error);
       } finally {
@@ -97,17 +103,16 @@ export default function AssetUserTable({ query, currentPage }: DashboardDataProp
                       {/* Status di paling kanan */}
                       <div
                         className={`px-2 py-1 text-xs rounded-md
-                        ${
-                          item.status === "DECOMMISSIONED"
+                        ${item.status === "DECOMMISSIONED"
                             ? "bg-red-100 text-red-500"
                             : item.status === "AVAILABLE"
-                            ? "bg-blue-100 text-blue-500"
-                            : item.status === "IN_USE"
-                            ? "bg-green-100 text-green-500"
-                            : item.status === "UNDER_MAINTENANCE"
-                            ? "bg-red-100 text-red-500"
-                            : "bg-gray-100 text-gray-500"
-                        }`}
+                              ? "bg-blue-100 text-blue-500"
+                              : item.status === "IN_USE"
+                                ? "bg-green-100 text-green-500"
+                                : item.status === "UNDER_MAINTENANCE"
+                                  ? "bg-red-100 text-red-500"
+                                  : "bg-gray-100 text-gray-500"
+                          }`}
                       >
                         {item.status}
                       </div>
@@ -156,8 +161,8 @@ export default function AssetUserTable({ query, currentPage }: DashboardDataProp
               </CardHeader>
               <CardContent>
                 <Table className="w-full mt-2">
-                  <TableHeader>
-                    <TableRow>
+                  <TableHeader >
+                    <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                       <TableHead className="text-black py-2 dark:text-white font-bold uppercase">No</TableHead>
                       <TableHead className="text-black dark:text-white font-bold uppercase">Asset Number</TableHead>
                       <TableHead className="text-black dark:text-white font-bold uppercase">Part Number</TableHead>
@@ -174,7 +179,7 @@ export default function AssetUserTable({ query, currentPage }: DashboardDataProp
                     </TableRow>
                   </TableHeader>
                   <TableBody className="text-[12px]">
-                    {data.map((item, index) => (
+                    {Array.isArray(data) && data.map((item, index) => (
                       <TableRow key={item.id}>
                         <TableCell className="text-center">{offset + index + 1}</TableCell>
                         <TableCell className="text-center font-bold">{item.assetNumber}</TableCell>
@@ -190,16 +195,15 @@ export default function AssetUserTable({ query, currentPage }: DashboardDataProp
                         <TableCell>
                           <div
                             className={`px-2 py-1 text-xs rounded-md inline-block
-                              ${
-                                item.status === "DECOMMISSIONED"
-                                  ? "bg-red-100 text-red-500"
-                                  : item.status === "AVAILABLE"
+                              ${item.status === "DECOMMISSIONED"
+                                ? "bg-red-100 text-red-500"
+                                : item.status === "AVAILABLE"
                                   ? "bg-blue-100 text-blue-500"
                                   : item.status === "IN_USE"
-                                  ? "bg-green-100 text-green-500"
-                                  : item.status === "UNDER_MAINTENANCE"
-                                  ? "bg-red-100 text-red-500"
-                                  : "bg-gray-100 text-gray-500"
+                                    ? "bg-green-100 text-green-500"
+                                    : item.status === "UNDER_MAINTENANCE"
+                                      ? "bg-red-100 text-red-500"
+                                      : "bg-gray-100 text-gray-500"
                               }`}
                           >
                             {item.status}
@@ -223,6 +227,9 @@ export default function AssetUserTable({ query, currentPage }: DashboardDataProp
                 </Table>
               </CardContent>
             </Card>
+          </div>
+          <div className="flex justify-center mt-4">
+            <Pagination totalPages={totalPages} />
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@ import { getMenuList } from '@/lib/menu-list';
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
 import InstallButton from '../demo/installButton';
-import WhatsAppButton from "@/components/whatsappButton"; // Pastikan path ini sesuai
+// import WhatsAppButton from "@/components/whatsappButton"; // Pastikan path ini sesuai
 
 export default function DashboardTechnicianPage() {
   const user = useCurrentUser();
@@ -17,22 +17,22 @@ export default function DashboardTechnicianPage() {
   const menuGroups = getMenuList(pathname, role);
 
   // Daftar nomor WhatsApp
-  const whatsappNumbers = [
-    { id: 1, label: "Teknisi 1 Parwanto", phone: "6281280212068" },
-    { id: 2, label: "Teknisi 2 Agung", phone: "6281280660953" }
-  ];
+  // const whatsappNumbers = [
+  //   { id: 1, label: "Teknisi 1 Parwanto", phone: "6281280212068" },
+  //   { id: 2, label: "Teknisi 2 Agung", phone: "6281280660953" }
+  // ];
 
-    // Fungsi mendapatkan ucapan berdasarkan waktu
-    const getTimeBasedGreeting = () => {
-      const hours = new Date().getHours();
-      if (hours >= 5 && hours < 12) return "Selamat pagi";
-      if (hours >= 12 && hours < 16) return "Selamat siang";
-      if (hours >= 16 && hours < 19) return "Selamat sore";
-      return "Selamat malam";
-    };
+  //   // Fungsi mendapatkan ucapan berdasarkan waktu
+  //   const getTimeBasedGreeting = () => {
+  //     const hours = new Date().getHours();
+  //     if (hours >= 5 && hours < 12) return "Selamat pagi";
+  //     if (hours >= 12 && hours < 16) return "Selamat siang";
+  //     if (hours >= 16 && hours < 19) return "Selamat sore";
+  //     return "Selamat malam";
+  //   };
 
      // Message yang akan dikirim ke WhatsApp, bisa dinamis berdasarkan data
-  const message = `${getTimeBasedGreeting()} - Saya telah membuka ticket maintenance mohon di cek.`;
+  // const message = `${getTimeBasedGreeting()} - Saya telah membuka ticket maintenance mohon di cek.`;
 
 
   // Fungsi logout
@@ -94,8 +94,8 @@ export default function DashboardTechnicianPage() {
         </div>
       </div>
 
-      {/* Floating WhatsApp Button */}
-      <WhatsAppButton numbers={whatsappNumbers} message={message} />
+      {/* Floating WhatsApp Button
+      <WhatsAppButton numbers={whatsappNumbers} message={message} /> */}
     </ScrollArea>
   );
 }

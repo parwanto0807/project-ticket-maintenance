@@ -19,7 +19,8 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { Card } from "@/components/ui/card";
 import WhatsAppLinkButtonTable from "@/components/whatsappButtonTable";
 import { FaTicketAlt, FaExclamationCircle, FaCalendarAlt, FaUser } from "react-icons/fa"; // Ikon untuk card
-import { motion } from "framer-motion"; // Animasi
+import { motion } from "framer-motion";
+import Pagination from "@/components/ui/pagination";
 
 const ITEMS_PER_PAGE_PRODUCT = 10;
 
@@ -58,13 +59,16 @@ interface TicketTableProps {
     currentPage: number;
 }
 
-export default function TicketTableUser({ query, currentPage }: TicketTableProps) {
+export default  function TicketTableUser({ query, currentPage }: TicketTableProps) {
     const user = useCurrentUser();
     const email = user?.email || "";
     const [data, setData] = useState<Ticket[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_PRODUCT;
 
+    const totalPages = currentPage    
+    // console.log("Total Pages", totalPages);
+    // console.log("Data", data)
     // Daftar nomor WhatsApp
     const whatsappNumbers = [
         { id: 1, label: "Teknisi 1 Parwanto", phone: "6281280212068" },
@@ -376,6 +380,9 @@ Asset Name: ${item.asset.product.part_name}`;
                                 })}
                         </TableBody>
                     </Table>
+                    <div className="flex justify-center mt-4">
+                        <Pagination totalPages={totalPages} />
+                    </div>
                 </div>
             </div>
         </div>
