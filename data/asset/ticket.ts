@@ -379,6 +379,11 @@ export const fetchTicketAnalistAll = async () => {
                             }
                         }
                     }
+                },
+                employee: {
+                    include: {
+                        department: true
+                    }
                 }
             },
             orderBy: {
@@ -448,6 +453,24 @@ export const fetchTicketAnalistAll = async () => {
             return acc;
         }, {});
 
+        // 4️⃣ Grouping dan counting berdasarkan group.name
+        const departmentCounts = filteredTickets.reduce((acc: { [key: string]: { total: number; latestCreatedAt: Date } }, ticket) => {
+            const departmentName = ticket.employee?.department?.dept_name || "Unknown Department";
+            const ticketDate = new Date(ticket.createdAt);
+
+            if (!acc[departmentName]) {
+                acc[departmentName] = { total: 0, latestCreatedAt: ticketDate };
+            }
+
+            acc[departmentName].total += 1;
+
+            if (ticketDate > acc[departmentName].latestCreatedAt) {
+                acc[departmentName].latestCreatedAt = ticketDate;
+            }
+
+            return acc;
+        }, {});
+
         // Ubah hasil ke format array untuk frontend
         const result = {
             groupData: Object.entries(groupCounts).map(([name, data]) => ({
@@ -464,6 +487,11 @@ export const fetchTicketAnalistAll = async () => {
                 name,
                 total: data.total,
                 createdAt: data.latestCreatedAt
+            })),
+            departmentTicketData: Object.entries(departmentCounts).map(([name, data]) => ({
+                name,
+                total: data.total,
+                createdAt: data.latestCreatedAt
             }))
         };
 
@@ -474,3 +502,78 @@ export const fetchTicketAnalistAll = async () => {
     }
 };
 
+export const fetchTicketAnalistDepartment = async () => {
+    noStore();
+    try {
+        const ticketFind = await db.ticketMaintenance.findMany({
+            include: {
+                employee: {
+                    include: {
+                        department: true // Include department untuk mendapatkan dept_name
+                    }
+                },
+                technician: true,
+                asset: {
+                    include: {
+                        product: true
+                    }
+                },
+            },
+            orderBy: {
+                updatedAt: 'desc'
+            },
+        });
+
+        // Hitung tanggal mulai dari 12 bulan terakhir
+        const startDate = startOfMonth(subMonths(new Date(), 11));
+
+        // Filter tiket yang berada dalam rentang 12 bulan terakhir
+        const filteredTickets = ticketFind.filter(ticket => 
+            new Date(ticket.createdAt) >= startDate
+        );
+
+        // Grouping dan counting berdasarkan department.dept_name dan employee.name
+        const departmentCounts = filteredTickets.reduce((acc: { 
+            [key: string]: { total: number; latestCreatedAt: Date; employees: { name: string; ticketCount: number }[] } 
+        }, ticket) => {
+            const deptName = ticket.employee?.department?.dept_name || "Unknown Department";
+            const employeeName = ticket.employee?.name || "Unknown Employee";
+            const ticketDate = new Date(ticket.createdAt);
+
+            // Jika departemen belum ada di accumulator, inisialisasi
+            if (!acc[deptName]) {
+                acc[deptName] = { total: 0, latestCreatedAt: ticketDate, employees: [] };
+            }
+
+            acc[deptName].total += 1;
+
+            // Cek apakah employee sudah ada di daftar
+            const existingEmployee = acc[deptName].employees.find(e => e.name === employeeName);
+            if (existingEmployee) {
+                existingEmployee.ticketCount += 1;
+            } else {
+                acc[deptName].employees.push({ name: employeeName, ticketCount: 1 });
+            }
+
+            // Update latestCreatedAt jika tiket lebih baru
+            if (ticketDate > acc[deptName].latestCreatedAt) {
+                acc[deptName].latestCreatedAt = ticketDate;
+            }
+
+            return acc;
+        }, {});
+
+        // Ubah hasil ke format array agar lebih mudah diolah di frontend
+        const result = Object.entries(departmentCounts).map(([dept_name, data]) => ({
+            dept_name,
+            total: data.total,
+            createdAt: data.latestCreatedAt, // Tambahkan createdAt untuk tracking kapan tiket terbaru dibuat
+            employees: data.employees // Menampilkan daftar karyawan dan jumlah tiket mereka
+        }));
+
+        return result;
+    } catch (error) {
+        console.error("Failed to fetch ticket list", error);
+        throw new Error("Failed to fetch ticket list");
+    }
+};

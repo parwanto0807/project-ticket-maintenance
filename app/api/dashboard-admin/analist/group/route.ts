@@ -24,11 +24,15 @@ export async function GET() {
         const filteredCategoryProductData = tickets.cetgoriProductData.filter((categoryProduct) =>
             new Date(categoryProduct.createdAt) >= startDate
         );
+        const filteredDepartmentData = tickets.departmentTicketData.filter((departmentData) =>
+            new Date(departmentData.createdAt) >= startDate
+        );
 
         return NextResponse.json({
             groupData: filteredGroupData,
             jenisProductData: filteredJenisProductData,
             categoryProductData: filteredCategoryProductData,
+            departmentTicketData: filteredDepartmentData,
         });
     } catch (error) {
         console.error("Error fetching ticket data:", error);
