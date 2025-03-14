@@ -35,7 +35,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-3xl font-bold tracking-tight"
+            className="text-1xl lg:text-3xl font-bold tracking-tight "
           >
             Hi, Welcome back {user?.name} 👋
           </motion.h2>
@@ -44,10 +44,10 @@ export default function DashboardPage() {
         {/* Tabs Section */}
         <Tabs defaultValue="overview" className="space-y-8">
           <TabsList className="flex w-full overflow-x-auto whitespace-nowrap px-4 justify-start md:justify-center">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="analytics1">Analytics 1</TabsTrigger>
-            <TabsTrigger value="analytics2">Analytics 2</TabsTrigger>
-            <TabsTrigger value="reports" disabled>Reports</TabsTrigger>
+            <TabsTrigger value="overview" className="text-[10px] lg:text-sm">Overview</TabsTrigger>
+            <TabsTrigger value="analytics1" className="text-[10px]  lg:text-sm">Analytics 1</TabsTrigger>
+            <TabsTrigger value="analytics2" className="text-[10px]  lg:text-sm">Analytics 2</TabsTrigger>
+            <TabsTrigger value="reports" className="text-[10px]  lg:text-sm" disabled>Reports</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
