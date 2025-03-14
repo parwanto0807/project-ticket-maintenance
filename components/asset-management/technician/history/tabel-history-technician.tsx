@@ -37,33 +37,13 @@ import Link from "next/link";
 import { Ticket } from "@/types/ticket";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
-// 🔹 Fungsi Fetch Data dari API berdasarkan Role
-async function fetchTickets(query: string, currentPage: number, email: string) {
-    try {
-        // 🔹 Panggil API dengan parameter yang sesuai
-        const response = await fetch(
-            `/api/ticket-history?query=${encodeURIComponent(query)}&currentPage=${currentPage}&email=${encodeURIComponent(email)}`
-        );
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch tickets");
-        }
-
-        const result = await response.json();
-        return result.data; // Mengembalikan hanya data tiket
-    } catch (error) {
-        console.error("Error fetching tickets:", error);
-        return [];
-    }
-}
-
-
 export default function HistoryTableTechnician({ offset, searchParams }: { offset: number; searchParams: { query?: string; page?: string } }) {
     // 🔹 State untuk menyimpan data tiket
     const [data, setData] = useState<Ticket[]>([]);
     const [loading, setLoading] = useState(true);
     const user = useCurrentUser();
     const email = user?.email;
+    const role = user?.role;
 
     // 🔹 Default nilai query dan halaman awal
     const query = searchParams.query || "";
@@ -73,22 +53,39 @@ export default function HistoryTableTechnician({ offset, searchParams }: { offse
     const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
     const [selectedTechnicians, setSelectedTechnicians] = useState<string[]>([]);
 
-    // 🔹 Ambil data tiket berdasarkan email saat pertama kali komponen dimuat
+    // 🔹 Fetch Data berdasarkan role
     useEffect(() => {
-        async function loadTickets() {
+        async function fetchTickets() {
+            if (!role || !email) return; // Pastikan role dan email sudah ada sebelum fetch
+
             setLoading(true);
             try {
-                const tickets = await fetchTickets(query, currentPage, email || "");
-                setData(tickets);
+                let apiUrl = "";
+
+                // 🔹 Pilih API berdasarkan role
+                if (role === "TECHNICIAN") {
+                    apiUrl = `/api/ticket-history?query=${encodeURIComponent(query)}&currentPage=${currentPage}&email=${encodeURIComponent(email)}`;
+                } else if (role === "ADMIN") {
+                    apiUrl = `/api/ticket-history-admin?query=${encodeURIComponent(query)}&currentPage=${currentPage}`;
+                }
+
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch tickets");
+                }
+
+                const result = await response.json();
+                setData(result.data);
             } catch (error) {
                 console.error("Error fetching tickets:", error);
             } finally {
                 setLoading(false);
             }
         }
-        loadTickets();
-    }, [query, email, currentPage]); // 🔹 Memastikan data diperbarui jika email atau halaman berubah
 
+        fetchTickets();
+    }, [query, email, role, currentPage]); // 🔹 Memastikan data diperbarui jika email, role, atau halaman berubah
 
     // Filter data berdasarkan multi-select filter
     const filteredData = data.filter((item) => {

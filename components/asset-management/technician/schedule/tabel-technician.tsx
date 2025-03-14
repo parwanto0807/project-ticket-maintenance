@@ -114,7 +114,7 @@ export default function TechnicianScheduleTable({
                 apiUrl = `/api/schedule/admin?query=${encodeURIComponent(query)}&currentPage=${currentPage}`;
             }
 
-            console.log("Fetching data from:", apiUrl); 
+            // console.log("Fetching data from:", apiUrl); 
 
             const res = await fetch(apiUrl);
             const result = await res.json();
