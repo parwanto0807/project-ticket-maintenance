@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import DashboardChartSectionAdmin from './ticket-maintenance-chart';
 import DashboardCardsAdmin from './dashboard-card';
+import DashboardChartAnalistGroup from './analist-chart-group';
 
 export default function DashboardPage() {
   const user = useCurrentUser();
@@ -46,7 +47,7 @@ export default function DashboardPage() {
         <Tabs defaultValue="overview" className="space-y-8">
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="analytics" disabled>
+            <TabsTrigger value="analytics">
               Analytics
             </TabsTrigger>
             <TabsTrigger value="reports" disabled>
@@ -75,6 +76,11 @@ export default function DashboardPage() {
               <motion.div variants={chartVariants} className="col-span-2 lg:col-span-7">
                 <DashboardChartSectionAdmin />
               </motion.div>
+            </motion.div>
+          </TabsContent>
+          <TabsContent value="analytics" className="space-y-4">
+          <motion.div variants={chartVariants} className="col-span-2 lg:col-span-7">
+            <DashboardChartAnalistGroup/>
             </motion.div>
           </TabsContent>
         </Tabs>
