@@ -153,7 +153,7 @@ export default function DashboardChartAnalist2() {
             <Card className="col-span-2 lg:col-span-3 bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply h-full">
                 <CardHeader>
                     <CardTitle>Recent tickets</CardTitle>
-                    <CardDescription>You made {overviewChartDepartmentDataDetail.length} tickets this month from all users.</CardDescription>
+                    <CardDescription>You made {overviewChartDepartmentDataDetail.length} Department tickets this last 12 month from all users.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col justify-between h-full">
                     <div className="space-y-8">
