@@ -174,7 +174,13 @@ export default function DashboardChartAnalist2() {
 
                                         {/* Informasi Departemen */}
                                         <div className="ml-4 space-y-1 w-full">
-                                            <p className="text-lg font-bold leading-none"><Badge variant="outline" className="font-bold border-orange-400">{dept.dept_name}</Badge></p>
+                                            <div className="text-lg font-bold leading-none">
+                                                <span>
+                                                    <Badge
+                                                        variant="outline" className="font-bold border-orange-400">{dept.dept_name}
+                                                    </Badge>
+                                                </span>
+                                            </div>
                                             <p className="text-xs text-medium md:text-sm flex justify-between">
                                                 <span className="font-bold">Total Tickets:</span>
                                                 <span className="font-semibold">{dept.total} Tickets</span>
