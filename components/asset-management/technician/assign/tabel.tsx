@@ -85,7 +85,7 @@ export default async function AssignTable({ query, currentPage }: { query: strin
 
                                     <div className="w-full items-center justify-between pt-0">
                                         <span className="font-bold text-gray-700">Technician</span> &nbsp;
-                                        <span>{data.technician?.name}</span>
+                                        <span>{data.technician?.name}</span> &nbsp;
                                         <div className="flex items-center justify-end gap-2 ">
                                             <TicketCompleteDialog ticketId={data.id} />
                                             <div>
@@ -236,7 +236,7 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                     <TableCell>
                                         {data.technician ? (
                                             <div className="flex items-center justify-between w-full">
-                                                <span className="font-bold text-gray-700">{data.technician.name}</span>
+                                                <span className="font-bold text-gray-700">{data.technician.name}</span> &nbsp;
                                                 <TicketMaintenanceUpdateSheet
                                                     ticketId={data.id}
                                                     technicians={technician} // array technician dari getTechniciansForData()

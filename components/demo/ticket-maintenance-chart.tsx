@@ -114,7 +114,7 @@ export default function DashboardChartSectionAdmin() {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
       {/* Card Overview dengan Chart */}
-      <Card className="col-span-2 lg:col-span-4 bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply">
+      <Card className="col-span-2 lg:col-span-4 bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply h-full">
         <CardHeader>
           <CardTitle>Overview Ticket Maintenance Last 12 Months </CardTitle>
         </CardHeader>
@@ -155,7 +155,7 @@ export default function DashboardChartSectionAdmin() {
       </Card>
 
       {/* Card Recent tickets */}
-      <Card className="col-span-2 lg:col-span-3 bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply mb-20">
+      <Card className="col-span-2 lg:col-span-3 bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply mb-20 h-full">
         <CardHeader>
           <CardTitle>Recent tickets</CardTitle>
           <CardDescription>You made 6 tickets this month from all user.</CardDescription>
