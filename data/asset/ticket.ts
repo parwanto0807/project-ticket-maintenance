@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { unstable_noStore as noStore } from "next/cache";
+import { startOfMonth, subMonths } from 'date-fns';
 
 const ITEMS_PER_PAGE_TICKET = 15;
 const ITEMS_PER_PAGE_TICKET_USER = 10;
@@ -182,7 +183,7 @@ export const fetchTicketListHistoryTechnician = async (query: string, currentPag
             },
             where: {
                 AND: [
-                    {technician: { email: email}},
+                    { technician: { email: email } },
                     {
                         OR: [
                             { ticketNumber: { contains: query, mode: 'insensitive' } },
@@ -338,4 +339,138 @@ export const fetchTicketListPages = async (query: string) => {
         throw new Error('Error fetching ticket');
     }
 }
+
+export const fetchTicketAnalist = async () => {
+    noStore()
+    try {
+        const ticketFind = await db.ticketMaintenance.findMany({
+            include: {
+                employee: true,
+                technician: true,
+                asset: {
+                    include: {
+                        product: true
+                    }
+                },
+            },
+            orderBy: {
+                updatedAt: 'desc'
+            },
+        })
+        return ticketFind;
+    } catch (error) {
+        console.error("Filed fetch ticket list", error)
+        throw new Error("Files fetch ticket list")
+    }
+}
+
+export const fetchTicketAnalistAll = async () => {
+    noStore();
+    try {
+        const ticketFind = await db.ticketMaintenance.findMany({
+            include: {
+                asset: {
+                    include: {
+                        product: {
+                            include: {
+                                group: true,
+                                jenisproduct: true,
+                                kategoriproduct: true
+                            }
+                        }
+                    }
+                }
+            },
+            orderBy: {
+                updatedAt: 'desc'
+            },
+        });
+
+        // Hitung tanggal mulai dari 12 bulan terakhir
+        const startDate = startOfMonth(subMonths(new Date(), 11));
+
+        // Filter tiket yang berada dalam rentang 12 bulan terakhir
+        const filteredTickets = ticketFind.filter(ticket =>
+            new Date(ticket.createdAt) >= startDate
+        );
+
+        // 1️⃣ Grouping dan counting berdasarkan group.name
+        const groupCounts = filteredTickets.reduce((acc: { [key: string]: { total: number; latestCreatedAt: Date } }, ticket) => {
+            const groupName = ticket.asset?.product?.group?.name || "Unknown Group";
+            const ticketDate = new Date(ticket.createdAt);
+
+            if (!acc[groupName]) {
+                acc[groupName] = { total: 0, latestCreatedAt: ticketDate };
+            }
+
+            acc[groupName].total += 1;
+
+            if (ticketDate > acc[groupName].latestCreatedAt) {
+                acc[groupName].latestCreatedAt = ticketDate;
+            }
+
+            return acc;
+        }, {});
+
+        // 2️⃣ Grouping dan counting berdasarkan jenisProduct.name
+        const jenisProductCounts = filteredTickets.reduce((acc: { [key: string]: { total: number; latestCreatedAt: Date } }, ticket) => {
+            const jenisProductName = ticket.asset?.product?.jenisproduct?.name || "Unknown Product";
+            const ticketDate = new Date(ticket.createdAt);
+
+            if (!acc[jenisProductName]) {
+                acc[jenisProductName] = { total: 0, latestCreatedAt: ticketDate };
+            }
+
+            acc[jenisProductName].total += 1;
+
+            if (ticketDate > acc[jenisProductName].latestCreatedAt) {
+                acc[jenisProductName].latestCreatedAt = ticketDate;
+            }
+
+            return acc;
+        }, {});
+
+        // 3️⃣ Grouping dan counting berdasarkan group.name
+        const categoryCounts = filteredTickets.reduce((acc: { [key: string]: { total: number; latestCreatedAt: Date } }, ticket) => {
+            const groupName = ticket.asset?.product?.kategoriproduct?.name || "Unknown Group";
+            const ticketDate = new Date(ticket.createdAt);
+
+            if (!acc[groupName]) {
+                acc[groupName] = { total: 0, latestCreatedAt: ticketDate };
+            }
+
+            acc[groupName].total += 1;
+
+            if (ticketDate > acc[groupName].latestCreatedAt) {
+                acc[groupName].latestCreatedAt = ticketDate;
+            }
+
+            return acc;
+        }, {});
+
+        // Ubah hasil ke format array untuk frontend
+        const result = {
+            groupData: Object.entries(groupCounts).map(([name, data]) => ({
+                name,
+                total: data.total,
+                createdAt: data.latestCreatedAt
+            })),
+            jenisProductData: Object.entries(jenisProductCounts).map(([name, data]) => ({
+                name,
+                total: data.total,
+                createdAt: data.latestCreatedAt
+            })),
+            cetgoriProductData: Object.entries(categoryCounts).map(([name, data]) => ({
+                name,
+                total: data.total,
+                createdAt: data.latestCreatedAt
+            }))
+        };
+
+        return result;
+    } catch (error) {
+        console.error("Failed to fetch ticket list", error);
+        throw new Error("Failed to fetch ticket list");
+    }
+};
 

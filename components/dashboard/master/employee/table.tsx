@@ -73,6 +73,8 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                                 <TableHead scope="col" className="px-4 py-5 font-medium sm:pl-6 uppercase"># </TableHead>
                                 <TableHead scope="col" className="px-4 py-5 font-medium sm:pl-6 uppercase">Employee </TableHead>
                                 <TableHead scope="col" className="px-3 py-5 font-medium uppercase">Address</TableHead>
+                                <TableHead scope="col" className="px-3 py-5 font-medium uppercase">Email For App</TableHead>
+                                <TableHead scope="col" className="px-3 py-5 font-medium uppercase">Email Corporate</TableHead>
                                 <TableHead scope="col" className="px-3 py-5 font-medium uppercase">Department</TableHead>
                                 <TableHead scope="col" className="px-3 py-5 font-medium uppercase">Created</TableHead>
                                 <TableHead scope="col" className="relative py-3 pl-6 pr-3 font-medium uppercase"> Action </TableHead>
@@ -94,6 +96,8 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                                     </TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3 font-bold">{employees.name}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3">{employees.address}</TableCell>
+                                    <TableCell className="whitespace-nowrap px-3 py-3 text-blue-700 font-bold">{employees.email}</TableCell>
+                                    <TableCell className="whitespace-nowrap px-3 py-3 text-blue-700 font-bold">{employees.emailCorporate}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3">{employees.department.dept_name}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3">{formatDate(employees.createdAt.toString())}</TableCell>
                                     <TableCell className=" flex justify-center gap-1 py-3">

@@ -116,7 +116,7 @@ export default function DashboardChartSectionAdmin() {
       {/* Card Overview dengan Chart */}
       <Card className="col-span-2 lg:col-span-4 bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply">
         <CardHeader>
-          <CardTitle>Overview</CardTitle>
+          <CardTitle>Overview Ticket Maintenance Last 12 Months </CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <ResponsiveContainer width="100%" height={350}>
