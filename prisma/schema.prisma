@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
 
 enum UserRole {
   ADMIN
@@ -297,11 +298,6 @@ model DepreciationType {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   depreciations Depreciation[]
-}
-
-enum UserRole {
-  ADMIN
-  USER
 }
 
 enum AssetStatus {
