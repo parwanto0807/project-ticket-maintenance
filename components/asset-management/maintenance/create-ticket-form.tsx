@@ -111,6 +111,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
     const router = useRouter();
     const user = useCurrentUser();
     const userTicket = user?.email;
+    // const userId = user?.id;
 
     const userDept = employeeDataFind?.filter((emp) => emp.email === userTicket);
     const departmentId = userDept?.[0]?.department?.id;
@@ -138,25 +139,25 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
             countNumber: countNumber,
         },
     });
-    
+
     useEffect(() => {
         form.reset({
-          troubleUser: "",
-          analisaDescription: "",
-          actionDescription: "",
-          priorityStatus: "Low",
-          status: "Pending",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          scheduledDate: undefined,
-          completedDate: undefined,
-          employeeId: "",
-          assetId: "",
-          ticketNumber: ticketNumber, // Akan mengikuti nilai ticketNumber state
-          countNumber: countNumber,
+            troubleUser: "",
+            analisaDescription: "",
+            actionDescription: "",
+            priorityStatus: "Low",
+            status: "Pending",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            scheduledDate: undefined,
+            completedDate: undefined,
+            employeeId: "",
+            assetId: "",
+            ticketNumber: ticketNumber, // Akan mengikuti nilai ticketNumber state
+            countNumber: countNumber,
         });
-      }, [ticketNumber, countNumber, form]);
-      
+    }, [ticketNumber, countNumber, form]);
+
     useEffect(() => {
         const fetchTicketNumber = async () => {
             try {
@@ -236,12 +237,28 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
 
         startTransition(() => {
             createTicket(formData)
-                .then((data) => {
+                .then(async (data) => {
                     if (data?.error) {
                         toast.error(data.error);
                     }
                     if (data?.success) {
                         toast.success(data.success);
+
+                        // 🔥 **Tambahkan pemanggilan API untuk mengirim notifikasi**
+                        // try {
+                        //     const notificationFormData = new FormData();
+                        //     notificationFormData.append("ticketNumber", values.ticketNumber);
+                        //     notificationFormData.append("troubleUser", values.troubleUser);
+                        //     notificationFormData.append("employeeId", userId as string);
+
+                        //     await fetch("/api/notifications/ticket/create", {
+                        //         method: "POST",
+                        //         body: notificationFormData, // **Kirim sebagai FormData**
+                        //     });
+                        // } catch (error) {
+                        //     console.error("Gagal mengirim notifikasi:", error);
+                        // }
+
                         router.push("/dashboard/maintenance/ticket");
                     }
                 })

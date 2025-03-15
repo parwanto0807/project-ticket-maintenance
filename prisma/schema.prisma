@@ -408,3 +408,4 @@ enum TechnicianStatus {
   INACTIVE
   ON_LEAVE
 }
+

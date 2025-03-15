@@ -16,14 +16,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PrinterIcon } from "@heroicons/react/24/outline";
 import { Card } from "@/components/ui/card";
-import Pagination from "@/components/ui/pagination";
+// import Pagination from "@/components/ui/pagination";
 
 const ITEMS_PER_PAGE_PRODUCT = 15;
 
 export default async function AssetTable({ query, currentPage }: { query: string; currentPage: number; }) {
     const data = await fetchAssetList(query, currentPage);
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_PRODUCT;
-    const totalPages = currentPage;
+    // const totalPages = currentPage;
 
     return (
         <div className="mt-6 flow-root">
@@ -85,7 +85,7 @@ export default async function AssetTable({ query, currentPage }: { query: string
                             <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                                 <TableHead className="text-black py-8 items-center dark:text-white font-bold uppercase">No</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Asste Number</TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">Part Name</TableHead>
+                                {/* <TableHead className="text-black items-center dark:text-white font-bold uppercase">Part Name</TableHead> */}
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Description</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Asset type</TableHead>
                                 <TableHead className="text-black items-center dark:text-white font-bold uppercase">Usefull Life</TableHead>
@@ -105,7 +105,7 @@ export default async function AssetTable({ query, currentPage }: { query: string
                                     <TableCell className="text-center">{offset + index + 1}</TableCell>
                                     <TableCell className="text-center font-bold text-nowrap">{data.assetNumber}</TableCell>
                                     <TableCell>{data.product.part_number}</TableCell>
-                                    <TableCell>{data.product.part_name}</TableCell>
+                                    {/* <TableCell>{data.product.part_name}</TableCell> */}
                                     <TableCell className="text-center">{data.assetType.name}</TableCell>
                                     <TableCell className="text-center">{data.usefulLife}</TableCell>
                                     <TableCell className="text-left">{data.employee?.name}</TableCell>
@@ -141,9 +141,9 @@ export default async function AssetTable({ query, currentPage }: { query: string
                         </TableBody>
                     </Table>
                 </div>
-                <div className="flex justify-center mt-4">
+                {/* <div className="flex justify-center mt-4">
                     <Pagination totalPages={totalPages} />
-                </div>
+                </div> */}
             </div>
         </div>
     )

@@ -2,6 +2,8 @@ import { db } from "@/lib/db";
 import { unstable_noStore as noStore } from 'next/cache';
 
 export const ITEMS_PER_PAGE_ASSET = 5;
+export const ITEMS_PER_PAGE_ASSET_ADMIN=15; 
+
 
 export async function generateAssetNumber(id: string) {
     try {
@@ -40,11 +42,11 @@ export async function generateAssetNumber(id: string) {
 
 export const fetchAssetList = async (query: string, currentPage: number) => {
     noStore();
-    const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET;
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET_ADMIN;
     try {
         const assetFind = await db.asset.findMany({
             skip: offset,
-            take: ITEMS_PER_PAGE_ASSET,
+            take: ITEMS_PER_PAGE_ASSET_ADMIN,
             include: {
                 employee: true,
                 product: true,
@@ -108,7 +110,7 @@ export const fetchAssetListPages = async (query: string) => {
                 updatedAt: 'desc'
             }
         });
-        const totalPagesAsset = Math.ceil(assetCount / ITEMS_PER_PAGE_ASSET);
+        const totalPagesAsset = Math.ceil(assetCount / ITEMS_PER_PAGE_ASSET_ADMIN);
         return totalPagesAsset;
     } catch (error) {
         console.error('Error fetching asset', error)
