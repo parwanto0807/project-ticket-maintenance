@@ -43,7 +43,7 @@ export default auth(async (req: CustomNextRequest) => {
   }
 
   if (isLoggedIn) {
-     const userRole = token?.role;
+    const userRole = token?.role;
     //  console.log("Login Sebagai", userRole);
 
     if (userRole === 'USER' && nextUrl.pathname.startsWith('/dashboard')) {
@@ -51,10 +51,10 @@ export default auth(async (req: CustomNextRequest) => {
     }
     else if (userRole === 'ADMIN' && nextUrl.pathname.startsWith('/dashboard')) {
       // console.log("LOGIN SEBAGAI ADMIN", token?.email);
-    }     else if (userRole === 'TECNICIAN' && nextUrl.pathname.startsWith('/dashboard')) {
+    } else if (userRole === 'TECNICIAN' && nextUrl.pathname.startsWith('/dashboard')) {
       // console.log("LOGIN SEBAGAI ADMIN", token?.email);
-    } 
-   }
+    }
+  }
 
   return NextResponse.next();
 });
