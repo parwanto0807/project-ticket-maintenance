@@ -162,7 +162,7 @@ export default async function AssetTable({
                                     <React.Fragment key={deptName}>
                                         {/* Header untuk grup departemen */}
                                         <TableRow className="bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
-                                            <TableCell colSpan={13} className="font-bold text-lg text-left py-2">
+                                            <TableCell colSpan={13} className="font-bold text-lg text-left py-2 text-orange-900 dark:text-orange-100">
                                                 🏤 {deptName}
                                             </TableCell>
                                         </TableRow>

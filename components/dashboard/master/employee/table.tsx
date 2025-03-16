@@ -11,56 +11,72 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import ImageDialogEmployee from "./imageDialog";
+import React from "react";
+import { Card } from "@/components/ui/card";
+
 const ITEMS_PER_PAGE_EMPLOYEES = 30;
 
 export default async function EmployeeTable({ query, currentPage }: { query: string; currentPage: number; }) {
     const employees = await getEmployeesFindAll(query, currentPage);
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_EMPLOYEES;
 
+    // Group employees by department
+    const groupedEmployees = employees.reduce((acc, employee) => {
+        const deptName = employee.department.dept_name;
+        if (!acc[deptName]) {
+            acc[deptName] = [];
+        }
+        acc[deptName].push(employee);
+        return acc;
+    }, {} as Record<string, typeof employees>);
+
     return (
         <div className="mt-6 flow-root">
             <div className="inline-block min-w-full align-middle">
-                <div className="rounded-lg p-2 md:pt-0 md:table  bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+                <div className="rounded-lg p-2 md:pt-0 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                     <div className="md:hidden">
-                        {Array.isArray(employees) && employees.map((employees) => (
-                            <div
-                                key={employees.id}
-                                className="mb-2 w-full rounded-md p-1"
-                            >
-                                <div className="grid grid-cols-1 items-center justify-between border-b pb-1">
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-12 h-12 overflow-hidden rounded items-center justify-center">
-                                                <ImageDialogEmployee
-                                                    src={employees.picture || "/noImage.jpg"}
-                                                    alt={`${employees.name} Asset Image`}
-                                                />
+                        {Object.entries(groupedEmployees).map(([deptName, employees]) => (
+                            <div key={deptName}>
+                                <h2 className="text-lg font-bold mt-4 mb-2 text-left py-2 text-orange-900 dark:text-orange-100 bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">{deptName}</h2>
+                                {employees.map((employee) => (
+                                    <div
+                                        key={employee.id}
+                                        className="mb-2 w-full rounded-md p-1"
+                                    >
+                                        <Card className="grid grid-cols-1 items-center justify-between border-b p-2">
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-12 h-12 overflow-hidden rounded items-center justify-center">
+                                                        <ImageDialogEmployee
+                                                            src={employee.picture || "/noImage.jpg"}
+                                                            alt={`${employee.name} Asset Image`}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <p className="text-sm font-medium pt-2">
+                                                        {employee.name}
+                                                    </p>
+                                                </div>
+                                                <p className="text-sm text-gray-500">{employee.email}</p>
+                                                <p className="text-sm text-gray-500">{employee.address}</p>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <p className="text-sm font-medium pt-2">
-                                                {employees.name} &nbsp;
-                                                {employees.department.dept_name}
-                                            </p>
-                                        </div>
-                                        <p className="text-sm text-gray-500">{employees.email}</p>
-                                        <p className="text-sm text-gray-500">{employees.address}</p>
+                                            <div className="w-full items-center justify-between pt-1">
+                                                <div className="flex justify-end gap-2">
+                                                    <UpdateEmployee id={employee.id} />
+                                                    <DeleteAlert id={employee.id} />
+                                                </div>
+                                            </div>
+                                        </Card>
                                     </div>
-
-
-                                    <div className="w-full items-center justify-between pt-1">
-                                        <div className="flex justify-end gap-2">
-                                            <UpdateEmployee id={employees.id} />
-                                            <DeleteAlert id={employees.id} />
-                                        </div>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         ))}
                     </div>
+
                     <div className='mt-0 grid grid-cols-1 sm:grid-cols-4 items-center justify-center space-between '>
                         <div className="flex pt-2 pb-0 gap-4">
-                            <div className="flex-initial w-96 text-xs  text-blue-700 italic md:text-nowrap">
+                            <div className="flex-initial w-96 text-xs text-blue-700 italic md:text-nowrap">
                                 <span>Data master employee</span>
                             </div>
                         </div>
@@ -81,32 +97,42 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                             </TableRow>
                         </TableHeader>
                         <TableBody className="rounded-lg text-[12px]">
-                            {Array.isArray(employees) && employees.map((employees, index) => (
-                                <TableRow key={employees.id}>
-                                    <TableCell className="whitespace-nowrap px-3 py-2">{offset + index + 1}</TableCell>
-                                    <TableCell className="whitespace-nowrap px-3 py-2">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-12 h-12 overflow-hidden rounded">
-                                                <ImageDialogEmployee
-                                                    src={employees.picture || "/noImage.jpg"}
-                                                    alt={`${employees.name} Asset Image`}
-                                                />
-                                            </div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="whitespace-nowrap px-3 py-3 font-bold">{employees.name}</TableCell>
-                                    <TableCell className="whitespace px-3 py-3">{employees.address}</TableCell>
-                                    <TableCell className="whitespace-nowrap px-3 py-3 text-blue-700 font-bold">{employees.email}</TableCell>
-                                    <TableCell className="whitespace-nowrap px-3 py-3 text-blue-700 font-bold">{employees.emailCorporate}</TableCell>
-                                    <TableCell className="whitespace-nowrap px-3 py-3">{employees.department.dept_name}</TableCell>
-                                    <TableCell className="whitespace-nowrap px-3 py-3">{formatDate(employees.createdAt.toString())}</TableCell>
-                                    <TableCell className=" flex justify-center gap-1 py-3">
-                                        <UpdateEmployee id={employees.id} />
-                                        <DeleteAlert id={employees.id} />
-                                    </TableCell>
-                                </TableRow>
+                            {Object.entries(groupedEmployees).map(([deptName, employees]) => (
+                                <React.Fragment key={deptName}>
+                                    {/* Baris untuk judul departemen */}
+                                    <TableRow className="bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+                                        <TableCell colSpan={9} className="font-bold text-lg rounded-md">
+                                           🏢 {deptName}
+                                        </TableCell>
+                                    </TableRow>
+                                    {/* Baris untuk setiap karyawan di departemen tersebut */}
+                                    {employees.map((employee, index) => (
+                                        <TableRow key={employee.id}>
+                                            <TableCell className="whitespace-nowrap px-3 py-2">{offset + index + 1}</TableCell>
+                                            <TableCell className="whitespace-nowrap px-3 py-2">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-12 h-12 overflow-hidden rounded">
+                                                        <ImageDialogEmployee
+                                                            src={employee.picture || "/noImage.jpg"}
+                                                            alt={`${employee.name} Asset Image`}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="whitespace-nowrap px-3 py-3 font-bold">{employee.name}</TableCell>
+                                            <TableCell className="whitespace px-3 py-3">{employee.address}</TableCell>
+                                            <TableCell className="whitespace-nowrap px-3 py-3 text-blue-700 font-bold">{employee.email}</TableCell>
+                                            <TableCell className="whitespace-nowrap px-3 py-3 text-blue-700 font-bold">{employee.emailCorporate}</TableCell>
+                                            <TableCell className="whitespace-nowrap px-3 py-3">{employee.department.dept_name}</TableCell>
+                                            <TableCell className="whitespace-nowrap px-3 py-3">{formatDate(employee.createdAt.toString())}</TableCell>
+                                            <TableCell className="flex justify-center gap-1 py-3">
+                                                <UpdateEmployee id={employee.id} />
+                                                <DeleteAlert id={employee.id} />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </React.Fragment>
                             ))}
-
                         </TableBody>
                     </Table>
                 </div>
