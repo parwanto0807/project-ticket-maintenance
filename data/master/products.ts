@@ -280,8 +280,10 @@ export async function fetchProducts(query: string, currentPage: number) {
                 ]
             },
             orderBy: {
-                updatedAt: 'desc'
-            }
+                kategoriproduct: {
+                    name: "asc"
+                }
+            },
         });
         //console.log(productFind)
         return productFind;
