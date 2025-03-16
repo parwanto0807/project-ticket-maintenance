@@ -43,6 +43,10 @@ const nextConfig = withPWA({
         protocol: "https",
         hostname: "2pwk5zmnkgubtogq.public.blob.vercel-storage.com",
       },
+      {
+        protocol: "https",
+        hostname: "solusiit.net",
+      }
     ],
     minimumCacheTTL: 1, // 🔥 Hindari cache lama
   },

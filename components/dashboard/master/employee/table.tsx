@@ -95,7 +95,7 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                                         </div>
                                     </TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3 font-bold">{employees.name}</TableCell>
-                                    <TableCell className="whitespace-nowrap px-3 py-3">{employees.address}</TableCell>
+                                    <TableCell className="whitespace px-3 py-3">{employees.address}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3 text-blue-700 font-bold">{employees.email}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3 text-blue-700 font-bold">{employees.emailCorporate}</TableCell>
                                     <TableCell className="whitespace-nowrap px-3 py-3">{employees.department.dept_name}</TableCell>

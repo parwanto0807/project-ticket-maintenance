@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogHeader, DialogDescription } from "@/components/ui/dialog";
+import Image from "next/image";
+import { getImageUrl } from "@/lib/getImageUrl";
 
 // 🔥 Gunakan `dynamic()` agar gambar hanya dirender di client-side (CSR)
-const DynamicImage = dynamic(() => import("next/image"), { ssr: false });
+// const DynamicImage = dynamic(() => import("next/image"), { ssr: false });
 
 interface ImageDialogProps {
   src: string;
@@ -16,6 +18,8 @@ export default function ImageDialogEmployee({ src, alt }: ImageDialogProps) {
   const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState(`${src}?t=${new Date().getTime()}`);
 
+  const imageUrl = getImageUrl(imageSrc);
+
   // 🔥 Fungsi untuk menangani error saat gambar gagal dimuat
   const handleError = () => {
     setImageSrc("/noImage.jpg");
@@ -24,8 +28,8 @@ export default function ImageDialogEmployee({ src, alt }: ImageDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <DynamicImage
-          src={imageSrc} // 🔥 Cache Bypass
+        <Image
+          src={imageUrl} // 🔥 Cache Bypass
           alt={alt}
           width={50}
           height={30}
@@ -40,8 +44,8 @@ export default function ImageDialogEmployee({ src, alt }: ImageDialogProps) {
           <DialogDescription>{alt}</DialogDescription>
         </DialogHeader>
 
-        <DynamicImage
-          src={imageSrc} // 🔥 Cache Bypass
+        <Image
+          src={imageUrl} // 🔥 Cache Bypass
           alt={alt}
           width={500}
           height={300}
