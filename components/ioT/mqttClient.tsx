@@ -114,7 +114,7 @@ export default function MqttClient() {
                                     onClick={() => setIsEditingThreshold(!isEditingThreshold)}
                                     className="text-xs bg-white/20 hover:bg-white/30 px-2 py-1 rounded mt-1"
                                 >
-                                    {isEditingThreshold ? 'Close' : 'Set Max Ampere'}
+                                    {isEditingThreshold ? 'Close' : 'Set Threshold'}
                                 </button>
                             )}
                         </div>
