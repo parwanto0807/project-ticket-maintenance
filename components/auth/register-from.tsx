@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FormError } from "../form-error";
-import { FormSuccess } from "../form-success";
+import { FormError } from "../../../project-ticket-maintenance/components/form-error";
+import { FormSuccess } from "../../../project-ticket-maintenance/components/form-success";
 import { register } from "@/action/auth/register";
 
 const RegisterForm = () => {

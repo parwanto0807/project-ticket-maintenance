@@ -16,10 +16,10 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { FormError } from "../form-error";
-import { FormSuccess } from "../form-success";
+import { Input } from "../../../project-ticket-maintenance/components/ui/input";
+import { Button } from "../../../project-ticket-maintenance/components/ui/button";
+import { FormError } from "../../../project-ticket-maintenance/components/form-error";
+import { FormSuccess } from "../../../project-ticket-maintenance/components/form-success";
 import { registerEmail } from "@/action/auth/register";
 
 const RegisterForm = () => {
