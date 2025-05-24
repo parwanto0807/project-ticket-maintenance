@@ -96,7 +96,7 @@ export default function MqttClient() {
         <Card className={cn(
             `bg-gradient-to-br ${fromColor} ${toColor} text-white`,
             isAlert && value && value >= (alertThreshold || 0) && 'animate-pulse border-2 border-red-500',
-            'min-h-[180px]' // Memberikan tinggi minimum yang konsisten
+            'min-h-[100px] sm:min-h-[180px]' // Memberikan tinggi minimum yang konsisten
         )}>
             <CardContent className="p-4 sm:p-6 flex flex-col h-full justify-between">
                 <div className="flex items-center mb-3 sm:mb-4">
