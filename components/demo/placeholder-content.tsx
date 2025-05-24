@@ -49,7 +49,7 @@ export default function DashboardPage() {
             <TabsTrigger value="analytics1" className="text-[10px]  lg:text-sm">Analytics 1</TabsTrigger>
             <TabsTrigger value="analytics2" className="text-[10px]  lg:text-sm">Analytics 2</TabsTrigger>
             <TabsTrigger value="iotMonitoring" className="text-[10px]  lg:text-sm">IoT Monitoring</TabsTrigger>
-            <TabsTrigger value="reports" className="text-[10px]  lg:text-sm" disabled>Reports</TabsTrigger>
+            {/* <TabsTrigger value="reports" className="text-[10px]  lg:text-sm" disabled>Reports</TabsTrigger> */}
           </TabsList>
 
           {/* Overview Tab */}
