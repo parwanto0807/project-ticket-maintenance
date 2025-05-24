@@ -3,9 +3,11 @@ import mqtt, { MqttClient } from 'mqtt'
 let client: MqttClient | null = null
 
 const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:'
-const protocol = isSecure ? 'wss' : 'ws'
-const port = isSecure ? 8084 : 8083
+const protocol = isSecure ? 'wss' : 'wss'
+const port = isSecure ? 8084 : 8084
 const BROKER_URL = `${protocol}://broker.emqx.io:${port}/mqtt`
+
+console.log('[MQTT] Broker URL:', BROKER_URL)
 
 const CLIENT_ID = `mqtt_${Math.random().toString(16).slice(2, 10)}`
 
