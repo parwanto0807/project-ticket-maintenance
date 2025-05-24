@@ -1,7 +1,7 @@
 import Link from "next/link"
 //import PageProduct from "@/components/demo/products-content";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
-import Search from "@/components/ui/search";
+import Search from "@/components/ui/search"
 import { fetchProductPages } from "@/data/master/products";
 import Pagination from "@/components/ui/pagination";
 import ProductsTable from "@/components/dashboard/master/product/tabel";

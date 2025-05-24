@@ -9,6 +9,7 @@ import DashboardChartSectionAdmin from "./ticket-maintenance-chart";
 import DashboardCardsAdmin from "./dashboard-card";
 import DashboardChartAnalistGroup from "./analist-chart-group";
 import DashboardChartAnalist2 from "./analist2-chart-group";
+import MqttClient from "../ioT/mqttClient";
 
 export default function DashboardPage() {
   const user = useCurrentUser();
@@ -47,6 +48,7 @@ export default function DashboardPage() {
             <TabsTrigger value="overview" className="text-[10px] lg:text-sm">Overview</TabsTrigger>
             <TabsTrigger value="analytics1" className="text-[10px]  lg:text-sm">Analytics 1</TabsTrigger>
             <TabsTrigger value="analytics2" className="text-[10px]  lg:text-sm">Analytics 2</TabsTrigger>
+            <TabsTrigger value="iotMonitoring" className="text-[10px]  lg:text-sm">IoT Monitoring</TabsTrigger>
             <TabsTrigger value="reports" className="text-[10px]  lg:text-sm" disabled>Reports</TabsTrigger>
           </TabsList>
 
@@ -83,6 +85,12 @@ export default function DashboardPage() {
           <TabsContent value="analytics2" className="space-y-4">
             <motion.div variants={chartVariants} className="col-span-2 lg:col-span-7">
               <DashboardChartAnalist2 />
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="iotMonitoring" className="space-y-4">
+            <motion.div className="col-span-2 lg:col-span-7">
+              <MqttClient />
             </motion.div>
           </TabsContent>
         </Tabs>
