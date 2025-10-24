@@ -32,7 +32,7 @@ export default async function ProductsTable({ query, currentPage }: { query: str
 
     return (
         <div className="mt-6 flow-root">
-            <div className="inline-block min-w-full align-middle">
+            <div className="inline-block min-w-full align-middle mx-auto">
                 <div className="rounded-lg p-2 md:pt-0 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                     {/* Mobile View */}
                     <div className="md:hidden">
