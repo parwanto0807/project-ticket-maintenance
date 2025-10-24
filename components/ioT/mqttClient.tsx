@@ -136,7 +136,7 @@ export default function MqttClient() {
                             value={currentThreshold}
                             onChange={handleThresholdChange}
                             onBlur={() => setIsEditingThreshold(false)}
-                            className="bg-white/20 border-white/30 text-white h-7 sm:h-8 text-xs sm:text-sm"
+                            className="appearance-auto bg-white/20 border-white/30 text-white h-9 text-sm [&::-webkit-inner-spin-button]:appearance-auto [&::-webkit-outer-spin-button]:appearance-auto"
                             step="0.1"
                             min="0.1"
                         />

@@ -42,7 +42,7 @@ export default async function AssetTable({
     }, {} as Record<string, typeof data>);
 
     return (
-        <div className="mt-6 flow-root">
+        <div className="mt-6 flow-root mx-auto">
             <div className="inline-block min-w-full align-middle">
                 <div className="rounded-lg p-2 md:pt-0 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                     {/* Tampilan Mobile */}

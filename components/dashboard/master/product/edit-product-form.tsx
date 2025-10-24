@@ -37,7 +37,9 @@ import LokasiRakForm from "./lokasi-rak-form";
 import RakForm from "./rak-form";
 import { toast } from "sonner";
 import Link from 'next/link';
-import { ArrowLeftStartOnRectangleIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, Package, Layers, Tag, Box, Warehouse, MapPin, Settings } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 const EditProductForm = ({
     productFindById,
@@ -86,7 +88,7 @@ const EditProductForm = ({
             brandId: productFindById?.brandId,
             gudangId: productFindById?.gudangId,
             lokasiRakId: productFindById?.lokasiRakId,
-            rakId: productFindById?.rakId, 
+            rakId: productFindById?.rakId,
             createdAt: productFindById?.createdAt,
             updatedAt: productFindById?.updatedAt,
         }
@@ -116,116 +118,102 @@ const EditProductForm = ({
 
     return (
         <Form {...form}>
-            <div className="w-full rounded-lg border p-4 shadow-lg mt-4 dark:bg-gray-950">
+            <div className="max-w-7xl mx-auto rounded-xl border bg-white dark:bg-gray-950 shadow-sm mt-6">
+                {/* Header */}
+                <div className="border-b bg-gradient-to-r from-blue-600 to-indigo-600 rounded-t-xl p-6 text-white">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-white/20 rounded-lg">
+                                <Package className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-bold">Edit Product</h1>
+                                <p className="text-blue-100">
+                                    Update product information for {productFindById.part_number}
+                                </p>
+                            </div>
+                        </div>
+                        <Link
+                            href="/dashboard/master/products"
+                            className="flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/30"
+                        >
+                            <ArrowLeftIcon className="h-4 w-4" />
+                            Back to List
+                        </Link>
+                    </div>
+                </div>
+
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-6 p-4 mb-12 ">
-                    <div className="mt-1 grid grid-cols-1 gap-4 gap-y-4 sm:grid-cols-3 items-center justify-center space-between ">
-                        <div className="w-full space-y-6 items-center justify-center">
-                            <FormField
-                                control={form.control}
-                                name="part_number"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Part Number</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                disabled={isPending}
-                                                placeholder="Part Number Product"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div className="w-full space-y-6">
-                            <FormField
-                                control={form.control}
-                                name="part_name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Part Name</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                disabled={isPending}
-                                                placeholder="Part Name Product"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div className="w-full space-y-6">
-                            <FormField
-                                control={form.control}
-                                name="nick_name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Nick Name</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                disabled={isPending}
-                                                placeholder="Nick Name Product"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                    </div>
-                    <div className="text-start text-xs mt-2">
-                        <span className="italic font-normal text-xs text-blue-600 mt-8 w-full">Perhatikan conversi satuan jika ada perbedaan satuan unit</span>
-                        <div className="flex-initial grid-flow-col sm:flex col-span-3 border rounded p-4">
-                            <div className="flex col-span-1 p-2 w-full">
-                                <div className="flex gap-x-2">
-                                    <div className="flex-none w-3/4 gap-x-2">
+                    className="p-8"
+                >
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Left Column - Basic Information */}
+                        <div className="lg:col-span-2 space-y-6">
+                            {/* Product Identification */}
+                            <Card>
+                                <CardHeader className="pb-4">
+                                    <CardTitle className="flex items-center gap-2 text-lg">
+                                        <Package className="h-5 w-5 text-blue-600" />
+                                        Product Identification
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Update basic product information for identification
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <FormField
                                             control={form.control}
-                                            name="satuan_pemasukan"
+                                            name="part_number"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Entry Unit</FormLabel>
-                                                    <Select
-                                                        onValueChange={field.onChange}
-                                                        defaultValue={field.value}
-                                                        disabled={isPending}>
-                                                        <FormControl>
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select a Entry Unit " />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {unitFind?.map(unitFind => (
-                                                                <SelectItem key={unitFind.id} value={unitFind.name}>
-                                                                    {unitFind.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                    <div className="flex-none w-1/4">
-                                        <FormField
-                                            control={form.control}
-                                            name="conversi_pemasukan"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Conversi</FormLabel>
+                                                    <FormLabel className="flex items-center gap-2">
+                                                        <Tag className="h-4 w-4 text-muted-foreground" />
+                                                        Part Number *
+                                                    </FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             {...field}
                                                             disabled={isPending}
-                                                            type="number"
-                                                            min="1"
+                                                            placeholder="e.g., PRD-001"
+                                                            className="h-11"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="part_name"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Part Name *</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            placeholder="e.g., Main Circuit Board"
+                                                            className="h-11"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="nick_name"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Nick Name</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            placeholder="e.g., MCB-001"
+                                                            className="h-11"
                                                         />
                                                     </FormControl>
                                                     <FormMessage />
@@ -233,159 +221,244 @@ const EditProductForm = ({
                                             )}
                                         />
                                     </div>
-                                </div>
-                            </div>
+                                </CardContent>
+                            </Card>
 
-                            <div className="flex col-span-1 w-full p-2">
-                                <div className="flex gap-x-2">
-                                    <div className="flex-none w-3/4">
-                                        <FormField
-                                            control={form.control}
-                                            name="satuan_penyimpanan"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Stock Unit</FormLabel>
-                                                    <Select
-                                                        onValueChange={field.onChange}
-                                                        defaultValue={field.value}
-                                                        disabled={isPending}>
-                                                        <FormControl>
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select a Stock Unit" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {unitFind?.map(unitFind => (
-                                                                <SelectItem key={unitFind.id} value={unitFind.name}>
-                                                                    {unitFind.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                    <div className="flex-none w-1/4">
-                                        <FormField
-                                            control={form.control}
-                                            name="conversi_penyimpanan"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Conversi</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            {...field}
-                                                            disabled={isPending}
-                                                            type="number"
-                                                            min="1"
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
+                            {/* Unit Configuration */}
+                            <Card>
+                                <CardHeader className="pb-4">
+                                    <CardTitle className="flex items-center gap-2 text-lg">
+                                        <Box className="h-5 w-5 text-green-600" />
+                                        Unit Configuration
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Update measurement units and conversions
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            {/* Entry Unit */}
+                                            <div className="space-y-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
+                                                <div className="flex items-center gap-2">
+                                                    <Box className="h-4 w-4 text-blue-600" />
+                                                    <FormLabel className="text-blue-700 font-medium">Entry Unit</FormLabel>
+                                                </div>
+                                                <FormField
+                                                    control={form.control}
+                                                    name="satuan_pemasukan"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <Select
+                                                                onValueChange={field.onChange}
+                                                                defaultValue={field.value}
+                                                                disabled={isPending}
+                                                            >
+                                                                <FormControl>
+                                                                    <SelectTrigger className="h-11">
+                                                                        <SelectValue placeholder="Select unit" />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    {unitFind?.map(unitFind => (
+                                                                        <SelectItem key={unitFind.id} value={unitFind.name}>
+                                                                            {unitFind.name}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="conversi_pemasukan"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-xs">Conversion Factor</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    {...field}
+                                                                    disabled={isPending}
+                                                                    type="number"
+                                                                    min="1"
+                                                                    className="h-9"
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
 
-                            <div className="flex col-span-1 w-full p-2">
-                                <div className="flex gap-x-2">
-                                    <div className="flex-initial md:flex-initial w-3/4">
-                                        <FormField
-                                            control={form.control}
-                                            name="satuan_pengeluaran"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Out Unit</FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
-                                                        <FormControl>
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select a Out Unit" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {unitFind?.map(unitFind => (
-                                                                <SelectItem key={unitFind.id} value={unitFind.name}>
-                                                                    {unitFind.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                    <div className="flex-initial md:flex-none w-1/4">
-                                        <FormField
-                                            control={form.control}
-                                            name="conversi_pengeluaran"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Conversi</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            {...field}
-                                                            disabled={isPending}
-                                                            type="number"
-                                                            min="1"
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                    <div className="flex-initial md:flex-none mt-6 ">
-                                        <UnitForm unitFind={unitFind} />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                            {/* Storage Unit */}
+                                            <div className="space-y-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border">
+                                                <div className="flex items-center gap-2">
+                                                    <Box className="h-4 w-4 text-green-600" />
+                                                    <FormLabel className="text-green-700 font-medium">Storage Unit</FormLabel>
+                                                </div>
+                                                <FormField
+                                                    control={form.control}
+                                                    name="satuan_penyimpanan"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <Select
+                                                                onValueChange={field.onChange}
+                                                                defaultValue={field.value}
+                                                                disabled={isPending}
+                                                            >
+                                                                <FormControl>
+                                                                    <SelectTrigger className="h-11">
+                                                                        <SelectValue placeholder="Select unit" />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    {unitFind?.map(unitFind => (
+                                                                        <SelectItem key={unitFind.id} value={unitFind.name}>
+                                                                            {unitFind.name}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="conversi_penyimpanan"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-xs">Conversion Factor</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    {...field}
+                                                                    disabled={isPending}
+                                                                    type="number"
+                                                                    min="1"
+                                                                    className="h-9"
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
 
-                    <div className="text-start text-xs mt-2">
-                        <span className="italic font-normal text-blue-600">Batas maksimal dan minimal product di data stock</span>
-                        <div className="flex-initial grid grid-cols-1 mt-0 md:grid-cols-2 gap-4 border rounded-md shadow-sm p-4">
-                            <div className="flex-initial grid grid-cols-1 mt-0 md:grid-cols-1 gap-4 border rounded-md shadow-sm p-4">
-                                <div className="flex col-span-1">
-                                    <div className="flex w-full gap-x-5 p-2">
-                                        <div className="flex-initial w-full">
+                                            {/* Output Unit */}
+                                            <div className="space-y-3 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border">
+                                                <div className="flex items-center gap-2">
+                                                    <Box className="h-4 w-4 text-orange-600" />
+                                                    <FormLabel className="text-orange-700 font-medium">Output Unit</FormLabel>
+                                                </div>
+                                                <FormField
+                                                    control={form.control}
+                                                    name="satuan_pengeluaran"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <Select
+                                                                onValueChange={field.onChange}
+                                                                defaultValue={field.value}
+                                                                disabled={isPending}
+                                                            >
+                                                                <FormControl>
+                                                                    <SelectTrigger className="h-11">
+                                                                        <SelectValue placeholder="Select unit" />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    {unitFind?.map(unitFind => (
+                                                                        <SelectItem key={unitFind.id} value={unitFind.name}>
+                                                                            {unitFind.name}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="conversi_pengeluaran"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-xs">Conversion Factor</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    {...field}
+                                                                    disabled={isPending}
+                                                                    type="number"
+                                                                    min="1"
+                                                                    className="h-9"
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end">
+                                            <UnitForm unitFind={unitFind} />
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Stock Configuration */}
+                            <Card>
+                                <CardHeader className="pb-4">
+                                    <CardTitle className="flex items-center gap-2 text-lg">
+                                        <Layers className="h-5 w-5 text-purple-600" />
+                                        Stock Configuration
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Update minimum and maximum stock levels
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-4">
                                             <FormField
                                                 control={form.control}
                                                 name="minStock"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Minimum Stock</FormLabel>
+                                                        <FormLabel className="flex items-center gap-2">
+                                                            <div className="h-2 w-2 rounded-full bg-red-500" />
+                                                            Minimum Stock
+                                                        </FormLabel>
                                                         <FormControl>
                                                             <Input
                                                                 {...field}
                                                                 disabled={isPending}
                                                                 type="number"
                                                                 min="0"
+                                                                className="h-11"
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}
                                             />
-                                        </div>
-
-                                        <div className="flex-initial w-full">
                                             <FormField
                                                 control={form.control}
                                                 name="maxStock"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Maximum Stock</FormLabel>
+                                                        <FormLabel className="flex items-center gap-2">
+                                                            <div className="h-2 w-2 rounded-full bg-green-500" />
+                                                            Maximum Stock
+                                                        </FormLabel>
                                                         <FormControl>
                                                             <Input
                                                                 {...field}
                                                                 disabled={isPending}
                                                                 type="number"
                                                                 min="0"
+                                                                className="h-11"
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -393,284 +466,322 @@ const EditProductForm = ({
                                                 )}
                                             />
                                         </div>
+                                        <FormField
+                                            control={form.control}
+                                            name="description"
+                                            render={({ field }) => (
+                                                <FormItem className="h-full">
+                                                    <FormLabel className="flex items-center gap-2">
+                                                        <Settings className="h-4 w-4 text-muted-foreground" />
+                                                        Specifications
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Textarea
+                                                            placeholder="Write detailed specifications about the product..."
+                                                            className="min-h-[120px] resize-none"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
                                     </div>
-                                </div>
-                            </div>
-
-                            <div className="flex-none col-span-1 md:col-span-2">
-                                <div className="flex-initial w-full">
-                                    <FormField
-                                        control={form.control}
-                                        name="description"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Spesification</FormLabel>
-                                                <FormControl>
-                                                    <Textarea
-                                                        placeholder="Write specifications about the product you will input"
-                                                        className="resize-none"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            </div>
+                                </CardContent>
+                            </Card>
                         </div>
-                    </div>
 
+                        {/* Right Column - Classification & Location */}
+                        <div className="space-y-6">
+                            {/* Product Classification */}
+                            <Card>
+                                <CardHeader className="pb-4">
+                                    <CardTitle className="flex items-center gap-2 text-lg">
+                                        <Tag className="h-5 w-5 text-orange-600" />
+                                        Product Classification
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Update product categorization and classification
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="space-y-4">
+                                        <FormField
+                                            control={form.control}
+                                            name="jenisId"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Product Type</FormLabel>
+                                                    <div className="flex gap-2">
+                                                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
+                                                            <FormControl>
+                                                                <SelectTrigger className="h-11 flex-1">
+                                                                    <SelectValue placeholder="Select type" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                {typeFind?.map(typeFind => (
+                                                                    <SelectItem key={typeFind.id} value={typeFind.id}>
+                                                                        {typeFind.name}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <TypeForm typeFind={typeFind} />
+                                                    </div>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
 
-                    <div className="text-start text-xs mb-0">
-                        <span className="italic font-normal text-blue-600">Pemilahan product berdasarkan type, kategory, group dan brand.</span>
+                                        <FormField
+                                            control={form.control}
+                                            name="kategoriId"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Category</FormLabel>
+                                                    <div className="flex gap-2">
+                                                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
+                                                            <FormControl>
+                                                                <SelectTrigger className="h-11 flex-1">
+                                                                    <SelectValue placeholder="Select category" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                {categoryFind?.map(categoryFind => (
+                                                                    <SelectItem key={categoryFind.id} value={categoryFind.id}>
+                                                                        {categoryFind.name}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <CategoryForm categoryFind={categoryFind} />
+                                                    </div>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
 
-                        <div className="flex-initial grid grid-cols-1 mt-0 sm:grid-cols-4 gap-4 border rounded-md shadow-sm p-4">
-                            <div className="flex w-full gap-x-2">
-                                <div className="flex-initial w-full">
-                                    <FormField
-                                        control={form.control}
-                                        name="jenisId"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Type Product</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select type product" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {typeFind?.map(typeFind => (
-                                                            <SelectItem key={typeFind.id} value={typeFind.id}>
-                                                                {typeFind.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                                <div className="flex-initial mt-6 ">
-                                    <TypeForm typeFind={typeFind} />
-                                </div>
-                            </div>
-                            <div className="flex w-full gap-x-2">
-                                <div className="flex-initial w-full">
-                                    <FormField
-                                        control={form.control}
-                                        name="kategoriId"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Category Product</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select category product" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {categoryFind?.map(categoryFind => (
-                                                            <SelectItem key={categoryFind.id} value={categoryFind.id} disabled={isPending}>
-                                                                {categoryFind.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                                <div className="flex-initial mt-6 ">
-                                    <CategoryForm categoryFind={categoryFind} />
-                                </div>
-                            </div>
-                            <div className="flex w-full gap-x-2">
-                                <div className="flex-initial w-full">
-                                    <FormField
-                                        control={form.control}
-                                        name="groupId"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Group Product</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select group product" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {groupFind?.map(groupFind => (
-                                                            <SelectItem key={groupFind.id} value={groupFind.id}>
-                                                                {groupFind.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                                <div className="flex-initial mt-6 ">
-                                    <GroupForm groupFind={groupFind} />
-                                </div>
-                            </div>
-                            <div className="flex w-full gap-x-2">
-                                <div className="flex-initial w-full">
-                                    <FormField
-                                        control={form.control}
-                                        name="brandId"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Brand Product</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select brand product" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {brandFind?.map(brandFind => (
-                                                            <SelectItem key={brandFind.id} value={brandFind.id}>
-                                                                {brandFind.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                                <div className="flex-initial mt-6 ">
-                                    <BrandForm brandFind={brandFind} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                        <FormField
+                                            control={form.control}
+                                            name="groupId"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Product Group</FormLabel>
+                                                    <div className="flex gap-2">
+                                                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
+                                                            <FormControl>
+                                                                <SelectTrigger className="h-11 flex-1">
+                                                                    <SelectValue placeholder="Select group" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                {groupFind?.map(groupFind => (
+                                                                    <SelectItem key={groupFind.id} value={groupFind.id}>
+                                                                        {groupFind.name}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <GroupForm groupFind={groupFind} />
+                                                    </div>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
 
-                    <div className="text-start text-xs mb-0">
-                        <span className="italic font-normal text-blue-600">Lokasi penempatan product tentukan disini</span>
+                                        <FormField
+                                            control={form.control}
+                                            name="brandId"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Brand</FormLabel>
+                                                    <div className="flex gap-2">
+                                                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
+                                                            <FormControl>
+                                                                <SelectTrigger className="h-11 flex-1">
+                                                                    <SelectValue placeholder="Select brand" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                {brandFind?.map(brandFind => (
+                                                                    <SelectItem key={brandFind.id} value={brandFind.id}>
+                                                                        {brandFind.name}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <BrandForm brandFind={brandFind} />
+                                                    </div>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                </CardContent>
+                            </Card>
 
-                        <div className="flex-initial grid grid-cols-1 mt-0 sm:grid-cols-3 gap-4 border rounded-md shadow-sm p-4">
-                            <div className="flex w-full gap-x-2">
-                                <div className="flex-initial w-full">
+                            {/* Storage Location */}
+                            <Card>
+                                <CardHeader className="pb-4">
+                                    <CardTitle className="flex items-center gap-2 text-lg">
+                                        <MapPin className="h-5 w-5 text-blue-600" />
+                                        Storage Location
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Update product storage location
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
                                     <FormField
                                         control={form.control}
                                         name="gudangId"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Gudang Product</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select gudang product" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {gudangFind?.map(gudangFind => (
-                                                            <SelectItem key={gudangFind.id} value={gudangFind.id}>
-                                                                {gudangFind.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                <FormLabel className="flex items-center gap-2">
+                                                    <Warehouse className="h-4 w-4 text-muted-foreground" />
+                                                    Warehouse
+                                                </FormLabel>
+                                                <div className="flex gap-2">
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
+                                                        <FormControl>
+                                                            <SelectTrigger className="h-11 flex-1">
+                                                                <SelectValue placeholder="Select warehouse" />
+                                                            </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            {gudangFind?.map(gudangFind => (
+                                                                <SelectItem key={gudangFind.id} value={gudangFind.id}>
+                                                                    {gudangFind.name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <GudangForm gudangFind={gudangFind} />
+                                                </div>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
-                                </div>
-                                <div className="flex-initial mt-6 ">
-                                    <GudangForm gudangFind={gudangFind} />
-                                </div>
-                            </div>
-                            <div className="flex w-full gap-x-2">
-                                <div className="flex-initial w-full">
+
                                     <FormField
                                         control={form.control}
                                         name="lokasiRakId"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Lokasi Rak Product</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select lokasi rak product" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {lokasiRakFind?.map(lokasiRakFind => (
-                                                            <SelectItem key={lokasiRakFind.id} value={lokasiRakFind.id}>
-                                                                {lokasiRakFind.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                <FormLabel>Rack Location</FormLabel>
+                                                <div className="flex gap-2">
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
+                                                        <FormControl>
+                                                            <SelectTrigger className="h-11 flex-1">
+                                                                <SelectValue placeholder="Select location" />
+                                                            </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            {lokasiRakFind?.map(lokasiRakFind => (
+                                                                <SelectItem key={lokasiRakFind.id} value={lokasiRakFind.id}>
+                                                                    {lokasiRakFind.name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <LokasiRakForm lokasiRakFind={lokasiRakFind} />
+                                                </div>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
-                                </div>
-                                <div className="flex-initial mt-6 ">
-                                    <LokasiRakForm lokasiRakFind={lokasiRakFind} />
-                                </div>
-                            </div>
-                            <div className="flex w-full gap-x-2">
-                                <div className="flex-initial w-full">
+
                                     <FormField
                                         control={form.control}
                                         name="rakId"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Rak Product</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select rak product" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {rakFind?.map(rakFind => (
-                                                            <SelectItem key={rakFind.id} value={rakFind.id}>
-                                                                {rakFind.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                <FormLabel>Rack</FormLabel>
+                                                <div className="flex gap-2">
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
+                                                        <FormControl>
+                                                            <SelectTrigger className="h-11 flex-1">
+                                                                <SelectValue placeholder="Select rack" />
+                                                            </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            {rakFind?.map(rakFind => (
+                                                                <SelectItem key={rakFind.id} value={rakFind.id}>
+                                                                    {rakFind.name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <RakForm rakFind={rakFind} />
+                                                </div>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
-                                </div>
-                                <div className="flex-initial mt-6 ">
-                                    <RakForm rakFind={rakFind} />
-                                </div>
-                            </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Product Info Card */}
+                            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+                                <CardContent className="p-4">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <Package className="h-4 w-4 text-green-600" />
+                                            <p className="text-sm font-medium text-green-900">Current Product</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-sm text-green-700">
+                                                <span className="font-semibold">Part Number:</span> {productFindById.part_number}
+                                            </p>
+                                            <p className="text-sm text-green-700">
+                                                <span className="font-semibold">Part Name:</span> {productFindById.part_name}
+                                            </p>
+                                            <p className="text-xs text-green-600">
+                                                Last updated: {new Date(productFindById.updatedAt).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
 
-                    <div className="relative ">
-                        <Button className={`w-24 h-9 rounded-lg absolute right-0 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white font-semibold py-2 px-4 rounded-lg`} type="submit">{loading ? 'Load Save...' : 'Save'}</Button>
+                    {/* Action Buttons */}
+                    <div className="flex justify-between items-center pt-8 mt-8 border-t">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => router.back()}
+                            className="flex items-center gap-2"
+                        >
+                            <ArrowLeftIcon className="h-4 w-4" />
+                            Cancel
+                        </Button>
+
+                        <Button
+                            type="submit"
+                            disabled={loading || isPending}
+                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-8 py-2.5"
+                        >
+                            {loading ? (
+                                <>
+                                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                                    Updating Product...
+                                </>
+                            ) : (
+                                <>
+                                    <PencilSquareIcon className="h-5 w-5" />
+                                    Update Product
+                                </>
+                            )}
+                        </Button>
                     </div>
                 </form>
-                <div className="flex items-center justify-end border p-2 pr-3 rounded-md shadow-sm">
-                    <Link
-                        href="/dashboard/master/products"
-                        className="flex h-9 w-24 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                    >
-                        <span>Exit</span>{' '}
-                        <ArrowLeftStartOnRectangleIcon className="h-5 md:ml-4" />
-                    </Link>
-                </div>
             </div>
         </Form>
     )
-
 }
 
 export default EditProductForm;
