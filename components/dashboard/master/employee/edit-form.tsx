@@ -54,12 +54,7 @@ function EditForm({
   const router = useRouter();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>('');
-
-  const urlToFile = async (url: string, filename: string): Promise<File> => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    return new File([blob], filename, { type: blob.type });
-  };
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof EmployeeSchemaCreate>>({
     resolver: zodResolver(EmployeeSchemaCreate),
@@ -75,21 +70,41 @@ function EditForm({
 
   const { setValue } = form;
 
+  // Effect untuk set preview image
   useEffect(() => {
     if (employee?.picture) {
       setPreviewImage(employee.picture);
-      setFileName(employee.picture);
+      setCurrentImage(employee.picture);
+      setFileName(employee.picture.split('/').pop() || 'profile.jpg');
     } else {
       setPreviewImage("/noImage.jpg");
+      setCurrentImage(null);
     }
   }, [employee?.picture]);
 
+  // Effect untuk set form value picture (opsional - hanya jika perlu file object)
   useEffect(() => {
-    if (employee?.picture) {
-      urlToFile(employee.picture, "profile-image.jpg").then((file) => {
-        form.setValue("picture", file);
-      });
-    }
+    const setPictureFile = async () => {
+      if (employee?.picture && !form.getValues("picture")) {
+        try {
+          // Hanya konversi ke File jika gambar dari external URL
+          if (employee.picture.startsWith('http')) {
+            const response = await fetch(employee.picture);
+            const blob = await response.blob();
+            const file = new File([blob], "profile-image.jpg", { type: blob.type });
+            form.setValue("picture", file);
+          } else {
+            // Skip conversion untuk local paths
+            console.log('Local path detected, skipping file conversion');
+          }
+        } catch (error) {
+          console.warn("Gagal mengonversi gambar ke File:", error);
+          // Tidak perlu set value jika gagal
+        }
+      }
+    };
+
+    setPictureFile();
   }, [employee?.picture, form]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,27 +115,44 @@ function EditForm({
       setValue("picture", file);
       setFileName(file.name);
     } else {
-      setPreviewImage("/noImage.jpg");
-      setFileName('');
+      // Jika tidak ada file baru yang dipilih, kembalikan ke gambar sebelumnya
+      setPreviewImage(currentImage || "/noImage.jpg");
+      setFileName(currentImage ? currentImage.split('/').pop() || '' : '');
     }
+  };
+
+  const handleRemoveImage = () => {
+    setPreviewImage("/noImage.jpg");
+    setValue("picture", undefined);
+    setFileName('');
+    setCurrentImage(null);
   };
 
   const onSubmit = async (values: z.infer<typeof EmployeeSchemaCreate>) => {
     setLoading(true);
 
     const formData = new FormData();
+    formData.append("id", employee?.id || "");
     formData.append("name", values.name);
     formData.append("email", values.email);
     formData.append("emailCorporate", values.emailCorporate || "");
     formData.append("address", values.address);
     formData.append("userDept", values.userDept);
 
+    // Handle picture upload
     if (values.picture instanceof File) {
+      // File baru diupload
       formData.append("picture", values.picture);
+    } else if (values.picture === undefined && currentImage) {
+      // Gambar dihapus
+      formData.append("removePicture", "true");
+    } else if (typeof values.picture === 'string' && values.picture) {
+      // Gambar tidak berubah, kirim path-nya
+      formData.append("currentPicture", values.picture);
     }
 
     try {
-      const response = await fetch(`/api/employee/update/${employee?.id ?? ""}`, {
+      const response = await fetch(`/api/employee/update/${employee?.id}`, {
         method: "PUT",
         body: formData,
       });
@@ -136,7 +168,7 @@ function EditForm({
 
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Terjadi kesalahan!");
+      toast.error("Terjadi kesalahan saat memperbarui data!");
     } finally {
       setLoading(false);
     }
@@ -166,7 +198,7 @@ function EditForm({
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link
                     href="/dashboard/master/employees"
@@ -178,7 +210,7 @@ function EditForm({
                 </div>
               </div>
             </div>
-            
+
             {/* Decorative Elements */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16 blur-2xl" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-orange-400/20 rounded-full -translate-x-8 translate-y-8 blur-xl" />
@@ -296,8 +328,8 @@ function EditForm({
                                 </FormControl>
                                 <SelectContent className="rounded-xl border-slate-200 dark:border-slate-600">
                                   {deptFind?.map(deptFind => (
-                                    <SelectItem 
-                                      key={deptFind.id} 
+                                    <SelectItem
+                                      key={deptFind.id}
                                       value={deptFind.id}
                                       className="rounded-lg focus:bg-amber-50 dark:focus:bg-slate-600"
                                     >
@@ -359,16 +391,30 @@ function EditForm({
                   </div>
                   <CardContent className="p-6 space-y-6">
                     <div className="flex flex-col items-center space-y-6">
-                      <div className="relative w-40 h-40 rounded-2xl border-4 border-slate-200 dark:border-slate-600 overflow-hidden shadow-lg">
+                      <div className="relative w-40 h-40 rounded-2xl border-4 border-slate-200 dark:border-slate-600 overflow-hidden shadow-lg group">
                         <Image
                           src={previewImage || "/noImage.jpg"}
                           alt="Preview"
                           fill
                           className="object-cover"
                           priority
+                          onError={() => setPreviewImage("/noImage.jpg")}
                         />
+                        {previewImage && previewImage !== "/noImage.jpg" && (
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={handleRemoveImage}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              Hapus
+                            </Button>
+                          </div>
+                        )}
                       </div>
-                      
+
                       <div className="w-full space-y-3">
                         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
                           Update Foto
@@ -394,7 +440,7 @@ function EditForm({
                           </p>
                         )}
                       </div>
-                      
+
                       <div className="text-center">
                         <p className="text-xs text-slate-500 dark:text-slate-400">
                           Format: JPG, PNG, WEBP
@@ -429,7 +475,7 @@ function EditForm({
                           </div>
                         )}
                       </Button>
-                      
+
                       <Link
                         href="/dashboard/master/employees"
                         className="inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-all duration-200"
