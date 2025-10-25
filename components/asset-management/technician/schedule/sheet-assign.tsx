@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { FiAlertTriangle } from "react-icons/fi";
+import { FiAlertTriangle, FiCamera, FiImage } from "react-icons/fi";
 import Image from "next/image";
 
 // Fungsi resize (contoh sederhana)
@@ -153,6 +153,32 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
     ? `${selectedTechnician.name} - ${selectedTechnician.specialization}`
     : "Not Assigned";
 
+  // Fungsi untuk menangani pemilihan file dengan opsi kamera atau galeri
+  const handleFileSelection = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setFile: (file: File | null) => void,
+    setPreview: (url: string) => void
+  ) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      let finalFile = file;
+      if (file.size > 1048576) {
+        finalFile = await resizeImage(file, 800, 800);
+      }
+      setFile(finalFile);
+      setPreview(URL.createObjectURL(finalFile));
+    }
+  };
+
+  // Fungsi untuk memicu input file dengan accept yang berbeda
+  const triggerFileInput = (inputId: string, accept: string = "image/*") => {
+    const input = document.getElementById(inputId) as HTMLInputElement;
+    if (input) {
+      input.accept = accept;
+      input.click();
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -214,24 +240,26 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
         ) : (
           <Button
             variant="outline"
-            className="flex items-center gap-2 text-yellow-700 bg-white border border-yellow-600 rounded-md px-4 py-2 transition-all duration-200 hover:bg-yellow-600 hover:text-white hover:shadow-md"
+            className="flex items-center gap-2 text-yellow-700 bg-white border border-yellow-600 rounded-md px-4 py-2 transition-all duration-200 hover:bg-yellow-600 hover:text-white hover:shadow-md dark:text-yellow-300 dark:border-yellow-500 dark:bg-gray-800 dark:hover:bg-yellow-700"
           >
             <FiAlertTriangle className="w-5 h-5" />
             <span className="font-semibold animate-blink">Assign Technician</span>
           </Button>
         )}
       </SheetTrigger>
-      <SheetContent className={`transition-transform duration-300 ease-out ${transformClass}`}>
+      <SheetContent className={`transition-transform duration-300 ease-out ${transformClass} dark:bg-gray-900 dark:text-white`}>
         <SheetHeader>
-          <SheetTitle>Update Ticket Maintenance</SheetTitle>
-          <SheetDescription>Detail tiket dan aksi update:</SheetDescription>
+          <SheetTitle className="dark:text-white">Update Ticket Maintenance</SheetTitle>
+          <SheetDescription className="dark:text-gray-300">
+            Detail tiket dan aksi update:
+          </SheetDescription>
         </SheetHeader>
         {/* Container scroll agar tombol submit tetap terlihat */}
-        <div className="max-h-[80vh] overflow-y-auto pr-2 dark: text-black">
+        <div className="max-h-[80vh] overflow-y-auto pr-2">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Readonly Technician */}
             <div>
-              <label htmlFor="technician" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="technician" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Technician
               </label>
               <input
@@ -239,12 +267,12 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 type="text"
                 value={technicianDisplay}
                 readOnly
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
               />
             </div>
             {/* Readonly Scheduled Date */}
             <div>
-              <label htmlFor="scheduledDate" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="scheduledDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Schedule Date
               </label>
               <input
@@ -252,12 +280,12 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 type="text"
                 value={scheduledDate || "Not set"}
                 readOnly
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
               />
             </div>
             {/* Actual Check Date */}
             <div>
-              <label htmlFor="actualCheckDate" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="actualCheckDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Actual Check Date
               </label>
               <input
@@ -265,12 +293,12 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 type="date"
                 value={actualCheckDate}
                 onChange={(e) => setActualCheckDate(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-white"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white"
               />
             </div>
             {/* Readonly Trouble User */}
             <div>
-              <label htmlFor="troubleUser" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="troubleUser" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Trouble User
               </label>
               <textarea
@@ -278,12 +306,12 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 rows={3}
                 value={troubleUser}
                 readOnly
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 dark:bg-white"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
               />
             </div>
             {/* Preview untuk Ticket Image 1 (tidak ada input file) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Ticket Image form user complain
               </label>
               {previewImage1 && previewImage1.trim() !== "" ? (
@@ -293,55 +321,78 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                     alt="Preview Ticket Image 1"
                     width={96}
                     height={96}
-                    style={{
-                      border: "1px solid #ccc", // Memberikan border ringan
-                      padding: "4px", // Sedikit padding agar terlihat rapi
-                      backgroundColor: "#f8f8f8", // Latar belakang abu-abu muda untuk estetika
-                    }}
-                    className="object-cover rounded"
+                    className="object-cover rounded border border-gray-300 dark:border-gray-600 p-1 bg-gray-50 dark:bg-gray-700"
                   />
                 </div>
               ) : (
-                <p className="mt-2 text-sm text-gray-500">No image available</p>
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">No image available</p>
               )}
             </div>
             {/* Analisa Description */}
             <div>
-              <label htmlFor="analisaDescription" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="analisaDescription" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Analisa Description
               </label>
               <textarea
                 id="analisaDescription"
                 value={analisaDescription}
                 onChange={(e) => setAnalisaDescription(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2  dark:bg-white"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                 placeholder="Enter analisa description..."
                 rows={3}
               />
             </div>
-            {/* File Input untuk Ticket Image 2 */}
+            {/* File Input untuk Ticket Image 2 dengan opsi kamera/galeri */}
             <div>
-              <label htmlFor="ticketImage2" className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Ticket Image Analisa Description
               </label>
+              
+              {/* Hidden file input untuk galeri */}
               <input
-                id="ticketImage2"
+                id="ticketImage2Gallery"
                 type="file"
                 accept="image/*"
-                {...(isMobile ? { capture: "environment" } : {})}
-                onChange={async (e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    const file = e.target.files[0];
-                    let finalFile = file;
-                    if (file.size > 1048576) {
-                      finalFile = await resizeImage(file, 800, 800);
-                    }
-                    setTicketImage2(finalFile);
-                    setPreviewImage2(URL.createObjectURL(finalFile));
-                  }
-                }}
-                className="mt-1 block w-full"
+                className="hidden"
+                onChange={(e) => handleFileSelection(e, setTicketImage2, setPreviewImage2)}
               />
+              
+              {/* Hidden file input untuk kamera (hanya mobile) */}
+              <input
+                id="ticketImage2Camera"
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => handleFileSelection(e, setTicketImage2, setPreviewImage2)}
+              />
+              
+              {/* Tombol pilihan */}
+              <div className="flex gap-2 mb-2">
+                {isMobile && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                    onClick={() => triggerFileInput("ticketImage2Camera", "image/*")}
+                  >
+                    <FiCamera className="w-4 h-4" />
+                    Camera
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                  onClick={() => triggerFileInput("ticketImage2Gallery", "image/*")}
+                >
+                  <FiImage className="w-4 h-4" />
+                  Gallery
+                </Button>
+              </div>
+              
               {previewImage2 && previewImage2.trim() !== "" && (
                 <div className="mt-2">
                   <Image
@@ -349,53 +400,76 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                     alt="Preview Ticket Image 2"
                     width={96}
                     height={96}
-                    style={{
-                      border: "1px solid #ccc", // Memberikan border ringan
-                      padding: "4px", // Sedikit padding agar terlihat rapi
-                      backgroundColor: "#f8f8f8", // Latar belakang abu-abu muda untuk estetika
-                    }}
-                    className="object-cover rounded"
+                    className="object-cover rounded border border-gray-300 dark:border-gray-600 p-1 bg-gray-50 dark:bg-gray-700"
                   />
                 </div>
               )}
             </div>
             {/* Action Description */}
             <div>
-              <label htmlFor="actionDescription" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="actionDescription" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Action Description
               </label>
               <textarea
                 id="actionDescription"
                 value={actionDescription}
                 onChange={(e) => setActionDescription(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2  dark:bg-white"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                 placeholder="Enter action description..."
                 rows={3}
               />
             </div>
-            {/* File Input untuk Ticket Image 3 */}
+            {/* File Input untuk Ticket Image 3 dengan opsi kamera/galeri */}
             <div>
-              <label htmlFor="ticketImage3" className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Ticket Image Action Description
               </label>
+              
+              {/* Hidden file input untuk galeri */}
               <input
-                id="ticketImage3"
+                id="ticketImage3Gallery"
                 type="file"
                 accept="image/*"
-                {...(isMobile ? { capture: "environment" } : {})}
-                onChange={async (e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    const file = e.target.files[0];
-                    let finalFile = file;
-                    if (file.size > 1048576) {
-                      finalFile = await resizeImage(file, 800, 800);
-                    }
-                    setTicketImage3(finalFile);
-                    setPreviewImage3(URL.createObjectURL(finalFile));
-                  }
-                }}
-                className="mt-1 block w-full"
+                className="hidden"
+                onChange={(e) => handleFileSelection(e, setTicketImage3, setPreviewImage3)}
               />
+              
+              {/* Hidden file input untuk kamera (hanya mobile) */}
+              <input
+                id="ticketImage3Camera"
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => handleFileSelection(e, setTicketImage3, setPreviewImage3)}
+              />
+              
+              {/* Tombol pilihan */}
+              <div className="flex gap-2 mb-2">
+                {isMobile && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                    onClick={() => triggerFileInput("ticketImage3Camera", "image/*")}
+                  >
+                    <FiCamera className="w-4 h-4" />
+                    Camera
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                  onClick={() => triggerFileInput("ticketImage3Gallery", "image/*")}
+                >
+                  <FiImage className="w-4 h-4" />
+                  Gallery
+                </Button>
+              </div>
+              
               {previewImage3 && previewImage3.trim() !== "" && (
                 <div className="mt-2">
                   <Image
@@ -403,19 +477,14 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                     alt="Preview Ticket Image 3"
                     width={96}
                     height={96}
-                    style={{
-                      border: "1px solid #ccc", // Memberikan border ringan
-                      padding: "4px", // Sedikit padding agar terlihat rapi
-                      backgroundColor: "#f8f8f8", // Latar belakang abu-abu muda untuk estetika
-                    }}
-                    className="object-cover rounded"
+                    className="object-cover rounded border border-gray-300 dark:border-gray-600 p-1 bg-gray-50 dark:bg-gray-700"
                   />
                 </div>
               )}
             </div>
             {/* Readonly Status */}
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Status
               </label>
               <input
@@ -423,11 +492,15 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
                 type="text"
                 value={status}
                 readOnly
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
               />
             </div>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Updating..." : "Update"}
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-800"
+            >
+              {loading ? "Updating..." : "Update Ticket"}
             </Button>
           </form>
         </div>
