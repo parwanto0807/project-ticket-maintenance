@@ -20,7 +20,7 @@ import {
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from "react";
-import { ArrowLeftStartOnRectangleIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, UserCircleIcon, PhotoIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import type { Department } from '@prisma/client';
@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input";
 import CreateDeptForm from './create-dept-form';
 import { EmployeeSchemaCreate } from "@/schemas";
 import { toast } from "sonner";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 
 type Employee = {
   id: string;
@@ -38,7 +38,7 @@ type Employee = {
   emailCorporate: string | null;
   address: string;
   userDept: string;
-  picture: string | null; // Picture bisa null
+  picture: string | null;
 };
 
 type EmployeeProp = Employee | null;
@@ -53,12 +53,13 @@ function EditForm({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string>('');
+
   const urlToFile = async (url: string, filename: string): Promise<File> => {
     const response = await fetch(url);
     const blob = await response.blob();
     return new File([blob], filename, { type: blob.type });
   };
-  const [fileName, setFileName] = useState<string>('');
 
   const form = useForm<z.infer<typeof EmployeeSchemaCreate>>({
     resolver: zodResolver(EmployeeSchemaCreate),
@@ -76,19 +77,20 @@ function EditForm({
 
   useEffect(() => {
     if (employee?.picture) {
-      setPreviewImage(employee?.picture);
-      setFileName(employee?.picture || "");
+      setPreviewImage(employee.picture);
+      setFileName(employee.picture);
+    } else {
+      setPreviewImage("/noImage.jpg");
     }
   }, [employee?.picture]);
 
   useEffect(() => {
     if (employee?.picture) {
-      urlToFile(employee?.picture, "image.jpg").then((file) => {
+      urlToFile(employee.picture, "profile-image.jpg").then((file) => {
         form.setValue("picture", file);
       });
     }
   }, [employee?.picture, form]);
-
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -96,11 +98,12 @@ function EditForm({
       const imageUrl = URL.createObjectURL(file);
       setPreviewImage(imageUrl);
       setValue("picture", file);
+      setFileName(file.name);
     } else {
       setPreviewImage("/noImage.jpg");
+      setFileName('');
     }
   };
-
 
   const onSubmit = async (values: z.infer<typeof EmployeeSchemaCreate>) => {
     setLoading(true);
@@ -117,7 +120,6 @@ function EditForm({
     }
 
     try {
-      // Panggil langsung API update Employee
       const response = await fetch(`/api/employee/update/${employee?.id ?? ""}`, {
         method: "PUT",
         body: formData,
@@ -130,7 +132,6 @@ function EditForm({
       }
 
       toast.success("Employee berhasil diperbarui!");
-      form.reset();
       router.push("/dashboard/master/employees");
 
     } catch (error) {
@@ -139,193 +140,309 @@ function EditForm({
     } finally {
       setLoading(false);
     }
-};
-
+  };
 
   return (
     <Form {...form}>
-      <div className='mt-6 grid grid-cols-1 sm:grid-cols-4 items-center justify-center space-between '>
-        <div className="flex pt-2 pb-0 gap-4">
-          <div className="flex-initial w-96 text-xs text-blue-700 italic md:text-nowrap">
-            <span>Input data master Employee ini dengan lengkap dan dapat di pertanggungjawabkan</span>
-          </div>
-        </div>
-      </div>
-      <div className="w-full rounded-lg border px-4 shadow-lg mt-4">
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 p-4 mb-12 "
-        >
-          <div className="mt-1 grid grid-cols-1 gap-4 gap-y-1 sm:grid-cols-2 items-center justify-center space-between">
-            <div className='w-full space-y-6 items-center justify-center'>
-              <FormField
-                control={form.control}
-                name='name'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Employee Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isPending}
-                        placeholder="Employee name"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className='w-full space-y-6 items-center justify-center'>
-              <FormField
-                control={form.control}
-                name='email'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Employee Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isPending}
-                        placeholder="Employee email"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className='w-full space-y-6 items-center justify-center'>
-              <FormField
-                control={form.control}
-                name='emailCorporate'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Corporate Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isPending}
-                        placeholder="Corporate email"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className='w-full space-y-6 items-center justify-center'>
-              <FormField
-                control={form.control}
-                name='address'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Employee Address</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isPending}
-                        placeholder="Employee Address"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="flex-initial grid grid-cols-1 mt-0 sm:grid-cols-1">
-              <div className="flex w-full gap-x-2">
-                <div className="flex-initial w-full">
-                  <FormField
-                    control={form.control}
-                    name="userDept"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Entry Unit</FormLabel>
-                        <Select
-                          value={field.value} // Gunakan value, bukan defaultValue
-                          onValueChange={field.onChange}
-                          disabled={isPending}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a Department " />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {deptFind?.map(deptFind => (
-                              <SelectItem key={deptFind.id} value={deptFind.id}>
-                                {deptFind.dept_name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Header dengan Gradient Profesional 2025 */}
+          <div className="relative mb-8 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 p-8 text-white shadow-2xl overflow-hidden">
+            <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:60px_60px]" />
+            <div className="relative z-10">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+                      <UserCircleIcon className="h-8 w-8" />
+                    </div>
+                    <div>
+                      <h1 className="text-3xl font-bold tracking-tight">
+                        Edit Data Employee
+                      </h1>
+                      <p className="text-orange-100 text-lg mt-2 max-w-2xl">
+                        Perbarui informasi employee dengan data terbaru yang valid
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-initial mt-7 ">
-                  <CreateDeptForm deptFind={deptFind} />
+                
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link
+                    href="/dashboard/master/employees"
+                    className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-white/20 backdrop-blur-sm rounded-xl hover:bg-white/30 transition-all duration-200 border border-white/30"
+                  >
+                    <ArrowLeftIcon className="h-4 w-4" />
+                    Kembali ke List
+                  </Link>
                 </div>
               </div>
             </div>
+            
+            {/* Decorative Elements */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16 blur-2xl" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-orange-400/20 rounded-full -translate-x-8 translate-y-8 blur-xl" />
           </div>
 
+          {/* Main Content Container */}
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column - Personal Information */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Personal Information Card */}
+                <Card className="border-0 shadow-xl dark:shadow-slate-900/50 bg-white dark:bg-slate-800 rounded-2xl overflow-hidden">
+                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-slate-700 dark:to-slate-600 px-6 py-4 border-b">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-amber-100 dark:bg-amber-900 rounded-lg">
+                        <UserCircleIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl font-semibold text-slate-900 dark:text-white">
+                          Informasi Personal
+                        </CardTitle>
+                        <CardDescription className="text-slate-600 dark:text-slate-300">
+                          Perbarui data diri dan informasi kontak employee
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </div>
+                  <CardContent className="p-6 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name='name'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                              Nama Lengkap
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                disabled={isPending}
+                                placeholder="Masukkan nama lengkap"
+                                className="h-12 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all rounded-xl"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-          <div className='mt-8'>
-            <div className="w-full md:w-1/4 items-center justify-center">
-              <Card className="w-full py-2 px-2 border-2 mt-4 rounded-sm items-center justify-center">
-                <h3 className="w-full font-bold items-center justify-center text-center">Upload Images</h3>
-                <div className="mb-2 pt-2">
-                  <input
-                    type="file"
-                    name="picture"
-                    className="file:h-full file:mr-4 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-gray-300 file:cursor-pointer border border-gray-400 w-full"
-                    accept="image/*"
-                    onChange={handleImageChange || "/noImage.jpg"}
-                  />
-                  {fileName && <p className="mt-2 text-gray-600" hidden>File: {fileName}</p>}
-                  {previewImage && (
-                    <div className="mt-4">
-                      <Image
-                        src={previewImage}
-                        alt="Preview"
-                        width={400}
-                        height={200}
-                        className="rounded-lg shadow-sm items-center justify-center object-center"
-                        style={{ maxWidth: '100%', height: 'auto' }}
-                        priority={previewImage === "/noImage.jpg"}
+                      <FormField
+                        control={form.control}
+                        name='email'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                              Email Akun
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                disabled={isPending}
+                                placeholder="email@example.com"
+                                type="email"
+                                className="h-12 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all rounded-xl"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
                     </div>
-                  )}
-                </div>
-              </Card>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name='emailCorporate'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                              Email Corporate
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                disabled={isPending}
+                                placeholder="corporate@company.com"
+                                type="email"
+                                className="h-12 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all rounded-xl"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name='userDept'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                              Department
+                            </FormLabel>
+                            <div className="flex gap-3">
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                                disabled={isPending}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="h-12 flex-1 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all rounded-xl">
+                                    <SelectValue placeholder="Pilih department" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="rounded-xl border-slate-200 dark:border-slate-600">
+                                  {deptFind?.map(deptFind => (
+                                    <SelectItem 
+                                      key={deptFind.id} 
+                                      value={deptFind.id}
+                                      className="rounded-lg focus:bg-amber-50 dark:focus:bg-slate-600"
+                                    >
+                                      {deptFind.dept_name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <CreateDeptForm deptFind={deptFind} />
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name='address'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                            Alamat Lengkap
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              disabled={isPending}
+                              placeholder="Masukkan alamat lengkap employee"
+                              className="h-12 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all rounded-xl"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right Column - Photo Upload & Actions */}
+              <div className="space-y-6">
+                {/* Photo Upload Card */}
+                <Card className="border-0 shadow-xl dark:shadow-slate-900/50 bg-white dark:bg-slate-800 rounded-2xl overflow-hidden">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-slate-700 dark:to-slate-600 px-6 py-4 border-b">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                        <PhotoIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl font-semibold text-slate-900 dark:text-white">
+                          Foto Profil
+                        </CardTitle>
+                        <CardDescription className="text-slate-600 dark:text-slate-300">
+                          Update foto employee yang jelas
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </div>
+                  <CardContent className="p-6 space-y-6">
+                    <div className="flex flex-col items-center space-y-6">
+                      <div className="relative w-40 h-40 rounded-2xl border-4 border-slate-200 dark:border-slate-600 overflow-hidden shadow-lg">
+                        <Image
+                          src={previewImage || "/noImage.jpg"}
+                          alt="Preview"
+                          fill
+                          className="object-cover"
+                          priority
+                        />
+                      </div>
+                      
+                      <div className="w-full space-y-3">
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                          Update Foto
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="file"
+                            name="picture"
+                            className="block w-full text-sm text-slate-500 
+                                     file:mr-4 file:py-3 file:px-4 file:rounded-xl 
+                                     file:border-0 file:text-sm file:font-semibold 
+                                     file:bg-amber-50 file:text-amber-700 dark:file:bg-amber-900 dark:file:text-amber-300
+                                     hover:file:bg-amber-100 dark:hover:file:bg-amber-800 
+                                     transition-all duration-200 cursor-pointer
+                                     bg-slate-50 dark:bg-slate-700 rounded-xl"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                          />
+                        </div>
+                        {fileName && (
+                          <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                            File: {fileName}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div className="text-center">
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          Format: JPG, PNG, WEBP
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          Maksimal ukuran: 5MB
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Action Buttons Card */}
+                <Card className="border-0 shadow-xl dark:shadow-slate-900/50 bg-white dark:bg-slate-800 rounded-2xl overflow-hidden">
+                  <CardContent className="p-6">
+                    <div className="flex flex-col gap-4">
+                      <Button
+                        type="submit"
+                        onClick={form.handleSubmit(onSubmit)}
+                        disabled={loading}
+                        className="h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 border-0"
+                      >
+                        {loading ? (
+                          <div className="flex items-center gap-3">
+                            <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <span>Memperbarui Data...</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-3">
+                            <ArrowUpTrayIcon className="h-5 w-5" />
+                            <span>Update Employee</span>
+                          </div>
+                        )}
+                      </Button>
+                      
+                      <Link
+                        href="/dashboard/master/employees"
+                        className="inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-all duration-200"
+                      >
+                        <ArrowLeftIcon className="h-4 w-4" />
+                        Batalkan
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
-
-          <div className="relative">
-            <Button
-              className={`w-24 h-9 rounded-lg absolute right-0 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white font-semibold py-2 px-4 rounded-lg`}
-              type="submit"
-            >
-              {loading ? 'Load Update...' : 'Update'}
-            </Button>
-          </div>
-        </form>
-
-        <div className="flex items-center justify-end border p-2 pr-3 rounded-md shadow-sm mb-4">
-          <Link
-            href="/dashboard/master/employees"
-            className="flex h-9 w-24 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-          >
-            <span>Exit</span>{' '}
-            <ArrowLeftStartOnRectangleIcon className="h-5 md:ml-4" />
-          </Link>
         </div>
       </div>
     </Form>
