@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { Prisma, AssetStatus } from "@prisma/client";
 import { unstable_noStore as noStore } from "next/cache";
 
 export const ITEMS_PER_PAGE_ASSET = 5;
@@ -48,32 +49,89 @@ export async function generateAssetNumber(id: string) {
 export const fetchAssetList = async (query: string, currentPage: number) => {
   noStore();
   const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET_ADMIN;
+
   try {
+    // 🧩 Dapatkan semua enum AssetStatus (misalnya: ACTIVE, INACTIVE, MAINTENANCE)
+    const validStatuses = Object.values(AssetStatus);
+
+    // Buat array filter OR
+    const orFilters: Prisma.AssetWhereInput[] = [
+      { assetNumber: { contains: query, mode: "insensitive" } },
+      { location: { contains: query, mode: "insensitive" } },
+      { assetType: { name: { contains: query, mode: "insensitive" } } },
+      { department: { dept_name: { contains: query, mode: "insensitive" } } },
+      { employee: { name: { contains: query, mode: "insensitive" } } },
+
+      // Product fields
+      { product: { part_name: { contains: query, mode: "insensitive" } } },
+      { product: { part_number: { contains: query, mode: "insensitive" } } },
+      { product: { nick_name: { contains: query, mode: "insensitive" } } },
+      { product: { description: { contains: query, mode: "insensitive" } } },
+      {
+        product: {
+          satuan_penyimpanan: { contains: query, mode: "insensitive" },
+        },
+      },
+      {
+        product: {
+          satuan_pengeluaran: { contains: query, mode: "insensitive" },
+        },
+      },
+      {
+        product: { brand: { name: { contains: query, mode: "insensitive" } } },
+      },
+      {
+        product: {
+          jenisproduct: { name: { contains: query, mode: "insensitive" } },
+        },
+      },
+      {
+        product: {
+          kategoriproduct: { name: { contains: query, mode: "insensitive" } },
+        },
+      },
+      {
+        product: { group: { name: { contains: query, mode: "insensitive" } } },
+      },
+      {
+        product: { gudang: { name: { contains: query, mode: "insensitive" } } },
+      },
+    ];
+
+    // 🧩 Tambahkan filter status HANYA jika query cocok dengan salah satu enum
+    const upperQuery = query.toUpperCase();
+    if (validStatuses.includes(upperQuery as AssetStatus)) {
+      orFilters.push({
+        status: { equals: upperQuery as AssetStatus },
+      });
+    }
+
     const assetFind = await db.asset.findMany({
       skip: offset,
       take: ITEMS_PER_PAGE_ASSET_ADMIN,
       include: {
-        employee: true,
-        product: true,
-        assetType: true,
-        department: true,
-      },
-      where: {
-        OR: [
-          { location: { contains: query, mode: "insensitive" } },
-          { assetNumber: { contains: query, mode: "insensitive" } },
-          { product: { part_name: { contains: query, mode: "insensitive" } } },
-          {
-            product: { part_number: { contains: query, mode: "insensitive" } },
+        employee: { select: { id: true, name: true, email: true } },
+        product: {
+          select: {
+            id: true,
+            part_number: true,
+            part_name: true,
+            nick_name: true,
+            satuan_penyimpanan: true,
+            satuan_pengeluaran: true,
+            description: true,
+            brand: { select: { name: true } },
+            jenisproduct: { select: { name: true } },
+            kategoriproduct: { select: { name: true } },
+            group: { select: { name: true } },
+            gudang: { select: { name: true } },
           },
-          { assetType: { name: { contains: query, mode: "insensitive" } } },
-          { employee: { name: { contains: query, mode: "insensitive" } } },
-        ],
+        },
+        assetType: { select: { id: true, name: true } },
+        department: { select: { id: true, dept_name: true } },
       },
-      orderBy: [
-        { departmentId: "asc" }, // urut berdasarkan departmentId
-        { createdAt: "desc" }, // lalu urut berdasarkan tanggal dibuat terbaru
-      ],
+      where: { OR: orFilters },
+      orderBy: [{ departmentId: "asc" }, { createdAt: "desc" }],
     });
 
     return assetFind;
@@ -110,17 +168,72 @@ export const fetchAssetListPages = async (query: string) => {
   try {
     const assetCount = await db.asset.count({
       where: {
-        OR: [{ location: { contains: query, mode: "insensitive" } }],
-      },
-      orderBy: {
-        updatedAt: "desc",
+        OR: [
+          { assetNumber: { contains: query, mode: "insensitive" } },
+          { location: { contains: query, mode: "insensitive" } },
+          { assetType: { name: { contains: query, mode: "insensitive" } } },
+          {
+            department: { dept_name: { contains: query, mode: "insensitive" } },
+          },
+          { employee: { name: { contains: query, mode: "insensitive" } } },
+
+          // === FIELD DARI PRODUCT ===
+          { product: { part_name: { contains: query, mode: "insensitive" } } },
+          {
+            product: { part_number: { contains: query, mode: "insensitive" } },
+          },
+          { product: { nick_name: { contains: query, mode: "insensitive" } } },
+          {
+            product: { description: { contains: query, mode: "insensitive" } },
+          },
+          {
+            product: {
+              satuan_penyimpanan: { contains: query, mode: "insensitive" },
+            },
+          },
+          {
+            product: {
+              satuan_pengeluaran: { contains: query, mode: "insensitive" },
+            },
+          },
+
+          // === RELASI DARI PRODUCT ===
+          {
+            product: {
+              brand: { name: { contains: query, mode: "insensitive" } },
+            },
+          },
+          {
+            product: {
+              jenisproduct: { name: { contains: query, mode: "insensitive" } },
+            },
+          },
+          {
+            product: {
+              kategoriproduct: {
+                name: { contains: query, mode: "insensitive" },
+              },
+            },
+          },
+          {
+            product: {
+              group: { name: { contains: query, mode: "insensitive" } },
+            },
+          },
+          {
+            product: {
+              gudang: { name: { contains: query, mode: "insensitive" } },
+            },
+          },
+        ],
       },
     });
+
     const totalPagesAsset = Math.ceil(assetCount / ITEMS_PER_PAGE_ASSET_ADMIN);
     return totalPagesAsset;
   } catch (error) {
-    console.error("Error fetching asset", error);
-    throw new Error("Error fetching asset");
+    console.error("Error fetching asset pages", error);
+    throw new Error("Error fetching asset pages");
   }
 };
 

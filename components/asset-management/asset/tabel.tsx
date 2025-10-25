@@ -1,4 +1,4 @@
-import React from "react"; // Pastikan React di-import
+import React from "react";
 import { UpdateAssetLink } from "./buttons";
 import DeleteAlertProduct from "./alert-delete";
 import {
@@ -15,7 +15,8 @@ import ImageDialog from "./imageDialog";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PrinterIcon } from "@heroicons/react/24/outline";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export default async function AssetTable({
     query,
@@ -25,15 +26,18 @@ export default async function AssetTable({
     currentPage: number;
 }) {
     const data = await fetchAssetList(query, currentPage);
-    // Handle error jika data bukan array
+
     if (!Array.isArray(data)) {
         console.error("Failed to fetch asset list:", data.error);
-        return <div>Error: {data.error}</div>; // Tampilkan pesan error
+        return (
+            <div className="rounded-lg bg-red-50 p-4 text-red-700 dark:bg-red-900/20 dark:text-red-300">
+                Error: {data.error}
+            </div>
+        );
     }
 
-    // Kelompokkan data berdasarkan departemen
     const groupedData = data.reduce((acc, item) => {
-        const deptName = item.department?.dept_name || "Unassigned"; // Jika tidak ada departemen, masukkan ke grup 'Unassigned'
+        const deptName = item.department?.dept_name || "Unassigned";
         if (!acc[deptName]) {
             acc[deptName] = [];
         }
@@ -41,198 +45,288 @@ export default async function AssetTable({
         return acc;
     }, {} as Record<string, typeof data>);
 
+    const getStatusVariant = (status: string) => {
+        switch (status?.toLowerCase()) {
+            case 'active': return 'default';
+            case 'inactive': return 'secondary';
+            case 'maintenance': return 'destructive';
+            case 'retired': return 'outline';
+            default: return 'secondary';
+        }
+    };
+
     return (
-        <div className="mt-6 flow-root mx-auto">
-            <div className="inline-block min-w-full align-middle">
-                <div className="rounded-lg p-2 md:pt-0 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
-                    {/* Tampilan Mobile */}
-                    <div className="md:hidden">
-                        {Array.isArray(data) &&
-                            data.map((data) => (
-                                <Card
-                                    key={data.id}
-                                    className="mb-2 w-full rounded-md p-4 bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950"
-                                >
-                                    <div className="grid grid-cols-1 items-center justify-between border-b pb-1">
-                                        <div>
-                                            <div className="mb-2 flex items-center font-bold text-black dark:text-white">
-                                                <p>{data.assetNumber}</p>
+        <div className="mt-6 flow-root">
+            <div className="min-w-full align-middle">
+                {/* Mobile View */}
+                <div className="lg:hidden space-y-4">
+                    {Array.isArray(data) && data.map((data, index) => (
+                        <Card
+                            key={data.id}
+                            className="bg-white/80 backdrop-blur-sm border-l-4 border-l-blue-500 shadow-lg hover:shadow-xl transition-all duration-300 dark:bg-slate-800/80 dark:border-l-blue-400"
+                        >
+                            <CardContent className="p-4">
+                                <div className="space-y-3">
+                                    {/* Header */}
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-center space-x-2">
+                                            <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                                                #{data.assetNumber}
+                                            </Badge>
+                                            <Badge variant={getStatusVariant(data.status)} className="text-xs">
+                                                {data.status}
+                                            </Badge>
+                                        </div>
+                                        <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                                            {index + 1}
+                                        </span>
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="grid grid-cols-1 gap-2">
+                                        <div className="flex items-center space-x-3">
+                                            <div className="w-16 h-16 overflow-hidden rounded-lg border border-blue-200 dark:border-blue-800">
+                                                <ImageDialog
+                                                    src={data.assetImage1 || "/noImage.jpg"}
+                                                    alt={`${data.assetNumber} Asset Image`}
+                                                />
                                             </div>
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-12 h-12 overflow-hidden rounded">
-                                                    <ImageDialog
-                                                        src={data.assetImage1 || "/noImage.jpg"}
-                                                        alt={`${data.assetNumber} Asset Image`}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <p className="text-sm pt-1">
-                                                    {data.product.part_name} &nbsp;
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-semibold text-slate-900 dark:text-white truncate">
+                                                    {data.product.part_name}
+                                                </h3>
+                                                <p className="text-sm text-slate-600 dark:text-slate-400">
+                                                    {data.product.part_number}
                                                 </p>
                                             </div>
-                                            <div className="flex items-center gap-2">
-                                                <p className="flex-none text-sm pb-2"> {data.location}</p>{" "}
-                                                &nbsp;
-                                                <p className="flex-none text-sm font-bold text-gray-500">
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2 text-sm">
+                                            <div>
+                                                <span className="text-slate-500 dark:text-slate-400">Type:</span>
+                                                <p className="font-medium text-slate-900 dark:text-white">
                                                     {data.assetType.name}
                                                 </p>
                                             </div>
-                                            <div className="flex flex-row items-center gap-2">
-                                                <p className="flex-none text-sm font-bold text-gray-500">
-                                                    {data.employee?.name}
-                                                </p>{" "}
-                                                &nbsp;
-                                                <p className="flex-nonetext-sm text-gray-500">
-                                                    {data.status}
+                                            <div>
+                                                <span className="text-slate-500 dark:text-slate-400">Life:</span>
+                                                <p className="font-medium text-slate-900 dark:text-white">
+                                                    {data.usefulLife}
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="w-full items-center justify-between pt-2">
-                                            <div className="flex items-center justify-end gap-2 ">
-                                                <UpdateAssetLink id={data.id} />
-                                                <DeleteAlertProduct id={data.id} />
-                                                <Link
-                                                    href={`/dashboard/asset/generate-pdf/${data.id}`}
-                                                    passHref
-                                                >
-                                                    <Button
-                                                        variant="outline"
-                                                        className="text-green-700 rounded-md border p-2 hover:bg-green-800 h-8 text-center hover:text-white flex justify-center items-center"
-                                                    >
-                                                        <PrinterIcon className="w-4 h-4" />
-                                                    </Button>
-                                                </Link>
+
+                                        <div className="space-y-1 text-sm">
+                                            <div className="flex items-center space-x-2">
+                                                <span className="text-slate-500 dark:text-slate-400">👤</span>
+                                                <span className="font-medium text-slate-900 dark:text-white">
+                                                    {data.employee?.name || 'Unassigned'}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <span className="text-slate-500 dark:text-slate-400">🏢</span>
+                                                <span className="font-medium text-slate-900 dark:text-white">
+                                                    {data.department?.dept_name || 'Unassigned'}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <span className="text-slate-500 dark:text-slate-400">📍</span>
+                                                <span className="font-medium text-slate-900 dark:text-white">
+                                                    {data.location}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2 text-sm">
+                                            <div>
+                                                <span className="text-slate-500 dark:text-slate-400">Cost:</span>
+                                                <p className="font-medium text-green-600 dark:text-green-400">
+                                                    {formatCurrencyQtt(Number(data.purchaseCost?.toString()))}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <span className="text-slate-500 dark:text-slate-400">Date:</span>
+                                                <p className="font-medium text-slate-900 dark:text-white">
+                                                    {data.purchaseDate?.toLocaleDateString()}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
-                                </Card>
-                            ))}
-                    </div>
 
-                    {/* Tampilan Desktop */}
-                    <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
-                        <TableHeader>
-                            <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
-                                <TableHead className="text-black py-8 items-center dark:text-white font-bold uppercase">
-                                    No
-                                </TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">
-                                    Asset Number
-                                </TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">
-                                    Description
-                                </TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">
-                                    Asset Type
-                                </TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">
-                                    Useful Life
-                                </TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">
-                                    User Name
-                                </TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">
-                                    Department
-                                </TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">
-                                    Location
-                                </TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">
-                                    Cost Purchase
-                                </TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">
-                                    Date Purchase
-                                </TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">
-                                    Status
-                                </TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">
-                                    Asset Image
-                                </TableHead>
-                                <TableHead className="text-black items-center dark:text-white font-bold uppercase">
-                                    Action
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody className="text-[12px] border-none">
-                            {Object.entries(groupedData).map(([deptName, items]) => {
+                                    {/* Actions */}
+                                    <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                                        <UpdateAssetLink id={data.id} />
+                                        <DeleteAlertProduct id={data.id} />
+                                        <Link href={`/dashboard/asset/generate-pdf/${data.id}`} passHref>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="text-blue-600 border-blue-200 hover:bg-blue-600 hover:text-white dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-800"
+                                            >
+                                                <PrinterIcon className="w-4 h-4" />
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
 
-                                return (
+                {/* Desktop View */}
+                <div className="hidden lg:block">
+                    <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0 dark:bg-slate-800/80">
+                        <Table className="border-separate border-spacing-0">
+                            <TableHeader>
+                                <TableRow className="bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 dark:from-sky-500 dark:to-indigo-700 dark:hover:from-sky-600 dark:hover:to-indigo-800">
+                                    <TableHead className="w-12 text-white font-semibold border-r border-blue-500/30 py-4 text-center">
+                                        No
+                                    </TableHead>
+                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
+                                        Asset Number
+                                    </TableHead>
+                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
+                                        Description
+                                    </TableHead>
+                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
+                                        Asset Type
+                                    </TableHead>
+                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
+                                        Useful Life
+                                    </TableHead>
+                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
+                                        User Name
+                                    </TableHead>
+                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
+                                        Department
+                                    </TableHead>
+                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
+                                        Location
+                                    </TableHead>
+                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
+                                        Cost Purchase
+                                    </TableHead>
+                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
+                                        Date Purchase
+                                    </TableHead>
+                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
+                                        Status
+                                    </TableHead>
+                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
+                                        Image
+                                    </TableHead>
+                                    <TableHead className="text-white font-semibold py-4 text-center">
+                                        Actions
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody className="bg-transparent">
+                                {Object.entries(groupedData).map(([deptName, items]) => (
                                     <React.Fragment key={deptName}>
-                                        {/* Header untuk grup departemen */}
-                                        <TableRow className="bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
-                                            <TableCell colSpan={13} className="font-bold text-lg text-left py-2 text-orange-900 dark:text-orange-100">
-                                                🏤 {deptName}
+                                        {/* Department Header */}
+                                        <TableRow className="bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 dark:from-blue-900/20 dark:to-blue-800/20 dark:hover:from-blue-800/30 dark:hover:to-blue-700/30">
+                                            <TableCell
+                                                colSpan={13}
+                                                className="font-bold text-lg text-blue-900 dark:text-blue-100 py-3 px-6 border-b border-blue-200 dark:border-blue-700"
+                                            >
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-2 h-6 bg-blue-500 rounded-full"></div>
+                                                    <span>🏢 {deptName}</span>
+                                                    <Badge variant="secondary" className="ml-2 bg-blue-500 text-white">
+                                                        {items.length} assets
+                                                    </Badge>
+                                                </div>
                                             </TableCell>
                                         </TableRow>
 
-                                        {/* Data untuk setiap departemen */}
-                                        {items.map((data, index) => {
-                                            const groupItemIndex = index + 1; // Nomor urut dalam grup
-
-                                            return (
-                                                <TableRow key={`${deptName}-${data.id}`}>
-                                                    <TableCell className="text-left text-nowrap">
-                                                        {groupItemIndex} {/* Format: Global - [Grup] */}
-                                                    </TableCell>
-                                                    <TableCell className="text-center font-bold text-nowrap">
-                                                        🎫 {data.assetNumber}
-                                                    </TableCell>
-                                                    <TableCell>{data.product.part_number}</TableCell>
-                                                    <TableCell className="text-center">
-                                                        🚪 {data.assetType.name}
-                                                    </TableCell>
-                                                    <TableCell className="text-center">
-                                                        {data.usefulLife}
-                                                    </TableCell>
-                                                    <TableCell className="text-left">
-                                                        👨‍💻 {data.employee?.name}
-                                                    </TableCell>
-                                                    <TableCell className="text-left">
-                                                        {data.department?.dept_name}
-                                                    </TableCell>
-                                                    <TableCell>{data.location}</TableCell>
-                                                    <TableCell>
-                                                        {formatCurrencyQtt(Number(data.purchaseCost?.toString()))}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {data.purchaseDate?.toDateString()}
-                                                    </TableCell>
-                                                    <TableCell>{data.status}</TableCell>
-                                                    <TableCell className="whitespace-nowrap px-3 py-2">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="w-12 h-12 overflow-hidden rounded">
-                                                                <ImageDialog
-                                                                    src={data.assetImage1 || "/noImage.jpg"}
-                                                                    alt={`${data.assetNumber} Asset Image`}
-                                                                />
-                                                            </div>
+                                        {/* Department Data */}
+                                        {items.map((data, index) => (
+                                            <TableRow
+                                                key={`${deptName}-${data.id}`}
+                                                className="bg-white/50 hover:bg-blue-50/80 dark:bg-slate-800/50 dark:hover:bg-blue-900/20 transition-colors duration-200 border-b border-slate-200/50 dark:border-slate-700/50"
+                                            >
+                                                <TableCell className="text-center font-medium text-slate-600 dark:text-slate-400 py-3">
+                                                    {index + 1}
+                                                </TableCell>
+                                                <TableCell className="font-semibold text-blue-700 dark:text-blue-300 py-3">
+                                                    <div className="flex items-center space-x-2">
+                                                        <span className="text-lg">🎫</span>
+                                                        <span>{data.assetNumber}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="py-3">
+                                                    <div>
+                                                        <div className="font-medium text-slate-900 dark:text-white">
+                                                            {data.product.part_name}
                                                         </div>
-                                                    </TableCell>
-                                                    <TableCell className="flex items-center justify-center object-center gap-2">
+                                                        <div className="text-sm text-slate-500 dark:text-slate-400">
+                                                            {data.product.part_number}
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="py-3">
+                                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                                                        {data.assetType.name}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-center text-slate-700 dark:text-slate-300 py-3">
+                                                    {data.usefulLife}
+                                                </TableCell>
+                                                <TableCell className="py-3">
+                                                    <div className="flex items-center space-x-2">
+                                                        <span className="text-slate-400">👤</span>
+                                                        <span className="text-slate-700 dark:text-slate-300">
+                                                            {data.employee?.name || 'Unassigned'}
+                                                        </span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="text-slate-700 dark:text-slate-300 py-3">
+                                                    {data.department?.dept_name || 'Unassigned'}
+                                                </TableCell>
+                                                <TableCell className="text-slate-700 dark:text-slate-300 py-3">
+                                                    {data.location}
+                                                </TableCell>
+                                                <TableCell className="font-semibold text-green-600 dark:text-green-400 py-3">
+                                                    {formatCurrencyQtt(Number(data.purchaseCost?.toString()))}
+                                                </TableCell>
+                                                <TableCell className="text-slate-700 dark:text-slate-300 py-3">
+                                                    {data.purchaseDate?.toLocaleDateString()}
+                                                </TableCell>
+                                                <TableCell className="py-3">
+                                                    <Badge variant={getStatusVariant(data.status)}>
+                                                        {data.status}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="py-3">
+                                                    <div className="w-12 h-12 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
+                                                        <ImageDialog
+                                                            src={data.assetImage1 || "/noImage.jpg"}
+                                                            alt={`${data.assetNumber} Asset Image`}
+                                                        />
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="py-3">
+                                                    <div className="flex items-center justify-center space-x-1">
                                                         <UpdateAssetLink id={data.id} />
                                                         <DeleteAlertProduct id={data.id} />
-                                                        <Link
-                                                            href={`/dashboard/asset/generate-pdf/${data.id}`}
-                                                            passHref
-                                                        >
+                                                        <Link href={`/dashboard/asset/generate-pdf/${data.id}`} passHref>
                                                             <Button
                                                                 variant="outline"
-                                                                className="text-green-700 rounded-md border p-2 hover:bg-green-800 h-8 text-center hover:text-white flex justify-center items-center"
+                                                                size="sm"
+                                                                className="text-blue-600 border-blue-200 hover:bg-blue-600 hover:text-white dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-800"
                                                             >
                                                                 <PrinterIcon className="w-4 h-4" />
                                                             </Button>
                                                         </Link>
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
                                     </React.Fragment>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </Card>
                 </div>
             </div>
         </div>
