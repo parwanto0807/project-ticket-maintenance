@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 // import { IconType } from 'react-icons';
 import { FaHistory, FaTicketAlt, FaArchive } from "react-icons/fa";
-import { ComponentType, SVGProps } from 'react';
+import { ComponentType, SVGProps } from "react";
 
 export type Submenu = {
   href: string;
@@ -45,9 +45,27 @@ export type Group = {
 
 export function getMenuList(pathname: string, role: string): Group[] {
   const additionalMenuItems: Menu[] = [
-    { href: '/dashboard/maintenance/ticket', label: 'Ticket History', active: pathname === '/dashboard/maintenance/ticket', icon: FaHistory, submenus: [] },
-    { href: '/dashboard/maintenance/ticket/create', label: 'Create Ticket', active: pathname === '/dashboard/maintenance/ticket/create', icon: FaTicketAlt, submenus: [] },
-    { href: '/dashboard/asset/asset-list-user', label: 'User Asset', active: pathname === '/dashboard/asset/asset-list-user', icon: FaArchive, submenus: [] },
+    {
+      href: "/dashboard/maintenance/ticket",
+      label: "Ticket History",
+      active: pathname === "/dashboard/maintenance/ticket",
+      icon: FaHistory,
+      submenus: [],
+    },
+    {
+      href: "/dashboard/maintenance/ticket/create",
+      label: "Create Ticket",
+      active: pathname === "/dashboard/maintenance/ticket/create",
+      icon: FaTicketAlt,
+      submenus: [],
+    },
+    {
+      href: "/dashboard/asset/asset-list-user",
+      label: "User Asset",
+      active: pathname === "/dashboard/asset/asset-list-user",
+      icon: FaArchive,
+      submenus: [],
+    },
   ];
 
   if (role === "USER") {
@@ -60,8 +78,20 @@ export function getMenuList(pathname: string, role: string): Group[] {
   }
 
   const additionalMenuItemsTecnician: Menu[] = [
-    { href: '/dashboard/technician/schedule', label: 'Technician Schedule', active: pathname === '/dashboard/technician/schedule', icon: FaHistory, submenus: [] },
-    { href: '/dashboard/technician/history', label: 'History Maintenance', active: pathname === '/dashboard/technician/history', icon: FaTicketAlt, submenus: [] },
+    {
+      href: "/dashboard/technician/schedule",
+      label: "Technician Schedule",
+      active: pathname === "/dashboard/technician/schedule",
+      icon: FaHistory,
+      submenus: [],
+    },
+    {
+      href: "/dashboard/technician/history",
+      label: "History Maintenance",
+      active: pathname === "/dashboard/technician/history",
+      icon: FaTicketAlt,
+      submenus: [],
+    },
     // { href: '/dashboard/asset/asset-list-user', label: 'User Asset', active: pathname === '/dashboard/asset/asset-list-user', icon: FaArchive, submenus: [] },
   ];
 
@@ -99,6 +129,11 @@ export function getMenuList(pathname: string, role: string): Group[] {
               href: "/dashboard/master/products",
               label: "Products",
               active: pathname === "/dashboard/master/products",
+            },
+            {
+              href: "/dashboard/master/software",
+              label: "Software",
+              active: pathname === "/dashboard/master/software",
             },
             {
               href: "/dashboard/master/price-product",
