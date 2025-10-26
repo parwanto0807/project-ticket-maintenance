@@ -136,7 +136,6 @@ export async function updateSoftware(id: string, formData: UpdateSoftwareData) {
 // Delete Software
 export async function deleteSoftware(id: string) {
   try {
-    // Check if software exists
     const existingSoftware = await db.software.findUnique({
       where: { id },
       include: {
