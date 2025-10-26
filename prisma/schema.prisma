@@ -260,12 +260,16 @@ model Asset {
   assetImage1   String?             @default("/public/noImage.jpg")
   productId     String              @map("product_id")
   employeeId    String?
-  assetType     AssetType           @relation(fields: [assetTypeId], references: [id])
-  department    Department          @relation("DepartmentAsset", fields: [departmentId], references: [id])
-  employee      Employee?           @relation("AssignAssets", fields: [employeeId], references: [id])
-  product       Product             @relation("ProductAssets", fields: [productId], references: [id])
+  assetType     AssetType           @relation(fields: [assetTypeId], references: [id]
   depreciations Depreciation[]
-  tickets       TicketMaintenance[]
+
+  product    Product             @relation(fields: [productId], references: [id], name: "ProductAssets")
+  employee   Employee?           @relation(fields: [employeeId], references: [id], name: "AssignAssets")
+  department Department?         @relation(fields: [departmentId], references: [id], name: "DepartmentAsset")
+  tickets    TicketMaintenance[]
+
+  softwareInstallations SoftwareInstallation[]
+  credentials           AssetCredential[]
 }
 
 model AssetType {
@@ -386,3 +390,66 @@ enum TechnicianStatus {
   ON_LEAVE
 }
 
+model Software {
+  id            String   @id @default(uuid())
+  name          String
+  vendor        String?
+  category      String? // OS, Antivirus, CAD, ERP, dll
+  licenseType   String? // Subscription, Perpetual, OEM, OpenSource
+  defaultExpiry Int? // masa berlaku default (bulan)
+  website       String?
+  description   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  installations SoftwareInstallation[]
+}
+
+model SoftwareInstallation {
+  id            String    @id @default(uuid())
+  assetId       String
+  softwareId    String
+  installDate   DateTime? @default(now())
+  licenseKey    String?
+  licenseExpiry DateTime?
+  version       String?
+  isActive      Boolean   @default(true)
+
+  asset    Asset    @relation(fields: [assetId], references: [id])
+  software Software @relation(fields: [softwareId], references: [id])
+}
+
+model AssetCredential {
+  id          String  @id @default(uuid())
+  assetId     String
+  username    String
+  passwordEnc String // disimpan terenkripsi
+  role        String? // Admin, User, Operator
+  accountType String? // OS Login, BIOS, Router, PLC, dsb
+  note        String?
+
+  // === INFORMASI JARINGAN ===
+  ipAddress      String? // IPv4 atau IPv6
+  macAddress     String? // MAC Address
+  connectionType ConnectionType? // Enum baru: LAN, WiFi, Serial, Bluetooth, dll
+  hostname       String? // Nama host device
+  portNumber     Int? // misal 22 untuk SSH, 3389 untuk RDP
+
+  // === AUDIT DAN WAKTU ===
+  lastLoginAt DateTime? // waktu terakhir digunakan
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  asset Asset @relation(fields: [assetId], references: [id])
+}
+
+enum ConnectionType {
+  ETHERNET
+  WIFI
+  BLUETOOTH
+  SERIAL
+  USB
+  VPN
+  CLOUD
+  OTHER
+}

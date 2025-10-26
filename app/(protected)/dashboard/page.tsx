@@ -31,7 +31,7 @@ export default function DashboardPage() {
   return (
     <ContentLayout title="Dashboard">
       {role === "ADMIN" ? (
-        <Breadcrumb>
+        <Breadcrumb className="ml-6">
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbPage>Dashboard</BreadcrumbPage>
