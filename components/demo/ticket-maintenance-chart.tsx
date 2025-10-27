@@ -60,11 +60,11 @@ interface CustomTooltipProps {
 const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md p-4 rounded-xl shadow-2xl border border-slate-200/50 dark:border-slate-700/50">
-        <p className="font-semibold text-sm text-slate-800 dark:text-slate-200 mb-2">{label}</p>
+      <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md p-3 md:p-4 rounded-lg md:rounded-xl shadow-2xl border border-slate-200/50 dark:border-slate-700/50">
+        <p className="font-semibold text-xs md:text-sm text-slate-800 dark:text-slate-200 mb-1 md:mb-2">{label}</p>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full" />
-          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <div className="w-2 h-2 md:w-3 md:h-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full" />
+          <p className="text-xs md:text-sm font-medium text-slate-700 dark:text-slate-300">
             Total: <span className="text-orange-500 font-bold">{payload[0].value}</span> Tickets
           </p>
         </div>
@@ -76,22 +76,22 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
 
 // Skeleton Loading Component
 const ChartSkeleton = () => (
-  <div className="animate-pulse space-y-4">
-    <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
-    <div className="h-64 bg-slate-200 dark:bg-slate-700 rounded"></div>
+  <div className="animate-pulse space-y-3 md:space-y-4">
+    <div className="h-6 md:h-8 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
+    <div className="h-48 md:h-64 bg-slate-200 dark:bg-slate-700 rounded"></div>
   </div>
 );
 
 const TicketSkeleton = () => (
-  <div className="animate-pulse space-y-6">
+  <div className="animate-pulse space-y-4 md:space-y-6">
     {[1, 2, 3, 4, 5].map((i) => (
-      <div key={i} className="flex items-center space-y-4">
-        <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-        <div className="ml-4 space-y-2 flex-1">
-          <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/3"></div>
-          <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+      <div key={i} className="flex items-center gap-3 md:gap-4">
+        <div className="w-8 h-8 md:w-10 md:h-10 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+        <div className="space-y-1 md:space-y-2 flex-1">
+          <div className="h-3 md:h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/3"></div>
+          <div className="h-2 md:h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
         </div>
-        <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
+        <div className="h-5 md:h-6 bg-slate-200 dark:bg-slate-700 rounded w-12 md:w-16"></div>
       </div>
     ))}
   </div>
@@ -130,9 +130,10 @@ const StatusBadge = ({ status }: { status: string }) => {
   const IconComponent = config.icon;
 
   return (
-    <div className={`flex items-center gap-1 px-2 py-1 rounded-full border text-xs font-medium ${config.color}`}>
+    <div className={`flex items-center gap-1 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full border text-xs font-medium ${config.color}`}>
       <IconComponent className="w-3 h-3" />
-      <span>{status.replace('_', ' ')}</span>
+      <span className="hidden xs:inline">{status.replace('_', ' ')}</span>
+      <span className="xs:hidden text-xs">{status.charAt(0)}</span>
     </div>
   );
 };
@@ -185,7 +186,7 @@ export default function DashboardChartSectionAdmin() {
             (a: TicketRecord, b: TicketRecord) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           )
-          .slice(0, 8)
+          .slice(0, 6) // Reduced from 8 to 6 for mobile
           .map((ticket: TicketRecord) => ({
             name: ticket.name || "No Name",
             email: ticket.email || "No Email",
@@ -246,36 +247,36 @@ export default function DashboardChartSectionAdmin() {
           }
         }
       }}
-      className="space-y-6"
+      className="space-y-4 md:space-y-6"
     >
       {/* Header Stats */}
       <motion.div
         variants={cardVariants}
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 bg-gradient-to-r from-orange-500/10 to-amber-500/10 rounded-2xl border border-orange-200/50 dark:border-orange-800/30"
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 md:gap-4 p-4 md:p-6 bg-gradient-to-r from-orange-500/10 to-amber-500/10 rounded-xl md:rounded-2xl border border-orange-200/50 dark:border-orange-800/30"
       >
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-orange-500 rounded-lg">
-            <Ticket className="h-5 w-5 text-white" />
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className="p-1.5 md:p-2 bg-orange-500 rounded-lg">
+            <Ticket className="h-4 w-4 md:h-5 md:w-5 text-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-slate-800 dark:text-white">
+            <h3 className="font-semibold text-slate-800 dark:text-white text-sm md:text-base">
               Ticket Analytics
             </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              Maintenance ticket overview and recent activities
+            <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
+              Maintenance ticket overview
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 md:gap-6 mt-2 sm:mt-0">
           <div className="text-center">
-            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+            <div className="text-xl md:text-2xl font-bold text-orange-600 dark:text-orange-400">
               {totalTickets}
             </div>
             <div className="text-xs text-slate-600 dark:text-slate-400">Total Tickets</div>
           </div>
-          <div className="w-px h-8 bg-slate-300 dark:bg-slate-600"></div>
+          <div className="w-px h-6 md:h-8 bg-slate-300 dark:bg-slate-600"></div>
           <div className="text-center">
-            <div className="text-lg font-bold text-slate-700 dark:text-slate-300">
+            <div className="text-lg md:text-lg font-bold text-slate-700 dark:text-slate-300">
               {ticketData.length}
             </div>
             <div className="text-xs text-slate-600 dark:text-slate-400">Recent</div>
@@ -283,54 +284,54 @@ export default function DashboardChartSectionAdmin() {
         </div>
       </motion.div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+      <div className="grid gap-4 md:gap-6 lg:grid-cols-7">
         {/* Chart Card */}
         <motion.div
           variants={cardVariants}
-          className="col-span-2 lg:col-span-4"
+          className="lg:col-span-4"
           onMouseEnter={() => setHoveredChart(true)}
           onMouseLeave={() => setHoveredChart(false)}
         >
           <Card className={`
-            bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl border transition-all duration-300 h-full
+            bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-xl md:rounded-2xl border transition-all duration-300 h-full
             ${hoveredChart 
-              ? 'border-orange-300/50 dark:border-orange-600/50 shadow-2xl shadow-orange-500/10' 
-              : 'border-white/50 dark:border-slate-700/50 shadow-2xl shadow-orange-500/5 dark:shadow-black/20'
+              ? 'border-orange-300/50 dark:border-orange-600/50 shadow-xl md:shadow-2xl shadow-orange-500/10' 
+              : 'border-white/50 dark:border-slate-700/50 shadow-lg md:shadow-2xl shadow-orange-500/5 dark:shadow-black/20'
             }
           `}>
-            <CardHeader className="pb-4">
+            <CardHeader className="pb-3 md:pb-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                   <div className={`
-                    p-2 rounded-xl shadow-lg transition-all duration-300
+                    p-1.5 md:p-2 rounded-lg md:rounded-xl shadow-lg transition-all duration-300
                     ${hoveredChart
                       ? 'bg-gradient-to-br from-orange-600 to-amber-600 shadow-orange-600/25'
                       : 'bg-gradient-to-br from-orange-500 to-amber-500 shadow-orange-500/25'
                     }
                   `}>
-                    <TrendingUp className="h-5 w-5 text-white" />
+                    <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   </div>
                   <div>
                     <CardTitle className={`
-                      text-lg font-bold transition-colors duration-300
+                      text-base md:text-lg font-bold transition-colors duration-300
                       ${hoveredChart ? 'text-orange-600 dark:text-orange-400' : 'text-slate-800 dark:text-white'}
                     `}>
                       Ticket Trends
                     </CardTitle>
-                    <CardDescription className="text-slate-600 dark:text-slate-400">
-                      Last 12 Months Overview
+                    <CardDescription className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
+                      Last 12 Months
                     </CardDescription>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 rounded-full">
+                <div className="flex items-center gap-1 px-2 md:px-3 py-1 bg-orange-100 dark:bg-orange-900/30 rounded-full">
                   <Calendar className="h-3 w-3 text-orange-600 dark:text-orange-400" />
-                  <span className="text-xs font-medium text-orange-700 dark:text-orange-300">
+                  <span className="text-xs font-medium text-orange-700 dark:text-orange-300 hidden xs:inline">
                     {totalTickets} Total
                   </span>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="pt-4">
+            <CardContent className="pt-2 md:pt-4">
               {isChartLoading ? (
                 <ChartSkeleton />
               ) : (
@@ -339,7 +340,7 @@ export default function DashboardChartSectionAdmin() {
                   initial="hidden"
                   animate="visible"
                 >
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={overviewChartData}>
                       <defs>
                         <linearGradient id="modernGradient" x1="0" y1="0" x2="0" y2="1">
@@ -361,17 +362,18 @@ export default function DashboardChartSectionAdmin() {
                       <XAxis
                         dataKey="name"
                         stroke="#64748B"
-                        fontSize={11}
+                        fontSize={10}
                         tickLine={false}
                         axisLine={false}
                       />
                       <YAxis
                         stroke="#64748B"
-                        fontSize={11}
+                        fontSize={10}
                         tickLine={false}
                         axisLine={false}
                         tickFormatter={(value) => `${value}`}
                         allowDecimals={false}
+                        width={30}
                       />
                       <Tooltip 
                         content={<CustomTooltip />} 
@@ -385,7 +387,7 @@ export default function DashboardChartSectionAdmin() {
                       <Bar
                         dataKey="total"
                         fill={hoveredChart ? "url(#hoverGradient)" : "url(#modernGradient)"}
-                        radius={[8, 8, 0, 0]}
+                        radius={[6, 6, 0, 0]}
                         animationDuration={1800}
                         className="transition-all duration-300"
                       />
@@ -400,34 +402,34 @@ export default function DashboardChartSectionAdmin() {
         {/* Recent Tickets Card */}
         <motion.div
           variants={cardVariants}
-          className="col-span-2 lg:col-span-3"
+          className="lg:col-span-3"
         >
-          <Card className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-slate-700/50 shadow-2xl shadow-orange-500/5 dark:shadow-black/20 h-full">
-            <CardHeader className="pb-4">
+          <Card className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-xl md:rounded-2xl border border-white/50 dark:border-slate-700/50 shadow-lg md:shadow-2xl shadow-orange-500/5 dark:shadow-black/20 h-full">
+            <CardHeader className="pb-3 md:pb-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-amber-500/25">
-                    <Clock className="h-5 w-5 text-white" />
+                <div className="flex items-center gap-2 md:gap-3">
+                  <div className="p-1.5 md:p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg md:rounded-xl shadow-lg shadow-amber-500/25">
+                    <Clock className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg font-bold text-slate-800 dark:text-white">
+                    <CardTitle className="text-base md:text-lg font-bold text-slate-800 dark:text-white">
                       Recent Tickets
                     </CardTitle>
-                    <CardDescription className="text-slate-600 dark:text-slate-400">
-                      Latest {ticketData.length} maintenance requests
+                    <CardDescription className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
+                      Latest {ticketData.length} requests
                     </CardDescription>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 px-3 py-1 bg-amber-100 dark:bg-amber-900/30 rounded-full">
+                <div className="flex items-center gap-1 px-2 md:px-3 py-1 bg-amber-100 dark:bg-amber-900/30 rounded-full">
                   <Sparkles className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-                  <span className="text-xs font-medium text-amber-700 dark:text-amber-300">
+                  <span className="text-xs font-medium text-amber-700 dark:text-amber-300 hidden xs:inline">
                     Live
                   </span>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2">
+              <div className="space-y-4 md:space-y-6 max-h-[350px] md:max-h-[400px] overflow-y-auto pr-1 md:pr-2">
                 {isLoading ? (
                   <TicketSkeleton />
                 ) : ticketData.length > 0 ? (
@@ -438,10 +440,10 @@ export default function DashboardChartSectionAdmin() {
                       variants={ticketVariants}
                       initial="hidden"
                       animate="visible"
-                      className="flex items-center gap-4 p-3 rounded-xl bg-slate-50/50 dark:bg-slate-700/30 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition-all duration-300 border border-transparent hover:border-slate-200/50 dark:hover:border-slate-600/50"
+                      className="flex items-center gap-3 md:gap-4 p-2 md:p-3 rounded-lg md:rounded-xl bg-slate-50/50 dark:bg-slate-700/30 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition-all duration-300 border border-transparent hover:border-slate-200/50 dark:hover:border-slate-600/50"
                     >
-                      <Avatar className="size-10 border-2 border-white dark:border-slate-700 shadow-lg">
-                        <AvatarFallback className="bg-gradient-to-br from-orange-500 to-amber-500 text-white font-semibold">
+                      <Avatar className="size-8 md:size-10 border-2 border-white dark:border-slate-700 shadow-lg">
+                        <AvatarFallback className="bg-gradient-to-br from-orange-500 to-amber-500 text-white font-semibold text-xs md:text-sm">
                           {initials(ticket.name)}
                         </AvatarFallback>
                       </Avatar>
@@ -450,10 +452,10 @@ export default function DashboardChartSectionAdmin() {
                         <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">
                           {ticket.name}
                         </p>
-                        <p className="text-xs text-slate-600 dark:text-slate-400 truncate">
+                        <p className="text-xs text-slate-600 dark:text-slate-400 truncate hidden sm:block">
                           {ticket.email}
                         </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-500 mt-1 truncate">
+                        <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5 truncate">
                           {ticket.assetName}
                         </p>
                       </div>
@@ -465,10 +467,10 @@ export default function DashboardChartSectionAdmin() {
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-center py-8"
+                    className="text-center py-6 md:py-8"
                   >
-                    <Ticket className="h-12 w-12 text-slate-400 mx-auto mb-3" />
-                    <p className="text-slate-500 dark:text-slate-500">No recent tickets</p>
+                    <Ticket className="h-8 w-8 md:h-12 md:w-12 text-slate-400 mx-auto mb-2 md:mb-3" />
+                    <p className="text-sm md:text-base text-slate-500 dark:text-slate-500">No recent tickets</p>
                   </motion.div>
                 )}
               </div>
@@ -480,11 +482,11 @@ export default function DashboardChartSectionAdmin() {
       {/* Footer Note */}
       <motion.div
         variants={cardVariants}
-        className="text-center text-sm text-slate-500 dark:text-slate-500 pt-4"
+        className="text-center text-xs md:text-sm text-slate-500 dark:text-slate-500 pt-2 md:pt-4"
       >
-        <div className="flex items-center justify-center gap-2">
-          <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" />
-          Real-time ticket monitoring and analytics
+        <div className="flex items-center justify-center gap-1 md:gap-2">
+          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-orange-400 rounded-full animate-pulse" />
+          <span>Real-time ticket monitoring</span>
         </div>
       </motion.div>
     </motion.div>
