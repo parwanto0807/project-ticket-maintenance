@@ -115,7 +115,7 @@ const CreateEmployeeForm = ({ deptFind }: { deptFind: Department[] }) => {
                       <UserCircleIcon className="h-8 w-8" />
                     </div>
                     <div>
-                      <h1 className="text-xl md:text-3xl font-bold tracking-tight">
+                      <h1 className="text-sm md:text-2xl font-bold tracking-tight">
                         Tambah Employee Baru
                       </h1>
                       <p className="text-blue-100 text-xs md:text-lg mt-2 max-w-2xl">

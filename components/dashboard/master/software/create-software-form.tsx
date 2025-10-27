@@ -118,10 +118,10 @@ export default function SoftwareForm() {
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        <h1 className="text-xl md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                             Add New Software
                         </h1>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className=" text-xs md:text-sm text-muted-foreground mt-1">
                             Register new software to your asset management system
                         </p>
                     </div>

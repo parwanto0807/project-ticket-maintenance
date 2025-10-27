@@ -133,8 +133,8 @@ const CreateProductForm = ({
                                 <Package className="h-6 w-6" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold">Create New Product</h1>
-                                <p className="text-blue-100">Add a new product to your inventory system</p>
+                                <h1 className="text-lg md:text-2xl font-bold">Create New Product</h1>
+                                <p className="text-blue-100 text-xs md:text-sm">Add a new product to your inventory system</p>
                             </div>
                         </div>
                         <Link
@@ -149,7 +149,7 @@ const CreateProductForm = ({
 
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="p-8"
+                    className="px-2 py-6"
                 >
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Left Column - Basic Information */}

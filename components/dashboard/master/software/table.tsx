@@ -82,10 +82,10 @@ export default async function SoftwareTable({
                             <Package className="h-6 w-6 text-white" />
                         </div>
                         <div>
-                            <CardTitle className="text-2xl font-bold text-white">
+                            <CardTitle className="text-lg md:text-2xl font-bold text-white">
                                 Software Management
                             </CardTitle>
-                            <CardDescription className="text-blue-100">
+                            <CardDescription className="text-blue-100 text-xs md:text-sm">
                                 Kelola inventori perangkat lunak perusahaan - {software?.length || 0} software terdaftar
                             </CardDescription>
                         </div>

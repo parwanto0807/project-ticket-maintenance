@@ -127,15 +127,15 @@ const EditProductForm = ({
                                 <Package className="h-6 w-6" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold">Edit Product</h1>
-                                <p className="text-blue-100">
+                                <h1 className="text-lg md:text-2xl font-bold">Edit Product</h1>
+                                <p className="text-blue-100 text-xs md:text-sm">
                                     Update product information for {productFindById.part_number}
                                 </p>
                             </div>
                         </div>
                         <Link
                             href="/dashboard/master/products"
-                            className="flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/30"
+                            className="flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-xs md:text-sm font-medium text-white transition-colors hover:bg-white/30"
                         >
                             <ArrowLeftIcon className="h-4 w-4" />
                             Back to List
@@ -145,7 +145,7 @@ const EditProductForm = ({
 
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="p-8"
+                    className="px-2 py-6"
                 >
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Left Column - Basic Information */}
