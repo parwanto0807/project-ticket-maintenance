@@ -1,16 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 enum UserRole {
@@ -27,8 +21,8 @@ model User {
   image                 String?
   password              String?
   role                  UserRole               @default(USER)
-  accounts              Account[]
   isTwoFactorEnabled    Boolean                @default(false)
+  accounts              Account[]
   twoFactorConfirmation TwoFactorConfirmation?
   fcmToken              String? // Simpan token FCM di sini
   Notification          Notification[]
@@ -46,11 +40,9 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
 }
@@ -83,12 +75,9 @@ model TwoFactorToken {
 }
 
 model TwoFactorConfirmation {
-  id String @id @default(cuid())
-
-  userId String
+  id     String @id @default(cuid())
+  userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId])
 }
 
 model AccountEmail {
@@ -122,13 +111,12 @@ model Department {
   note      String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @default(now()) @updatedAt
-  employee  Employee[] @relation("EmployeeDept")
   asset     Asset[]    @relation("DepartmentAsset")
+  employee  Employee[] @relation("EmployeeDept")
 }
 
-//Product Tabel 
 model Product {
-  id                   String   @id @default(uuid()) @map("_id")
+  id                   String              @id @default(uuid()) @map("_id")
   part_number          String
   part_name            String
   nick_name            String
@@ -165,28 +153,25 @@ model Product {
 }
 
 model Harga {
-  id        String   @id @default(uuid()) @map("_id")
-  idProduct String   @map("HargaJualProduct")
-  idMtUang  String   @map("Matauang")
-  hargaHpp  Decimal  @db.Decimal(15, 2)
-  hargaJual Decimal  @db.Decimal(15, 2)
-  default   Boolean  @default(false)
-  createdAt DateTime
-  updatedAt DateTime
-
+  id          String   @id @default(uuid()) @map("_id")
+  idProduct   String   @map("HargaJualProduct")
+  idMtUang    String   @map("Matauang")
+  hargaHpp    Decimal  @db.Decimal(15, 2)
+  hargaJual   Decimal  @db.Decimal(15, 2)
+  default     Boolean  @default(false)
+  createdAt   DateTime
+  updatedAt   DateTime
   part_number Product  @relation("HargaJualProduct", fields: [idProduct], references: [id])
   mtUang      MataUang @relation("MataUang", fields: [idMtUang], references: [id])
 }
 
 model Group {
-  id        String   @id @default(uuid()) @map("_id")
+  id        String    @id @default(uuid()) @map("_id")
   note      String
   name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  // Add this line to establish the reverse relation to Product
-  products Product[] @relation("GroupProducts")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  products  Product[] @relation("GroupProducts")
 }
 
 model Unit {
@@ -198,43 +183,39 @@ model Unit {
 }
 
 model Brand {
-  id        String   @id @default(uuid()) @map("_id")
+  id        String    @id @default(uuid()) @map("_id")
   name      String
   note      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  products Product[] @relation("BrandProducts")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  products  Product[] @relation("BrandProducts")
 }
 
 model Gudang {
-  id        String   @id @default(uuid()) @map("_id")
+  id        String    @id @default(uuid()) @map("_id")
   name      String
   note      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  products Product[] @relation("GudangProducts")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  products  Product[] @relation("GudangProducts")
 }
 
 model Rak {
-  id        String   @id @default(uuid()) @map("_id")
+  id        String    @id @default(uuid()) @map("_id")
   name      String
   note      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  products Product[] @relation("RakProducts")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  products  Product[] @relation("RakProducts")
 }
 
 model LokasiRak {
-  id        String   @id @default(uuid()) @map("_id")
+  id        String    @id @default(uuid()) @map("_id")
   name      String
   note      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  products Product[] @relation("LokasiRakProducts")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  products  Product[] @relation("LokasiRakProducts")
 }
 
 model MataUang {
@@ -245,23 +226,21 @@ model MataUang {
 }
 
 model JenisProduct {
-  id   String @id @default(uuid()) @map("_id")
-  name String
-  note String
-
+  id        String    @id @default(uuid()) @map("_id")
+  name      String
+  note      String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now()) @updatedAt
   product   Product[] @relation("JenisProducts")
 }
 
 model KategoriProduct {
-  id        String   @id @default(uuid()) @map("_id")
+  id        String    @id @default(uuid()) @map("_id")
   name      String
   note      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  product Product[] @relation("KategoriProducts")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  product   Product[] @relation("KategoriProducts")
 }
 
 model Asset {
@@ -272,17 +251,17 @@ model Asset {
   location      String?
   purchaseDate  DateTime?
   purchaseCost  Float?
-  residualValue Float? // Nilai sisa aset setelah penyusutan
-  usefulLife    Int? // Masa manfaat aset (dalam tahun)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  depreciations Depreciation[]
+  residualValue Float?
+  usefulLife    Int?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
   assetTypeId   String
-  assetType     AssetType      @relation(fields: [assetTypeId], references: [id])
   departmentId  String
-  assetImage1   String?        @default("/public/noImage.jpg")
-  productId     String         @map("product_id")
+  assetImage1   String?             @default("/public/noImage.jpg")
+  productId     String              @map("product_id")
   employeeId    String?
+  assetType     AssetType           @relation(fields: [assetTypeId], references: [id]
+  depreciations Depreciation[]
 
   product    Product             @relation(fields: [productId], references: [id], name: "ProductAssets")
   employee   Employee?           @relation(fields: [employeeId], references: [id], name: "AssignAssets")
@@ -295,34 +274,34 @@ model Asset {
 
 model AssetType {
   id          String   @id @default(uuid()) @map("_id")
-  name        String // Nama jenis aset (contoh: "Kendaraan", "Peralatan Elektronik")
-  description String? // Deskripsi jenis aset
-  assets      Asset[] // Relasi ke aset
+  name        String
+  description String?
   kode        String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  assets      Asset[]
 }
 
 model Depreciation {
   id                 String           @id @default(uuid()) @map("_id")
-  assetId            String // Relasi ke aset
-  asset              Asset            @relation(fields: [assetId], references: [id])
-  date               DateTime // Tanggal pencatatan penyusutan
-  amount             Float // Jumlah penyusutan pada periode ini
-  description        String? // Deskripsi (opsional)
-  depreciationTypeId String // Relasi ke tipe depresiasi
-  depreciationType   DepreciationType @relation(fields: [depreciationTypeId], references: [id])
+  assetId            String
+  date               DateTime
+  amount             Float
+  description        String?
+  depreciationTypeId String
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
+  asset              Asset            @relation(fields: [assetId], references: [id])
+  depreciationType   DepreciationType @relation(fields: [depreciationTypeId], references: [id])
 }
 
 model DepreciationType {
   id            String         @id @default(uuid()) @map("_id")
-  name          String // Nama tipe depresiasi (contoh: "Straight-Line", "Double Declining Balance")
-  description   String? // Deskripsi tipe depresiasi
-  depreciations Depreciation[] // Relasi ke depresiasi
+  name          String
+  description   String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  depreciations Depreciation[]
 }
 
 enum AssetStatus {
@@ -331,7 +310,6 @@ enum AssetStatus {
   UNDER_MAINTENANCE
   DECOMMISSIONED
 }
-
 model TicketMaintenance {
   id                 String         @id @default(uuid()) @map("_id") // Menggunakan UUID sebagai ID
   countNumber        Int
