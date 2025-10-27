@@ -3,6 +3,7 @@ import { SessionProvider } from "next-auth/react";
 import "./globals.css";
 import { auth } from "@/auth";
 import FloatingBackButton from "@/components/backToHome";
+import { ThemeProvider } from "@/components/theme-provider"; // Import ThemeProvider
 
 export const metadata: Metadata = {
   title: "Asset Management",
@@ -20,13 +21,16 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
+  
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="relative">
-        <SessionProvider session={session ?? null}>
-          {children}
-          <FloatingBackButton />
-        </SessionProvider>
+        <ThemeProvider>
+          <SessionProvider session={session ?? null}>
+            {children}
+            <FloatingBackButton />
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
