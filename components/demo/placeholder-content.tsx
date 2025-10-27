@@ -381,61 +381,6 @@ const MobileShortcutMenu = () => {
   );
 };
 
-// Floating Action Button untuk Mobile
-const MobileFAB = () => {
-  const user = useCurrentUser();
-  const role = user?.role || "USER";
-
-  const getFABAction = () => {
-    if (role === "USER") {
-      return {
-        href: "/dashboard/maintenance/ticket/create",
-        icon: Plus,
-        label: "Create Ticket"
-      };
-    }
-    if (role === "TECHNICIAN") {
-      return {
-        href: "/dashboard/technician/schedule",
-        icon: Calendar,
-        label: "View Schedule"
-      };
-    }
-    return {
-      href: "/dashboard/master",
-      icon: Boxes,
-      label: "Master Data"
-    };
-  };
-
-  const fabAction = getFABAction();
-
-  return (
-    <motion.div
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.3, delay: 0.8 }}
-      className="lg:hidden fixed bottom-6 right-6 z-50"
-    >
-      <Link href={fabAction.href}>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className={`
-            w-12 h-12 rounded-xl flex items-center justify-center
-            bg-gradient-to-br from-blue-500 to-purple-600 
-            shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40
-            border border-white/20
-            text-white
-            transition-all duration-200
-          `}
-        >
-          <fabAction.icon className="w-5 h-5" />
-        </motion.button>
-      </Link>
-    </motion.div>
-  );
-};
 
 // Ikon Plus untuk USER role
 const Plus = ({ className }: { className?: string }) => (
@@ -666,9 +611,6 @@ export default function DashboardPage() {
           </motion.div>
         </div>
       </ScrollArea>
-
-      {/* Floating Action Button untuk Mobile */}
-      <MobileFAB />
     </div>
   );
 }
