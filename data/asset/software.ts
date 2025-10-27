@@ -82,6 +82,8 @@ export const softwareApi = {
       const software = await db.software.findMany({
         orderBy: { name: "asc" },
       });
+      console.log("Fetched all software:", software);
+
       return software;
     } catch (error) {
       console.error("Error fetching all software:", error);
@@ -619,7 +621,9 @@ export const fetchFilteredSoftware = async (
         ],
       },
       include: {
-        installations: true,
+        installations: {
+          include: { software: { select: { name: true, vendor: true } } },
+        },
       },
       orderBy: { name: "asc" },
       take: ITEMS_PER_PAGE,

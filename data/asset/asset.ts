@@ -129,6 +129,7 @@ export const fetchAssetList = async (query: string, currentPage: number) => {
         },
         assetType: { select: { id: true, name: true } },
         department: { select: { id: true, dept_name: true } },
+        softwareInstallations: { include: { software: true } },
       },
       where: { OR: orFilters },
       orderBy: [{ departmentId: "asc" }, { createdAt: "desc" }],
@@ -252,6 +253,7 @@ export const fetchAssetType = async () => {
   }
 };
 
+// data/asset/asset.ts
 export const fetchAssetById = async (id: string) => {
   noStore();
   try {
@@ -262,6 +264,11 @@ export const fetchAssetById = async (id: string) => {
         department: true,
         product: true,
         employee: true,
+        softwareInstallations: {
+          include: {
+            software: true, // Include software details
+          },
+        },
       },
     });
     return findAssetById;

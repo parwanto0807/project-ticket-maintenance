@@ -116,7 +116,7 @@ model Department {
 }
 
 model Product {
-  id                   String              @id @default(uuid()) @map("_id")
+  id                   String   @id @default(uuid()) @map("_id")
   part_number          String
   part_name            String
   nick_name            String
@@ -253,14 +253,14 @@ model Asset {
   purchaseCost  Float?
   residualValue Float?
   usefulLife    Int?
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   assetTypeId   String
   departmentId  String
-  assetImage1   String?             @default("/public/noImage.jpg")
-  productId     String              @map("product_id")
+  assetImage1   String?        @default("/public/noImage.jpg")
+  productId     String         @map("product_id")
   employeeId    String?
-  assetType     AssetType           @relation(fields: [assetTypeId], references: [id]
+  assetType     AssetType      @relation(fields: [assetTypeId], references: [id])
   depreciations Depreciation[]
 
   product    Product             @relation(fields: [productId], references: [id], name: "ProductAssets")
@@ -310,6 +310,7 @@ enum AssetStatus {
   UNDER_MAINTENANCE
   DECOMMISSIONED
 }
+
 model TicketMaintenance {
   id                 String         @id @default(uuid()) @map("_id") // Menggunakan UUID sebagai ID
   countNumber        Int
