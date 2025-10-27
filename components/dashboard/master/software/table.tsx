@@ -104,7 +104,7 @@ export default async function SoftwareTable({
                                         {getCategoryIcon(item.category)}
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold text-gray-900">{item.name}</h3>
+                                        <h3 className="font-semibold ">{item.name}</h3>
                                         <div className="flex items-center space-x-2 mt-1">
                                             <Building className="h-4 w-4 text-gray-400" />
                                             <span className="text-sm text-gray-600">{item.vendor || 'No vendor'}</span>
@@ -186,35 +186,35 @@ export default async function SoftwareTable({
                 <CardContent className="p-0">
                     <Table>
                         <TableHeader>
-                            <TableRow className="bg-gray-50/50 hover:bg-gray-50/50">
-                                <TableHead className="font-semibold text-gray-900 pl-6">
+                            <TableRow >
+                                <TableHead className="font-semibold pl-6">
                                     <div className="flex items-center space-x-2">
                                         <Package className="h-4 w-4" />
                                         <span>Nama Software</span>
                                     </div>
                                 </TableHead>
-                                <TableHead className="font-semibold text-gray-900">
+                                <TableHead className="font-semibold">
                                     <div className="flex items-center space-x-2">
                                         <Building className="h-4 w-4" />
                                         <span>Vendor</span>
                                     </div>
                                 </TableHead>
-                                <TableHead className="font-semibold text-gray-900">
+                                <TableHead className="font-semibold">
                                     Kategori
                                 </TableHead>
-                                <TableHead className="font-semibold text-gray-900">
+                                <TableHead className="font-semibold">
                                     Tipe Lisensi
                                 </TableHead>
-                                <TableHead className="font-semibold text-gray-900">
+                                <TableHead className="font-semibold">
                                     <div className="flex items-center space-x-2">
                                         <Calendar className="h-4 w-4" />
                                         <span>Masa Berlaku</span>
                                     </div>
                                 </TableHead>
-                                <TableHead className="font-semibold text-gray-900">
+                                <TableHead className="font-semibold">
                                     Status
                                 </TableHead>
-                                <TableHead className="font-semibold text-gray-900 text-right pr-6">
+                                <TableHead className="font-semibold text-right pr-6">
                                     Aksi
                                 </TableHead>
                             </TableRow>
@@ -223,7 +223,7 @@ export default async function SoftwareTable({
                             {software?.map((item) => (
                                 <TableRow
                                     key={item.id}
-                                    className="hover:bg-gray-50/80 transition-colors group"
+                                    className="hover:bg-gray-50/80 dark:hover:bg-gray-800 transition-colors group"
                                 >
                                     {/* Nama Software */}
                                     <TableCell className="pl-6 py-4">
@@ -232,7 +232,7 @@ export default async function SoftwareTable({
                                                 {getCategoryIcon(item.category)}
                                             </div>
                                             <div>
-                                                <p className="font-medium text-gray-900">{item.name}</p>
+                                                <p className="font-medium ">{item.name}</p>
                                                 {item.website && (
                                                     <a
                                                         href={item.website}
@@ -252,7 +252,7 @@ export default async function SoftwareTable({
                                     <TableCell className="py-4">
                                         <div className="flex items-center space-x-2">
                                             <Building className="h-4 w-4 text-gray-400" />
-                                            <span className="text-gray-700">{item.vendor || '-'}</span>
+                                            <span>{item.vendor || '-'}</span>
                                         </div>
                                     </TableCell>
 
@@ -270,7 +270,7 @@ export default async function SoftwareTable({
                                     <TableCell className="py-4">
                                         <div className="flex items-center space-x-2">
                                             <Calendar className="h-4 w-4 text-gray-400" />
-                                            <span className="text-gray-700">
+                                            <span>
                                                 {item.defaultExpiry ? `${item.defaultExpiry} bulan` : '-'}
                                             </span>
                                         </div>
