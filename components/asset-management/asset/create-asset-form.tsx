@@ -246,8 +246,8 @@ const CreateAssetForm = ({
                                 <Package className="h-6 w-6" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold">Create New Asset</h1>
-                                <p className="text-blue-100">Add a new asset to your inventory system</p>
+                                <h1 className="text-sm md:text-2xl font-bold">Create New Asset</h1>
+                                <p className="text-xs md:text-sm text-blue-100">Add a new asset to your inventory system</p>
                             </div>
                         </div>
                         <Link
@@ -262,7 +262,7 @@ const CreateAssetForm = ({
 
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="p-8"
+                    className="px-2 py-6"
                     encType="multipart/form-data"
                 >
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

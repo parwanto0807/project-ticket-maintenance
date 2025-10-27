@@ -276,8 +276,8 @@ const EditAssetForm = ({
                                 <Package className="h-6 w-6" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold">Edit Asset</h1>
-                                <p className="text-blue-100">
+                                <h1 className="text-xl md:text-2xl font-bold">Edit Asset</h1>
+                                <p className="text-blue-100 text-xs md:text-sm">
                                     Update asset information for {assetFind.assetNumber}
                                 </p>
                             </div>
@@ -294,7 +294,7 @@ const EditAssetForm = ({
 
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="p-8"
+                    className="px-2 py-6"
                     encType="multipart/form-data"
                 >
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
