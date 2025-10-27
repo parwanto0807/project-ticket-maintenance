@@ -5,10 +5,6 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { motion } from "framer-motion";
 import {
-  // FaBox,
-  // FaTicketAlt,
-  // FaExclamationCircle,
-  // FaMoneyBillWave,
   FaSpinner,
 } from "react-icons/fa";
 import { 
@@ -17,7 +13,6 @@ import {
   AlertCircle, 
   DollarSign,
   TrendingUp,
-  // Users,
   BarChart3,
   Sparkles
 } from "lucide-react";
@@ -104,20 +99,20 @@ const DashboardCardsAdmin = () => {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="text-2xl font-bold"
+          className="text-xl md:text-2xl font-bold"
         >
           {totalAssetUser.toLocaleString()}
-          <span className="text-sm font-normal text-slate-600 dark:text-slate-400 ml-1">
+          <span className="text-xs md:text-sm font-normal text-slate-600 dark:text-slate-400 ml-1">
             Assets
           </span>
         </motion.span>
       ) : (
         <div className="flex items-center justify-center py-2">
-          <FaSpinner className="animate-spin text-blue-500" />
+          <FaSpinner className="animate-spin text-blue-500 w-4 h-4 md:w-5 md:h-5" />
         </div>
       ),
       tooltip: "Total number of assets managed in the system",
-      icon: <Package className="w-6 h-6" />,
+      icon: <Package className="w-4 h-4 md:w-6 md:h-6" />,
       gradient: "from-blue-500 to-cyan-500",
       badge: "Active",
       trend: { value: 12, isPositive: true }
@@ -129,20 +124,20 @@ const DashboardCardsAdmin = () => {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-2xl font-bold"
+          className="text-xl md:text-2xl font-bold"
         >
           {totalTicketUser.toLocaleString()}
-          <span className="text-sm font-normal text-slate-600 dark:text-slate-400 ml-1">
+          <span className="text-xs md:text-sm font-normal text-slate-600 dark:text-slate-400 ml-1">
             Tickets
           </span>
         </motion.span>
       ) : (
         <div className="flex items-center justify-center py-2">
-          <FaSpinner className="animate-spin text-emerald-500" />
+          <FaSpinner className="animate-spin text-emerald-500 w-4 h-4 md:w-5 md:h-5" />
         </div>
       ),
       tooltip: "Total maintenance tickets created",
-      icon: <Ticket className="w-6 h-6" />,
+      icon: <Ticket className="w-4 h-4 md:w-6 md:h-6" />,
       gradient: "from-emerald-500 to-green-500",
       badge: "All Time",
       trend: { value: 8, isPositive: true }
@@ -154,20 +149,20 @@ const DashboardCardsAdmin = () => {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-2xl font-bold"
+          className="text-xl md:text-2xl font-bold"
         >
           {openTicketUser.toLocaleString()}
-          <span className="text-sm font-normal text-slate-600 dark:text-slate-400 ml-1">
+          <span className="text-xs md:text-sm font-normal text-slate-600 dark:text-slate-400 ml-1">
             Pending
           </span>
         </motion.span>
       ) : (
         <div className="flex items-center justify-center py-2">
-          <FaSpinner className="animate-spin text-amber-500" />
+          <FaSpinner className="animate-spin text-amber-500 w-4 h-4 md:w-5 md:h-5" />
         </div>
       ),
       tooltip: "Tickets currently awaiting resolution",
-      icon: <AlertCircle className="w-6 h-6" />,
+      icon: <AlertCircle className="w-4 h-4 md:w-6 md:h-6" />,
       gradient: "from-amber-500 to-orange-500",
       badge: "Urgent",
       trend: { value: -5, isPositive: false }
@@ -179,17 +174,17 @@ const DashboardCardsAdmin = () => {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-2xl font-bold"
+          className="text-xl md:text-2xl font-bold"
         >
           {formatCurrency(totalPurchaseCost)}
         </motion.span>
       ) : (
         <div className="flex items-center justify-center py-2">
-          <FaSpinner className="animate-spin text-purple-500" />
+          <FaSpinner className="animate-spin text-purple-500 w-4 h-4 md:w-5 md:h-5" />
         </div>
       ),
       tooltip: "Total value of all assets in the system",
-      icon: <DollarSign className="w-6 h-6" />,
+      icon: <DollarSign className="w-4 h-4 md:w-6 md:h-6" />,
       gradient: "from-purple-500 to-pink-500",
       badge: "Investment",
       trend: { value: 15, isPositive: true }
@@ -208,7 +203,7 @@ const DashboardCardsAdmin = () => {
       }
     }),
     hover: {
-      y: -8,
+      y: -4,
       scale: 1.02,
       transition: {
         duration: 0.3,
@@ -234,7 +229,7 @@ const DashboardCardsAdmin = () => {
       <motion.div
         initial="hidden"
         animate="visible"
-        className="space-y-6"
+        className="space-y-4 md:space-y-6"
       >
         {/* Header */}
         <motion.div
@@ -243,29 +238,29 @@ const DashboardCardsAdmin = () => {
           transition={{ duration: 0.6 }}
           className="flex items-center justify-between"
         >
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
-              <BarChart3 className="w-5 h-5 text-white" />
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="p-1.5 md:p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg md:rounded-xl shadow-lg">
+              <BarChart3 className="w-4 h-4 md:w-5 md:h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+              <h2 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white">
                 Dashboard Overview
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
                 Key metrics and performance indicators
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full">
-            <Sparkles className="w-4 h-4 text-blue-500" />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <div className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full">
+            <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-blue-500" />
+            <span className="text-xs md:text-sm font-medium text-slate-700 dark:text-slate-300 hidden xs:inline">
               Real-time
             </span>
           </div>
         </motion.div>
 
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {cardData.map((card, index) => (
             <Tooltip.Root key={index}>
               <Tooltip.Trigger asChild>
@@ -276,26 +271,26 @@ const DashboardCardsAdmin = () => {
                   animate="visible"
                   whileHover="hover"
                   className={`
-                    relative p-6 rounded-2xl backdrop-blur-xl border transition-all duration-300 overflow-hidden
+                    relative p-4 md:p-6 rounded-xl md:rounded-2xl backdrop-blur-xl border transition-all duration-300 overflow-hidden
                     bg-white/70 dark:bg-slate-800/70
                     border-white/50 dark:border-slate-700/50
-                    shadow-2xl shadow-slate-500/5 dark:shadow-black/20
-                    hover:shadow-2xl hover:shadow-slate-500/10 dark:hover:shadow-black/30
+                    shadow-lg md:shadow-2xl shadow-slate-500/5 dark:shadow-black/20
+                    hover:shadow-xl md:hover:shadow-2xl hover:shadow-slate-500/10 dark:hover:shadow-black/30
                   `}
                 >
                   {/* Background Gradient */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-5`} />
                   
                   {/* Animated Border */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 hover:opacity-10 transition-opacity duration-300 rounded-2xl`} />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 hover:opacity-10 transition-opacity duration-300 rounded-xl md:rounded-2xl`} />
                   
                   {/* Content */}
                   <div className="relative z-10">
                     {/* Header */}
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-3 md:mb-4">
                       <motion.div
                         variants={iconVariants}
-                        className={`p-3 rounded-xl bg-gradient-to-br ${card.gradient} shadow-lg`}
+                        className={`p-2 md:p-3 rounded-lg md:rounded-xl bg-gradient-to-br ${card.gradient} shadow-lg`}
                       >
                         {card.icon}
                       </motion.div>
@@ -303,7 +298,7 @@ const DashboardCardsAdmin = () => {
                       {/* Badge */}
                       {card.badge && (
                         <span className={`
-                          px-2 py-1 text-xs font-medium rounded-full
+                          px-1.5 md:px-2 py-0.5 md:py-1 text-xs rounded-full font-medium
                           ${card.gradient.includes('blue') ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : ''}
                           ${card.gradient.includes('emerald') ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : ''}
                           ${card.gradient.includes('amber') ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : ''}
@@ -315,12 +310,12 @@ const DashboardCardsAdmin = () => {
                     </div>
 
                     {/* Value */}
-                    <div className="mb-2">
+                    <div className="mb-1 md:mb-2">
                       {card.value}
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+                    <h3 className="text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 md:mb-3">
                       {card.title}
                     </h3>
 
@@ -338,7 +333,12 @@ const DashboardCardsAdmin = () => {
                         `}>
                           {card.trend.isPositive ? '+' : ''}{card.trend.value}%
                         </span>
-                        <span className="text-slate-500 dark:text-slate-500">from last month</span>
+                        <span className="text-slate-500 dark:text-slate-500 hidden sm:inline">
+                          from last month
+                        </span>
+                        <span className="text-slate-500 dark:text-slate-500 sm:hidden">
+                          vs last month
+                        </span>
                       </div>
                     )}
                   </div>
@@ -351,7 +351,7 @@ const DashboardCardsAdmin = () => {
               {card.tooltip && (
                 <Tooltip.Portal>
                   <Tooltip.Content
-                    className="bg-slate-900 dark:bg-slate-700 text-white px-3 py-2 rounded-lg text-xs shadow-2xl backdrop-blur-xl border border-slate-700/50 z-50"
+                    className="bg-slate-900 dark:bg-slate-700 text-white px-3 py-2 rounded-lg text-xs shadow-2xl backdrop-blur-xl border border-slate-700/50 z-50 max-w-[200px] text-center"
                     side="top"
                     sideOffset={8}
                   >
@@ -369,11 +369,11 @@ const DashboardCardsAdmin = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center justify-center py-8"
+            className="flex items-center justify-center py-6 md:py-8"
           >
-            <div className="flex items-center gap-3 text-slate-500 dark:text-slate-500">
-              <FaSpinner className="animate-spin text-blue-500" />
-              <span className="text-sm">Loading dashboard data...</span>
+            <div className="flex items-center gap-2 md:gap-3 text-slate-500 dark:text-slate-500">
+              <FaSpinner className="animate-spin text-blue-500 w-4 h-4 md:w-5 md:h-5" />
+              <span className="text-xs md:text-sm">Loading dashboard data...</span>
             </div>
           </motion.div>
         )}
