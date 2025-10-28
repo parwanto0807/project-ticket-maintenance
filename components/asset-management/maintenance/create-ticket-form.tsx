@@ -695,7 +695,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                             </div>
 
                             {/* Sticky Footer Buttons */}
-                            <div className="sticky bottom-0 mb-8 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 p-6">
+                            <div className="sticky bottom-0 mb-12 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 p-6">
                                 <div className="flex flex-col sm:flex-row gap-3 justify-end">
                                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                                         <Button
