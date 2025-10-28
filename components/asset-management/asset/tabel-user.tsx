@@ -36,76 +36,20 @@ import {
 import ImageDialog from "./imageDialog";
 import { formatCurrencyQtt } from "@/lib/utils";
 import Pagination from "@/components/ui/pagination";
-import { AssetDetailSheet } from "./detailSheet";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { PrintAssetButton } from "./buttons";
 
 interface AssetData {
   id: string;
   assetNumber: string;
-  product: {
-    id: string;
-    group: {
-      name: string;
-    };
-    brand: {
-      name: string;
-    };
-    gudang: {
-      name: string;
-    };
-    part_number: string;
-    part_name: string;
-    nick_name: string;
-    satuan_penyimpanan: string;
-    satuan_pengeluaran: string;
-    description: string | null;
-    jenisproduct: {
-      name: string;
-    };
-    kategoriproduct: {
-      name: string;
-    };
-  };
-  assetType: {
-    id: string;
-    name: string;
-  };
-  usefulLife: number | null;
-  employee: {
-    name: string;
-    id: string;
-    email: string;
-  } | null;
-  department: {
-    id: string;
-    dept_name: string;
-  } | null;
-  location: string | null;
-  purchaseCost?: number | null;
-  purchaseDate?: Date | null;
+  assetImage1?: string;
+  product: { part_number: string; part_name: string };
+  assetType: { name: string };
+  usefulLife: string | number;
+  employee?: { name: string };
+  department?: { dept_name: string };
+  location: string;
+  purchaseCost?: number;
+  purchaseDate?: Date;
   status: string;
-  assetImage1?: string | null;
-  softwareInstallations: {
-    id: string;
-    assetId: string;
-    softwareId: string;
-    installDate: Date | null;
-    licenseKey: string | null;
-    licenseExpiry: Date | null;
-    version: string | null;
-    isActive: boolean;
-    software?: { // Ubah menjadi object, bukan array
-      name: string;
-      vendor?: string | null;
-    };
-  }[];
-  description?: string | null;
-  serialNumber?: string | null;
-  warrantyExpiry?: Date | null;
-  softwareCount: number;
-  employeeId: string | null;
 }
 
 interface DashboardDataProps {
@@ -267,15 +211,6 @@ export default function AssetUserTable({ query, currentPage }: DashboardDataProp
                       </div>
                     </div>
                   </CardContent>
-                  <div className="flex items-center justify-center space-x-1">
-                    <AssetDetailSheet asset={item} />
-                    <Link href={`/dashboard/asset/asset-software/create/${item.id}`}>
-                      <Button variant="outline" size="sm">
-                        Assign Software
-                      </Button>
-                    </Link>
-                    <PrintAssetButton id={item.id} />
-                  </div>
                 </Card>
               ))
             ) : (
