@@ -359,7 +359,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                             animate="visible"
                             className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-orange-100 dark:border-slate-700 overflow-hidden"
                         >
-                            <div className="p-6 md:p-8 space-y-6 max-h-[70vh] overflow-y-auto">
+                            <div className="p-6 md:p-8 space-y-8 max-h-[80vh] overflow-y-auto">
                                 {/* Ticket Number */}
                                 <motion.div variants={itemVariants}>
                                     <FormField
