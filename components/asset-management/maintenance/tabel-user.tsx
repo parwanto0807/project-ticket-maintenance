@@ -18,7 +18,19 @@ import ImageDialogTicket from "./imageDialogTicket";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { Card } from "@/components/ui/card";
 import WhatsAppLinkButtonTable from "@/components/whatsappButtonTable";
-import { FaTicketAlt, FaExclamationCircle, FaCalendarAlt, FaUser } from "react-icons/fa"; // Ikon untuk card
+import {
+    FaTicketAlt,
+    FaExclamationCircle,
+    FaCalendarAlt,
+    FaUser,
+    FaTools,
+    FaClock,
+    FaCheckCircle,
+    FaExclamationTriangle,
+    FaImage,
+    FaWrench,
+    FaCog
+} from "react-icons/fa";
 import { motion } from "framer-motion";
 import Pagination from "@/components/ui/pagination";
 
@@ -59,16 +71,15 @@ interface TicketTableProps {
     currentPage: number;
 }
 
-export default  function TicketTableUser({ query, currentPage }: TicketTableProps) {
+export default function TicketTableUser({ query, currentPage }: TicketTableProps) {
     const user = useCurrentUser();
     const email = user?.email || "";
     const [data, setData] = useState<Ticket[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [totalPages, setTotalPages] = useState<number>(1);
+
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_PRODUCT;
 
-    const totalPages = currentPage    
-    // console.log("Total Pages", totalPages);
-    // console.log("Data", data)
     // Daftar nomor WhatsApp
     const whatsappNumbers = [
         { id: 1, label: "Teknisi 1 Parwanto", phone: "6281280212068" },
@@ -79,12 +90,15 @@ export default  function TicketTableUser({ query, currentPage }: TicketTableProp
         async function fetchData() {
             try {
                 setLoading(true);
-                const res = await fetch(`/api/ticket-list?query=${encodeURIComponent(query)}&currentPage=${currentPage}&email=${encodeURIComponent(email)}`);
+                const res = await fetch(
+                    `/api/ticket-list?query=${encodeURIComponent(query)}&currentPage=${currentPage}&email=${encodeURIComponent(email)}`
+                );
                 if (!res.ok) {
                     throw new Error("Gagal mengambil data tiket");
                 }
                 const json = await res.json();
-                setData(json);
+                setData(json.tickets || []);
+                setTotalPages(json.totalPages || 1);
             } catch (error) {
                 console.error("Error fetching ticket list:", error);
             } finally {
@@ -97,97 +111,173 @@ export default  function TicketTableUser({ query, currentPage }: TicketTableProp
         }
     }, [query, currentPage, email]);
 
-    if (loading) return <p>Loading...</p>;
+    const getStatusIcon = (status: string) => {
+        switch (status) {
+            case "Completed":
+                return <FaCheckCircle className="w-4 h-4 text-green-500" />;
+            case "In_Progress":
+                return <FaWrench className="w-4 h-4 text-orange-500" />;
+            case "Assigned":
+                return <FaCog className="w-4 h-4 text-blue-500" />;
+            case "Pending":
+                return <FaClock className="w-4 h-4 text-yellow-500" />;
+            case "Canceled":
+                return <FaExclamationTriangle className="w-4 h-4 text-red-500" />;
+            default:
+                return <FaTicketAlt className="w-4 h-4 text-gray-500" />;
+        }
+    };
+
+    const getStatusBadge = (status: string) => {
+        const baseClasses = "px-3 py-1.5 text-xs font-medium rounded-full flex items-center gap-2";
+
+        switch (status) {
+            case "Completed":
+                return `${baseClasses} bg-green-50 text-green-700 border border-green-200`;
+            case "In_Progress":
+                return `${baseClasses} bg-orange-50 text-orange-700 border border-orange-200`;
+            case "Assigned":
+                return `${baseClasses} bg-blue-50 text-blue-700 border border-blue-200`;
+            case "Pending":
+                return `${baseClasses} bg-yellow-50 text-yellow-700 border border-yellow-200`;
+            case "Canceled":
+                return `${baseClasses} bg-red-50 text-red-700 border border-red-200`;
+            default:
+                return `${baseClasses} bg-gray-50 text-gray-700 border border-gray-200`;
+        }
+    };
+
+    const getPriorityBadge = (priority: string) => {
+        const baseClasses = "px-2 py-1 text-xs font-medium rounded-full";
+
+        switch (priority?.toLowerCase()) {
+            case "high":
+                return `${baseClasses} bg-red-100 text-red-700 border border-red-200`;
+            case "medium":
+                return `${baseClasses} bg-yellow-100 text-yellow-700 border border-yellow-200`;
+            case "low":
+                return `${baseClasses} bg-green-100 text-green-700 border border-green-200`;
+            default:
+                return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+            </div>
+        );
+    }
 
     return (
-        <div className="mt-0 flow-root">
+        <div className="mt-6 flow-root">
             <div className="inline-block min-w-full align-middle">
-                <div className="rounded-lg p-0 md:pt-0 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
-                    {/* Tampilan Mobile */}
-                    <div className="md:hidden">
-                        {Array.isArray(data) &&
+                <div className="rounded-xl p-2 md:pt-4 bg-gradient-to-br from-orange-50 via-white to-orange-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 shadow-lg border border-orange-100 dark:border-slate-700 mx-auto max-w-7xl">
+
+                    {/* Mobile View: Cards */}
+                    <div className="md:hidden grid grid-cols-1 gap-4 p-2">
+                        {Array.isArray(data) && data.length > 0 ? (
                             data.map((item) => {
-                                const dynamicMessage = `Saya telah membuka ticket maintenance mohon di cek.
-Ticket Number: ${item.ticketNumber}
-Asset Name: ${item.asset.product.part_name}`;
+                                const dynamicMessage = `Halo, saya ingin menanyakan status ticket maintenance:\n\nTicket Number: ${item.ticketNumber}\nAsset: ${item.asset.product.part_name}\nStatus: ${item.status}`;
 
                                 return (
                                     <motion.div
                                         key={item.id}
-                                        whileHover={{ scale: 1.02 }} // Animasi hover
+                                        whileHover={{ scale: 1.02 }}
                                         transition={{ type: "spring", stiffness: 300 }}
                                     >
-                                        <Card className="mb-4 w-full rounded-lg p-4 bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950 shadow-md hover:shadow-lg transition-shadow">
-                                            <div className="flex flex-col gap-3">
-                                                {/* Header Card */}
-                                                <div className="flex justify-between items-center">
-                                                    <Badge
-                                                        variant="secondary"
-                                                        className="font-mono tracking-widest uppercase h-8 border-orange-500 flex items-center gap-2"
-                                                    >
-                                                        <FaTicketAlt className="w-4 h-4" />
-                                                        {item.ticketNumber}
-                                                    </Badge>
-                                                    <Badge
-                                                        className={`font-mono tracking-widest uppercase h-8 ${item.status === "Pending"
-                                                            ? "bg-red-100 text-red-500"
-                                                            : item.status === "Assigned"
-                                                                ? "bg-blue-100 text-blue-500"
-                                                                : item.status === "In_Progress"
-                                                                    ? "bg-orange-100 text-orange-500"
-                                                                    : item.status === "Completed"
-                                                                        ? "bg-green-100 text-green-500"
-                                                                        : item.status === "Canceled"
-                                                                            ? "bg-red-100 text-red-500"
-                                                                            : "bg-gray-100 text-gray-500"
-                                                            }`}
-                                                    >
-                                                        {item.status.replace("_", " ")}
-                                                    </Badge>
+                                        <Card className="rounded-xl border-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-md hover:shadow-xl transition-all duration-300">
+                                            <div className="p-4">
+                                                {/* Header */}
+                                                <div className="flex justify-between items-start mb-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="p-2 rounded-lg bg-orange-500 text-white">
+                                                            <FaTicketAlt className="w-4 h-4" />
+                                                        </div>
+                                                        <div>
+                                                            <Badge className="font-mono text-xs bg-orange-50 text-orange-700 border-orange-200">
+                                                                {item.ticketNumber}
+                                                            </Badge>
+                                                            <div className={getPriorityBadge(item.priorityStatus) + " mt-1"}>
+                                                                {item.priorityStatus}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className={getStatusBadge(item.status)}>
+                                                        {getStatusIcon(item.status)}
+                                                        <span className="text-xs">
+                                                            {item.status.replace("_", " ")}
+                                                        </span>
+                                                    </div>
                                                 </div>
 
-                                                {/* Konten Card */}
-                                                <div className="space-y-2">
-                                                    <div className="flex items-center gap-2">
-                                                        <FaExclamationCircle className="w-4 h-4 text-orange-500" />
-                                                        <p className="text-sm font-semibold">
-                                                            {item.asset.product.part_name}
-                                                        </p>
+                                                {/* Content */}
+                                                <div className="space-y-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <FaExclamationCircle className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                                                        <div className="min-w-0 flex-1">
+                                                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                                                {item.asset.product.part_name}
+                                                            </p>
+                                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                {item.asset.assetNumber}
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <FaUser className="w-4 h-4 text-orange-500" />
-                                                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                                                            {item.employee?.name}
-                                                        </p>
+
+                                                    <div className="flex items-center gap-3">
+                                                        <FaUser className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                                                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                                                            {item.employee.name}
+                                                        </span>
                                                     </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <FaCalendarAlt className="w-4 h-4 text-orange-500" />
-                                                        <p className="text-sm text-gray-600 dark:text-gray-300">
+
+                                                    {item.technician && (
+                                                        <div className="flex items-center gap-3">
+                                                            <FaTools className="w-4 h-4 text-green-500 flex-shrink-0" />
+                                                            <span className="text-sm text-gray-700 dark:text-gray-300">
+                                                                {item.technician.name}
+                                                            </span>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="flex items-center gap-3">
+                                                        <FaCalendarAlt className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                                                        <span className="text-sm text-gray-700 dark:text-gray-300">
                                                             {item.scheduledDate
-                                                                ? new Date(item.scheduledDate).toDateString()
-                                                                : "No Schedule"}
+                                                                ? new Date(item.scheduledDate).toLocaleDateString()
+                                                                : "Belum dijadwalkan"
+                                                            }
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Trouble Description */}
+                                                    <div className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3">
+                                                        <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                            Deskripsi Masalah:
                                                         </p>
+                                                        <ReadMoreText text={item.troubleUser} />
+                                                    </div>
+
+                                                    {/* Images */}
+                                                    <div className="flex gap-2">
+                                                        {[item.ticketImage1, item.ticketImage2, item.ticketImage3].map((image, index) => (
+                                                            image && (
+                                                                <div key={index} className="w-16 h-16 rounded-lg border-2 border-orange-200 dark:border-slate-600 overflow-hidden">
+                                                                    <ImageDialogTicket
+                                                                        src={image}
+                                                                        alt={`Ticket Image ${index + 1}`}
+                                                                    />
+                                                                </div>
+                                                            )
+                                                        ))}
                                                     </div>
                                                 </div>
 
-                                                {/* Gambar Tiket */}
-                                                <div className="flex full max-h-16 overflow-hidden rounded-lg gap-2">
-                                                    <ImageDialogTicket
-                                                        src={item.ticketImage1 || "/noImage.jpg"}
-                                                        alt={`${item.ticketImage1} Asset Image`}
-                                                    />
-                                                    <ImageDialogTicket
-                                                        src={item.ticketImage2 || "/noImage.jpg"}
-                                                        alt={`${item.ticketImage2} Asset Image`}
-                                                    />
-                                                    <ImageDialogTicket
-                                                        src={item.ticketImage3 || "/noImage.jpg"}
-                                                        alt={`${item.ticketImage3} Asset Image`}
-                                                    />
-                                                </div>
-
-                                                {/* Action Buttons */}
-                                                <div className="flex justify-end gap-2">
+                                                {/* Actions */}
+                                                <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-200 dark:border-slate-600">
+                                                    <TicketDialog ticket={item} />
                                                     {item.completedDate ? (
                                                         <WhatsAppLinkButtonTable
                                                             numbers={whatsappNumbers}
@@ -205,184 +295,242 @@ Asset Name: ${item.asset.product.part_name}`;
                                                     ) : (
                                                         <DeleteAlertTicket id={item.id} />
                                                     )}
-                                                    <TicketDialog ticket={item} />
                                                 </div>
                                             </div>
                                         </Card>
                                     </motion.div>
                                 );
-                            })}
+                            })
+                        ) : (
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                <FaTicketAlt className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                                <p>Tidak ada tiket ditemukan</p>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Tampilan Desktop */}
-                    <Table className="hidden w-full max-w-full mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
-                        <TableHeader>
-                            <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
-                                <TableHead className="text-black dark:text-white">No</TableHead>
-                                <TableHead className="text-black dark:text-white">
-                                    Ticket Number
-                                </TableHead>
-                                <TableHead className="text-black dark:text-white">
-                                    Trouble User
-                                </TableHead>
-                                <TableHead></TableHead>
-                                <TableHead className="text-black dark:text-white">
-                                    Analisa Technician
-                                </TableHead>
-                                <TableHead></TableHead>
-                                <TableHead className="text-black dark:text-white">
-                                    Action Technician
-                                </TableHead>
-                                <TableHead></TableHead>
-                                <TableHead className="text-black dark:text-white">
-                                    Priority Status
-                                </TableHead>
-                                <TableHead className="text-black dark:text-white">
-                                    Ticket Status
-                                </TableHead>
-                                <TableHead className="text-black dark:text-white">
-                                    Check Date
-                                </TableHead>
-                                <TableHead className="text-black dark:text-white">
-                                    Complete Date
-                                </TableHead>
-                                <TableHead className="text-black dark:text-white">
-                                    User Ticket
-                                </TableHead>
-                                <TableHead className="text-black dark:text-white">
-                                    Asset Name
-                                </TableHead>
-                                <TableHead className="text-black dark:text-white">
-                                    Asset Image
-                                </TableHead>
-                                <TableHead className="text-black dark:text-white text-center">
-                                    Action
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody className="text-[12px] border-none">
-                            {Array.isArray(data) &&
-                                data.map((item, index) => {
-                                    const dynamicMessage = `Saya telah membuka ticket maintenance mohon di cek.
-Ticket Number: ${item.ticketNumber}
-Asset Name: ${item.asset.product.part_name}`;
-                                    return (
-                                        <TableRow key={item.id}>
-                                            <TableCell className="text-center">
-                                                {offset + index + 1}
-                                            </TableCell>
-                                            <TableCell className="text-center font-bold text-nowrap">
-                                                {item.ticketNumber}
-                                            </TableCell>
-                                            <TableCell>
-                                                <ReadMoreText text={item.troubleUser} />
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="w-12 h-12 overflow-hidden rounded">
-                                                    <ImageDialogTicket
-                                                        src={item.ticketImage1 || "/noImage.jpg"}
-                                                        alt={`${item.ticketImage1} Asset Image`}
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <ReadMoreText text={item.analisaDescription ?? ""} />
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="w-12 h-12 overflow-hidden rounded">
-                                                    <ImageDialogTicket
-                                                        src={item.ticketImage2 || "/noImage.jpg"}
-                                                        alt={`${item.ticketImage2} Asset Image`}
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-center">
-                                                <ReadMoreText text={item.actionDescription ?? ""} />
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="w-12 h-12 overflow-hidden rounded">
-                                                    <ImageDialogTicket
-                                                        src={item.ticketImage3 || "/noImage.jpg"}
-                                                        alt={`${item.ticketImage3} Asset Image`}
-                                                    />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-center">
-                                                {item.priorityStatus}
-                                            </TableCell>
-                                            <TableCell className="text-center">
-                                                <Badge
-                                                    className={`
-                            font-mono tracking-widest uppercase
-                            ${item.status === "Pending"
-                                                            ? "bg-red-100 text-red-500"
-                                                            : item.status === "Assigned"
-                                                                ? "bg-blue-100 text-blue-500"
-                                                                : item.status === "In_Progress"
-                                                                    ? "bg-orange-100 text-orange-500"
-                                                                    : item.status === "Completed"
-                                                                        ? "bg-green-100 text-green-500"
-                                                                        : item.status === "Canceled"
-                                                                            ? "bg-red-100 text-red-500"
-                                                                            : "bg-gray-100 text-gray-500"
-                                                        }
-                          `}
-                                                >
-                                                    {item.status.replace("_", " ")}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                {item.scheduledDate
-                                                    ? new Date(item.scheduledDate).toDateString()
-                                                    : ""}
-                                            </TableCell>
-                                            <TableCell>
-                                                {item.completedDate
-                                                    ? new Date(item.completedDate).toDateString()
-                                                    : ""}
-                                            </TableCell>
-                                            <TableCell>{item.employee.name}</TableCell>
-                                            <TableCell>{item.asset.product.part_name}</TableCell>
-                                            <TableCell className="flex whitespace-nowrap gap-4">
+                    {/* Desktop View: Table */}
+                    <div className="hidden md:block">
+                        <Card className="border-0 bg-transparent shadow-none">
+                            <Card className="mb-6 border-0 bg-gradient-to-r from-orange-500 to-amber-500">
+                                <div className="p-6 text-center">
+                                    <div className="inline-flex items-center gap-3 mb-2">
+                                        <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm">
+                                            <FaTicketAlt className="w-8 h-8 text-white" />
+                                        </div>
+                                        <h2 className="text-2xl font-bold text-white">
+                                            Maintenance Tickets
+                                        </h2>
+                                    </div>
+                                    <p className="text-orange-100 text-sm">
+                                        Kelola dan pantau tiket maintenance peralatan Anda
+                                    </p>
+                                </div>
+                            </Card>
+
+                            <div className="rounded-xl border border-orange-100 dark:border-slate-700 overflow-hidden bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
+                                <Table className="w-full">
+                                    <TableHeader>
+                                        <TableRow className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-500 hover:to-amber-500 border-0">
+                                            <TableHead className="text-white font-bold uppercase text-xs py-4 text-center border-0 w-12">
+                                                #
+                                            </TableHead>
+                                            <TableHead className="text-white font-bold uppercase text-xs py-4 border-0">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-12 h-12 overflow-hidden rounded">
-                                                        <ImageDialog
-                                                            src={item.asset.assetImage1 || "/noImage.jpg"}
-                                                            alt={`${item.asset.assetNumber} Asset Image`}
-                                                        />
-                                                    </div>
+                                                    <FaTicketAlt className="w-3 h-3" />
+                                                    Ticket Info
                                                 </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center justify-center object-center gap-2">
-                                                    {item.completedDate ? (
-                                                        <WhatsAppLinkButtonTable
-                                                            numbers={whatsappNumbers}
-                                                            message={dynamicMessage}
-                                                            disabled
-                                                        />
-                                                    ) : (
-                                                        <WhatsAppLinkButtonTable
-                                                            numbers={whatsappNumbers}
-                                                            message={dynamicMessage}
-                                                        />
-                                                    )}
-                                                    {item.scheduledDate ? (
-                                                        <DeleteAlertTicket id={item.id} disabled />
-                                                    ) : (
-                                                        <DeleteAlertTicket id={item.id} />
-                                                    )}
-                                                    <TicketDialog ticket={item} />
+                                            </TableHead>
+                                            <TableHead className="text-white font-bold uppercase text-xs py-4 border-0">
+                                                <div className="flex items-center gap-2">
+                                                    <FaExclamationCircle className="w-3 h-3" />
+                                                    Issue
                                                 </div>
-                                            </TableCell>
+                                            </TableHead>
+                                            <TableHead className="text-white font-bold uppercase text-xs py-4 border-0 text-center">
+                                                <div className="flex items-center gap-2 justify-center">
+                                                    <FaImage className="w-3 h-3" />
+                                                    Evidence
+                                                </div>
+                                            </TableHead>
+                                            <TableHead className="text-white font-bold uppercase text-xs py-4 border-0 text-center">
+                                                Priority
+                                            </TableHead>
+                                            <TableHead className="text-white font-bold uppercase text-xs py-4 border-0 text-center">
+                                                Status
+                                            </TableHead>
+                                            <TableHead className="text-white font-bold uppercase text-xs py-4 border-0">
+                                                <div className="flex items-center gap-2">
+                                                    <FaCalendarAlt className="w-3 h-3" />
+                                                    Schedule
+                                                </div>
+                                            </TableHead>
+                                            <TableHead className="text-white font-bold uppercase text-xs py-4 border-0">
+                                                Asset
+                                            </TableHead>
+                                            <TableHead className="text-white font-bold uppercase text-xs py-4 border-0 text-center">
+                                                Actions
+                                            </TableHead>
                                         </TableRow>
-                                    );
-                                })}
-                        </TableBody>
-                    </Table>
-                    <div className="flex justify-center mt-4">
-                        <Pagination totalPages={totalPages} />
+                                    </TableHeader>
+                                    <TableBody className="bg-white/80 dark:bg-slate-800/80">
+                                        {Array.isArray(data) && data.length > 0 ? (
+                                            data.map((item, index) => {
+                                                const dynamicMessage = `Halo, saya ingin menanyakan status ticket maintenance:\n\nTicket Number: ${item.ticketNumber}\nAsset: ${item.asset.product.part_name}\nStatus: ${item.status}`;
+
+                                                return (
+                                                    <TableRow
+                                                        key={item.id}
+                                                        className="border-b border-orange-50 dark:border-slate-700/50 hover:bg-orange-50/50 dark:hover:bg-slate-700/50 transition-colors"
+                                                    >
+                                                        <TableCell className="text-center text-sm font-medium text-gray-900 dark:text-white py-4">
+                                                            {offset + index + 1}
+                                                        </TableCell>
+                                                        <TableCell className="py-4">
+                                                            <div className="space-y-1">
+                                                                <div className="flex items-center gap-2">
+                                                                    <FaTicketAlt className="w-3 h-3 text-orange-500" />
+                                                                    <span className="font-mono font-bold text-gray-900 dark:text-white">
+                                                                        {item.ticketNumber}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center gap-2 text-xs text-gray-500">
+                                                                    <FaUser className="w-3 h-3" />
+                                                                    {item.employee.name}
+                                                                </div>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="py-4 max-w-xs">
+                                                            <div className="space-y-2">
+                                                                <ReadMoreText
+                                                                    text={item.troubleUser}
+                                                                />
+                                                                {item.analisaDescription && (
+                                                                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded p-2">
+                                                                        <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">
+                                                                            Analisa Teknisi:
+                                                                        </p>
+                                                                        <ReadMoreText
+                                                                            text={item.analisaDescription}
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="py-4">
+                                                            <div className="flex justify-center gap-1">
+                                                                {[item.ticketImage1, item.ticketImage2, item.ticketImage3]
+                                                                    .filter(Boolean)
+                                                                    .map((image, idx) => (
+                                                                        <div key={idx} className="w-10 h-10 rounded border border-orange-200 dark:border-slate-600 overflow-hidden">
+                                                                            <ImageDialogTicket
+                                                                                src={image!}
+                                                                                alt={`Evidence ${idx + 1}`}
+                                                                            />
+                                                                        </div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="text-center py-4">
+                                                            <Badge className={getPriorityBadge(item.priorityStatus)}>
+                                                                {item.priorityStatus}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="py-4">
+                                                            <div className="flex justify-center">
+                                                                <div className={getStatusBadge(item.status)}>
+                                                                    {getStatusIcon(item.status)}
+                                                                    <span className="text-xs">
+                                                                        {item.status.replace("_", " ")}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="py-4">
+                                                            <div className="space-y-1 text-sm">
+                                                                <div className="flex items-center gap-2">
+                                                                    <FaCalendarAlt className="w-3 h-3 text-purple-500" />
+                                                                    <span className="text-gray-700 dark:text-gray-300">
+                                                                        {item.scheduledDate
+                                                                            ? new Date(item.scheduledDate).toLocaleDateString()
+                                                                            : "Belum dijadwalkan"
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                                {item.completedDate && (
+                                                                    <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
+                                                                        <FaCheckCircle className="w-3 h-3" />
+                                                                        Selesai: {new Date(item.completedDate).toLocaleDateString()}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="py-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-10 h-10 rounded border border-orange-200 dark:border-slate-600 overflow-hidden">
+                                                                    <ImageDialog
+                                                                        src={item.asset.assetImage1 || "/noImage.jpg"}
+                                                                        alt={item.asset.assetNumber}
+                                                                    />
+                                                                </div>
+                                                                <div>
+                                                                    <div className="font-medium text-gray-900 dark:text-white text-sm">
+                                                                        {item.asset.product.part_name}
+                                                                    </div>
+                                                                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                                        {item.asset.assetNumber}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="py-4">
+                                                            <div className="flex justify-center gap-2">
+                                                                <TicketDialog ticket={item} />
+                                                                {item.completedDate ? (
+                                                                    <WhatsAppLinkButtonTable
+                                                                        numbers={whatsappNumbers}
+                                                                        message={dynamicMessage}
+                                                                        disabled
+                                                                    />
+                                                                ) : (
+                                                                    <WhatsAppLinkButtonTable
+                                                                        numbers={whatsappNumbers}
+                                                                        message={dynamicMessage}
+                                                                    />
+                                                                )}
+                                                                {item.scheduledDate ? (
+                                                                    <DeleteAlertTicket id={item.id} disabled />
+                                                                ) : (
+                                                                    <DeleteAlertTicket id={item.id} />
+                                                                )}
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })
+                                        ) : (
+                                            <TableRow>
+                                                <TableCell colSpan={9} className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                                    <div className="flex flex-col items-center gap-2">
+                                                        <FaTicketAlt className="w-8 h-8 text-gray-300" />
+                                                        Tidak ada tiket ditemukan
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </Card>
                     </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex justify-center mt-6 px-4">
+                            <Pagination totalPages={totalPages} />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
