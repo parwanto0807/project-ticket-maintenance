@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FaSignOutAlt } from "react-icons/fa";
 import { signOut } from "next-auth/react";
+import { useState } from "react";
 
 interface Menu {
   label: string;
@@ -14,10 +15,32 @@ interface BottomNavProps {
 }
 
 export default function BottomNav({ menus }: BottomNavProps) {
-  // Fungsi Logout
-  const handleSignOut = () => {
-    signOut();
-    window.location.href = "/auth/login";
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  // Fungsi Logout yang diperbaiki
+  const handleSignOut = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isSigningOut) return; // Prevent multiple clicks
+    
+    setIsSigningOut(true);
+    
+    try {
+      await signOut({ 
+        redirect: false,
+        callbackUrl: "/auth/login" 
+      });
+      
+      // Redirect manual setelah signOut selesai
+      window.location.href = "/auth/login";
+    } catch (error) {
+      console.error("Sign out error:", error);
+      // Fallback redirect
+      window.location.href = "/auth/login";
+    } finally {
+      setIsSigningOut(false);
+    }
   };
 
   // Jika menus kosong, jangan tampilkan apa-apa
@@ -49,7 +72,8 @@ export default function BottomNav({ menus }: BottomNavProps) {
               <button
                 key={index}
                 onClick={handleSignOut}
-                className="flex flex-col items-center justify-center text-orange-600 hover:scale-105 transition-transform duration-200"
+                disabled={isSigningOut}
+                className="flex flex-col items-center justify-center text-orange-600 hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {menu.icon ? (
                   <menu.icon className="text-2xl" />
@@ -98,7 +122,8 @@ export default function BottomNav({ menus }: BottomNavProps) {
               <button
                 key={index}
                 onClick={handleSignOut}
-                className="flex flex-col items-center justify-center text-orange-600 hover:scale-105 transition-transform duration-200"
+                disabled={isSigningOut}
+                className="flex flex-col items-center justify-center text-orange-600 hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {menu.icon ? (
                   <menu.icon className="text-2xl" />
@@ -120,13 +145,20 @@ export default function BottomNav({ menus }: BottomNavProps) {
             </Link>
           );
         })}
-        {/* Ganti tombol WhatsApp dengan tombol Sign Out */}
+        
+        {/* Tombol Sign Out tambahan */}
         <button
           onClick={handleSignOut}
-          className="flex flex-col items-center justify-center text-orange-600 hover:scale-105 transition-transform duration-200"
+          disabled={isSigningOut}
+          className="flex flex-col items-center justify-center text-orange-600 hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <FaSignOutAlt className="text-2xl mt-3" />
+          <FaSignOutAlt className="text-2xl" />
           <span className="text-xs">Sign Out</span>
+          {isSigningOut && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-50 rounded">
+              <div className="w-4 h-4 border-2 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
         </button>
       </div>
     </nav>

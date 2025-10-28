@@ -238,7 +238,7 @@ export default function DashboardOverviewPage() {
             <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-500">
               <span>v2.1.0</span>
               <div className="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full" />
-              <span>© 2024 Your Company</span>
+              <span>© 2024 Intech Mitra Abadi, PT</span>
             </div>
           </div>
         </div>
