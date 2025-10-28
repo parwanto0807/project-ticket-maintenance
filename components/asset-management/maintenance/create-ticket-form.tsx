@@ -327,7 +327,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-8 px-4">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-4 px-4">
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -335,7 +335,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                 className="max-w-4xl mx-auto"
             >
                 {/* Header */}
-                <div className="text-center mb-12">
+                <div className="text-center mb-2">
                     <div className="inline-flex items-center gap-3 mb-4 p-4 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg">
                         <div className="p-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl text-white">
                             <FaTicketAlt className="w-6 h-6" />
