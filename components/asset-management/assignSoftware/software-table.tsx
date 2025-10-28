@@ -202,7 +202,7 @@ export const AssetSoftwareTable = ({
                         </span>
                     </div>
                 </div>
-                
+
                 <Button asChild variant="outline" className="flex items-center gap-2 w-fit">
                     <Link href="/dashboard/asset/asset-list">
                         <ArrowLeft className="h-4 w-4" />
@@ -342,24 +342,24 @@ export const AssetSoftwareTable = ({
 
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-gray-50/80 hover:bg-gray-50/80 dark:bg-slate-800 dark:hover:bg-slate-800 border-gray-200 dark:border-gray-700">
-                            <TableHead className="font-semibold text-gray-900 dark:text-gray-100">Software</TableHead>
-                            <TableHead className="font-semibold text-gray-900 dark:text-gray-100">Version</TableHead>
-                            <TableHead className="font-semibold text-gray-900 dark:text-gray-100">License Type</TableHead>
-                            <TableHead className="font-semibold text-gray-900 dark:text-gray-100">
+                        <TableRow className="bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 dark:from-sky-500 dark:to-indigo-700 dark:hover:from-sky-600 dark:hover:to-indigo-800">
+                            <TableHead className="font-semibold py-4 text-gray-100 ">Software</TableHead>
+                            <TableHead className="font-semibold py-4 text-gray-100">Version</TableHead>
+                            <TableHead className="font-semibold py-4 text-gray-100">License Type</TableHead>
+                            <TableHead className="font-semibold py-4 text-gray-100">
                                 <Key className="h-4 w-4 inline mr-1" />
                                 License Key
                             </TableHead>
-                            <TableHead className="font-semibold text-gray-900 dark:text-gray-100">
+                            <TableHead className="font-semibold py-4 text-gray-100">
                                 <Calendar className="h-4 w-4 inline mr-1" />
                                 Install Date
                             </TableHead>
-                            <TableHead className="font-semibold text-gray-900 dark:text-gray-100">
+                            <TableHead className="font-semibold py-4 text-gray-100">
                                 <Calendar className="h-4 w-4 inline mr-1" />
                                 License Expiry
                             </TableHead>
-                            <TableHead className="font-semibold text-gray-900 dark:text-gray-100">Status</TableHead>
-                            <TableHead className="font-semibold text-gray-900 dark:text-gray-100 w-[100px]">Actions</TableHead>
+                            <TableHead className="font-semibold py-4 text-gray-100">Status</TableHead>
+                            <TableHead className="font-semibold py-4 text-gray-100 w-[100px]">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

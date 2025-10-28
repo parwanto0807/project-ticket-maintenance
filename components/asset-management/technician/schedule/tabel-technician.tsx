@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import Link from "next/link";
+// import Link from "next/link";
 import {
     Table,
     TableBody,
@@ -24,7 +24,7 @@ import {
     Loader2,
     UserCheck,
     XCircle,
-    ArrowLeft,
+    // ArrowLeft,
 } from "lucide-react";
 import ReadMoreText from "./read-more";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -119,7 +119,7 @@ export default function TechnicianScheduleTable({
             const res = await fetch(apiUrl);
             const result = await res.json();
             setTickets(result);
-            console.log("Fetched tickets:", result); 
+            console.log("Fetched tickets:", result);
 
         } catch (err) {
             console.error("Error fetching schedule:", err);
@@ -143,7 +143,7 @@ export default function TechnicianScheduleTable({
     return (
         <div className="mt-0 flow-root">
             <div className="mx-auto max-w-8xl">
-                <Card className="p-2 rounded-lg bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+                <Card className="p-2 rounded-lg bg-gradient-to-b from-blue-50 to-blue-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                     <CardHeader className="px-4 py-2">
                         <CardTitle className="text-lg font-bold text-center">
                             Technician Schedule Tickets
@@ -153,16 +153,16 @@ export default function TechnicianScheduleTable({
                         {/* Tampilan Mobile */}
                         <div className="md:hidden">
                             {Array.isArray(tickets) && tickets.map((data) => {
-                                const dynamicMessage = 
-                                `Saya telah mengerjakan Ticket Number: ${data.ticketNumber} 
+                                const dynamicMessage =
+                                    `Saya telah mengerjakan Ticket Number: ${data.ticketNumber} 
         Asset Name: ${data.asset.product.part_name} mohon di cek dan di Closing , 
         Cek detail ticket di sini: https://solusiit.net/dashboard/technician/assign?ticket=${data.ticketNumber}`;
                                 return (
                                     <Card
                                         key={data.id}
-                                        className="mb-2 w-full rounded-md p-2 bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950"
+                                        className="mb-2 w-full rounded-md p-2 bg-gradient-to-b from-blue-100 to-blue-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950"
                                     >
-                                        <Card className="mb-4 w-full rounded-lg p-4 bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950 shadow-md hover:shadow-lg transition-shadow">
+                                        <Card className="mb-4 w-full rounded-lg p-4 bg-gradient-to-b from-blue-100 to-blue-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950 shadow-md hover:shadow-lg transition-shadow">
                                             <div className="flex flex-col gap-3">
                                                 {/* Header Card */}
                                                 <div className="flex justify-between datas-center">
@@ -291,35 +291,35 @@ export default function TechnicianScheduleTable({
                         {/* Tampilan Desktop */}
                         <Table className="hidden w-full max-w-full mt-2 md:table">
                             <TableHeader>
-                                <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
-                                    <TableHead className="text-black dark:text-white">No</TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">
+                                <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 dark:from-sky-500 dark:to-indigo-700 dark:hover:from-sky-600 dark:hover:to-indigo-800">
+                                    <TableHead className="text-white py-5">No</TableHead>
+                                    <TableHead className="text-white py-5 text-center">
                                         Ticket
                                     </TableHead>
-                                    <TableHead className="text-black dark:text-white">
+                                    <TableHead className="text-white py-5">
                                         Title
                                     </TableHead>
-                                    <TableHead className="text-black dark:text-white">
+                                    <TableHead className="text-white py-5">
                                         Technician
                                     </TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">
+                                    <TableHead className="text-white py-5 text-center">
                                         Status
                                     </TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">
+                                    <TableHead className="text-white py-5 text-center">
                                         Priority
                                     </TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">
+                                    <TableHead className="text-white py-5 text-center">
                                         Schedule Action
                                     </TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">
+                                    <TableHead className="text-white py-5 text-center">
                                         Action
                                     </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="text-[12px] border-none">
                                 {Array.isArray(tickets) && tickets.map((data, index) => {
-                                const dynamicMessage = 
-                                `Saya telah mengerjakan Ticket Number: ${data.ticketNumber} 
+                                    const dynamicMessage =
+                                        `Saya telah mengerjakan Ticket Number: ${data.ticketNumber} 
         Asset Name: ${data.asset.product.part_name} mohon di cek dan di Closing , 
         Cek detail ticket di sini: https://solusiit.net/dashboard/technician/assign?ticket=${data.ticketNumber}`;
 
@@ -441,7 +441,7 @@ export default function TechnicianScheduleTable({
                         </Table>
                     </CardContent>
                 </Card>
-                <div className="flex justify-end datas-end w-full pt-2">
+                {/* <div className="flex justify-end datas-end w-full pt-2">
                     <Link href="/dashboard">
                         <Button
                             variant="destructive"
@@ -451,7 +451,7 @@ export default function TechnicianScheduleTable({
                             Back to Dashboard
                         </Button>
                     </Link>
-                </div>
+                </div> */}
             </div>
         </div>
     );

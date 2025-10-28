@@ -30,17 +30,17 @@ export default async function AssignTable({ query, currentPage }: { query: strin
     return (
         <div className="mt-0 flow-root">
             <div className="mx-auto max-w-8xl">
-                <Card className="p-2 rounded-lg bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+                <Card className="p-2 rounded-lg bg-gradient-to-b from-blue-50 to-blue-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                     <CardHeader className="px-4 py-2">
                         <CardTitle className="text-lg font-bold text-center">
-                            Technician Schedule Tickets
+                            Technician Schedule Tickets.
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-0">
                         <div className="md:hidden">
                             {Array.isArray(data) &&
                                 data.map((data) => (
-                                    <Card key={data.id} className="mb-2 w-full rounded-md p-2 bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+                                    <Card key={data.id} className="mb-2 w-full rounded-md p-2 bg-gradient-to-b from-blue-100 to-blue-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                                         <div className="grid grid-cols-1 items-center justify-between pb-1">
                                             <div>
                                                 <div className="mb-2 flex items-center justify-between font-bold text-black dark:text-white">
@@ -127,7 +127,7 @@ export default async function AssignTable({ query, currentPage }: { query: strin
 
                         <Table className="hidden w-full max-w-full mt-2 md:table">
                             <TableHeader>
-                                <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+                                <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-blue-100 to-blue-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                                     <TableHead className="text-black dark:text-white">No</TableHead>
                                     <TableHead className="text-black dark:text-white text-center">Ticket</TableHead>
                                     <TableHead className="text-black dark:text-white">Title</TableHead>

@@ -31,9 +31,9 @@ export default async function AssignTable({ query, currentPage }: { query: strin
     const technician = await getTechniciansForData();
 
     return (
-        <div className="mt-0 flow-root">
+        <div className="w-full mt-0 flow-root mx-auto">
             <div className="inline-block min-w-full align-middle">
-                <div className="rounded-lg p-0 md:pt-0 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+                <div className="rounded-lg p-0 md:pt-0 md:table bg-gradient-to-b from-white to-blue-50 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-900">
                     <div className="md:hidden">
                         {Array.isArray(data) && data.length > 0 ? (
                             data.map((data) => (
@@ -144,26 +144,26 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                         )}
                     </div>
                     <div className="flex justify-center">
-                        <Table className="hidden w-full max-w-full mx-auto mt-2 md:table bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+                        <Table className="hidden w-full max-w-full mx-auto mt-0 md:table">
                             <TableHeader>
-                                <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
-                                    <TableHead className="text-black dark:text-white">No</TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">Ticket Number</TableHead>
-                                    <TableHead className="text-black dark:text-white">Trouble User</TableHead>
+                                <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 dark:from-sky-500 dark:to-indigo-700 dark:hover:from-sky-600 dark:hover:to-indigo-800">
+                                    <TableHead className="py-6 text-white">No</TableHead>
+                                    <TableHead className="py-6 text-white text-center">Ticket Number</TableHead>
+                                    <TableHead className="py-6 text-white">Trouble User</TableHead>
                                     <TableHead></TableHead>
-                                    <TableHead className="text-black dark:text-white">Analisa Technician</TableHead>
+                                    <TableHead className="py-6 text-white">Analisa Technician</TableHead>
                                     <TableHead></TableHead>
-                                    <TableHead className="text-black dark:text-white">Action Technician</TableHead>
+                                    <TableHead className="py-6 text-white">Action Technician</TableHead>
                                     <TableHead></TableHead>
-                                    <TableHead className="text-black dark:text-white">Schedule Check Date</TableHead>
-                                    <TableHead className="text-black dark:text-white">Complete Date </TableHead>
-                                    <TableHead className="text-black dark:text-white">User Ticket</TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">Technician</TableHead>
-                                    <TableHead className="text-black dark:text-white">Asset Name</TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">Action</TableHead>
+                                    <TableHead className="py- text-white">Schedule Check Date</TableHead>
+                                    <TableHead className="py- text-white">Complete Date </TableHead>
+                                    <TableHead className="py- text-white">User Ticket</TableHead>
+                                    <TableHead className="py- text-white text-center">Technician</TableHead>
+                                    <TableHead className="py- text-white">Asset Name</TableHead>
+                                    <TableHead className="py- text-white text-center">Action</TableHead>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody className="text-[12px] border-none">
+                            <TableBody className="text-[12px] border border-blue-100 dark:border-slate-800 bg-transparent">
                                 {Array.isArray(data) && data.length > 0 ? (
                                     data.map((data, index) => (
                                         <TableRow key={data.id}>

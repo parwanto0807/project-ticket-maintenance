@@ -20,7 +20,7 @@ export default async function TechnicianTable({ query, currentPage }: { query: s
 
     return (
         <div className="flex justify-center items-center mt-6">
-            <Card className="w-full max-w-8xl shadow-lg border rounded-lg bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+            <Card className="w-full max-w-8xl shadow-lg border rounded-lg bg-gradient-to-b from-blue-50 to-blue-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                 <CardHeader>
                     <CardTitle className="text-center text-xl font-bold text-gray-800 dark:text-gray-200">
                         Technician List
@@ -65,14 +65,14 @@ export default async function TechnicianTable({ query, currentPage }: { query: s
                         {/* Desktop View */}
                         <Table className="hidden w-full max-w-full mt-2 md:table bg-white dark:bg-gray-900">
                             <TableHeader>
-                                <TableRow className="text-[10px] font-bold uppercase bg-gray-200 dark:bg-gray-700">
-                                    <TableHead className="text-black dark:text-white text-center">#</TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">Name</TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">Specialization</TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">Phone</TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">Email</TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">Status</TableHead>
-                                    <TableHead className="text-black dark:text-white text-center">Action</TableHead>
+                                <TableRow className="text-[10px] font-bold uppercase bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 dark:from-sky-500 dark:to-indigo-700 dark:hover:from-sky-600 dark:hover:to-indigo-800">
+                                    <TableHead className="py-6 text-white text-center">#</TableHead>
+                                    <TableHead className="py-6 text-white text-center">Name</TableHead>
+                                    <TableHead className="py-6 text-white text-center">Specialization</TableHead>
+                                    <TableHead className="py-6 text-white text-center">Phone</TableHead>
+                                    <TableHead className="py-6 text-white text-center">Email</TableHead>
+                                    <TableHead className="py-6 text-white text-center">Status</TableHead>
+                                    <TableHead className="py-6 text-white text-center">Action</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="text-[12px] border-none">

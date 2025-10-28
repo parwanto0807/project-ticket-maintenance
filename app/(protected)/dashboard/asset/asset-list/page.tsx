@@ -20,14 +20,40 @@ import { CreateAssetButton } from "@/components/asset-management/asset/buttons";
 const AssetList = async ({
   searchParams
 }: {
-  searchParams?: {
+  searchParams: {
     query?: string;
     page?: string;
-  }
+    assetType?: string;
+    userName?: string;
+    department?: string;
+    status?: string;
+    location?: string;
+    software?: string;
+  };
 }) => {
-  const { query = "", page } =  searchParams || { query: "", page: "1" };
+  const {
+    query = "",
+    page,
+    assetType,
+    userName,
+    department,
+    status,
+    location,
+    software
+  } = searchParams || { query: "", page: "1" };
+
   const currentPage = Number(page) || 1;
-  const totalPages = await fetchAssetListPages(query || "");
+
+  const filters = {
+    assetType,
+    userName,
+    department,
+    status,
+    location,
+    software,
+  };
+
+  const totalPages = await fetchAssetListPages(query || "", filters);
 
   return (
     <ContentLayout title="Asset List">
@@ -41,7 +67,7 @@ const AssetList = async ({
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/dashboard">Asset</Link>
+              <Link href="/dashboard/asset">Asset</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
@@ -58,7 +84,16 @@ const AssetList = async ({
           </div>
 
           <div className="w-full">
-            <AssetTable query={query} currentPage={currentPage} />
+            <AssetTable
+              query={query}
+              currentPage={currentPage}
+              assetType={assetType}
+              userName={userName}
+              department={department}
+              status={status}
+              location={location}
+              software={software}
+            />
           </div>
 
           <div className="flex justify-center mt-4">

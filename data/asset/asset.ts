@@ -46,7 +46,55 @@ export async function generateAssetNumber(id: string) {
   }
 }
 
-export const fetchAssetList = async (query: string, currentPage: number) => {
+export const fetchAllAssetsGeneral = async () => {
+  noStore();
+
+  try {
+    const assetFind = await db.asset.findMany({
+      include: {
+        employee: { select: { id: true, name: true, email: true } },
+        product: {
+          select: {
+            id: true,
+            part_number: true,
+            part_name: true,
+            nick_name: true,
+            satuan_penyimpanan: true,
+            satuan_pengeluaran: true,
+            description: true,
+            brand: { select: { name: true } },
+            jenisproduct: { select: { name: true } },
+            kategoriproduct: { select: { name: true } },
+            group: { select: { name: true } },
+            gudang: { select: { name: true } },
+          },
+        },
+        assetType: { select: { id: true, name: true } },
+        department: { select: { id: true, dept_name: true } },
+        softwareInstallations: { include: { software: true } },
+      },
+      orderBy: [{ departmentId: "asc" }, { createdAt: "desc" }],
+    });
+
+    return assetFind;
+  } catch (error) {
+    console.error("❌ Error fetching all assets:", error);
+    return { error: "Can not find Asset List" };
+  }
+};
+
+export const fetchAssetList = async (
+  query: string,
+  currentPage: number,
+  filters?: {
+    assetType?: string;
+    userName?: string;
+    department?: string;
+    status?: string;
+    location?: string;
+    software?: string;
+  }
+) => {
   noStore();
   const offset = (currentPage - 1) * ITEMS_PER_PAGE_ASSET_ADMIN;
 
@@ -54,7 +102,7 @@ export const fetchAssetList = async (query: string, currentPage: number) => {
     // 🧩 Dapatkan semua enum AssetStatus (misalnya: ACTIVE, INACTIVE, MAINTENANCE)
     const validStatuses = Object.values(AssetStatus);
 
-    // Buat array filter OR
+    // Buat array filter OR untuk pencarian teks
     const orFilters: Prisma.AssetWhereInput[] = [
       { assetNumber: { contains: query, mode: "insensitive" } },
       { location: { contains: query, mode: "insensitive" } },
@@ -106,6 +154,42 @@ export const fetchAssetList = async (query: string, currentPage: number) => {
       });
     }
 
+    // 🎯 Build WHERE clause dengan kombinasi OR filters dan AND filters
+    const whereClause: Prisma.AssetWhereInput = {
+      AND: [
+        // OR filters untuk pencarian teks
+        query ? { OR: orFilters } : {},
+
+        // Filter tambahan dari dropdown
+        filters?.assetType && filters.assetType !== "all"
+          ? { assetType: { name: { equals: filters.assetType } } }
+          : {},
+
+        filters?.userName && filters.userName !== "all"
+          ? { employee: { name: { equals: filters.userName } } }
+          : {},
+
+        filters?.department && filters.department !== "all"
+          ? { department: { dept_name: { equals: filters.department } } }
+          : {},
+
+        filters?.status && filters.status !== "all"
+          ? { status: { equals: filters.status as AssetStatus } }
+          : {},
+
+        filters?.location && filters.location !== "all"
+          ? { location: { equals: filters.location } }
+          : {},
+
+        // Filter software: with-software atau without-software
+        filters?.software && filters.software !== "all"
+          ? filters.software === "with-software"
+            ? { softwareInstallations: { some: {} } } // Memiliki setidaknya satu software
+            : { softwareInstallations: { none: {} } } // Tidak memiliki software
+          : {},
+      ].filter(Boolean) as Prisma.AssetWhereInput[], // Hapus elemen kosong
+    };
+
     const assetFind = await db.asset.findMany({
       skip: offset,
       take: ITEMS_PER_PAGE_ASSET_ADMIN,
@@ -129,9 +213,20 @@ export const fetchAssetList = async (query: string, currentPage: number) => {
         },
         assetType: { select: { id: true, name: true } },
         department: { select: { id: true, dept_name: true } },
-        softwareInstallations: { include: { software: true } },
+        softwareInstallations: {
+          include: {
+            software: {
+              select: {
+                id: true,
+                name: true,
+                vendor: true,
+                licenseType: true,
+              },
+            },
+          },
+        },
       },
-      where: { OR: orFilters },
+      where: whereClause,
       orderBy: [{ departmentId: "asc" }, { createdAt: "desc" }],
     });
 
@@ -163,78 +258,71 @@ export const fetchAssetListForData = async () => {
   }
 };
 
-export const fetchAssetListPages = async (query: string) => {
+export const fetchAssetListPages = async (
+  query: string,
+  filters?: {
+    assetType?: string;
+    userName?: string;
+    department?: string;
+    status?: string;
+    location?: string;
+    software?: string;
+  }
+) => {
   noStore();
 
   try {
-    const assetCount = await db.asset.count({
-      where: {
-        OR: [
-          { assetNumber: { contains: query, mode: "insensitive" } },
-          { location: { contains: query, mode: "insensitive" } },
-          { assetType: { name: { contains: query, mode: "insensitive" } } },
-          {
-            department: { dept_name: { contains: query, mode: "insensitive" } },
-          },
-          { employee: { name: { contains: query, mode: "insensitive" } } },
+    const validStatuses = Object.values(AssetStatus);
+    const orFilters: Prisma.AssetWhereInput[] = [
+      // ... (sama seperti di fetchAssetList)
+    ];
 
-          // === FIELD DARI PRODUCT ===
-          { product: { part_name: { contains: query, mode: "insensitive" } } },
-          {
-            product: { part_number: { contains: query, mode: "insensitive" } },
-          },
-          { product: { nick_name: { contains: query, mode: "insensitive" } } },
-          {
-            product: { description: { contains: query, mode: "insensitive" } },
-          },
-          {
-            product: {
-              satuan_penyimpanan: { contains: query, mode: "insensitive" },
-            },
-          },
-          {
-            product: {
-              satuan_pengeluaran: { contains: query, mode: "insensitive" },
-            },
-          },
+    const upperQuery = query.toUpperCase();
+    if (validStatuses.includes(upperQuery as AssetStatus)) {
+      orFilters.push({
+        status: { equals: upperQuery as AssetStatus },
+      });
+    }
 
-          // === RELASI DARI PRODUCT ===
-          {
-            product: {
-              brand: { name: { contains: query, mode: "insensitive" } },
-            },
-          },
-          {
-            product: {
-              jenisproduct: { name: { contains: query, mode: "insensitive" } },
-            },
-          },
-          {
-            product: {
-              kategoriproduct: {
-                name: { contains: query, mode: "insensitive" },
-              },
-            },
-          },
-          {
-            product: {
-              group: { name: { contains: query, mode: "insensitive" } },
-            },
-          },
-          {
-            product: {
-              gudang: { name: { contains: query, mode: "insensitive" } },
-            },
-          },
-        ],
-      },
-    });
+    const whereClause: Prisma.AssetWhereInput = {
+      AND: [
+        query ? { OR: orFilters } : {},
 
-    const totalPagesAsset = Math.ceil(assetCount / ITEMS_PER_PAGE_ASSET_ADMIN);
-    return totalPagesAsset;
+        filters?.assetType && filters.assetType !== "all"
+          ? { assetType: { name: { equals: filters.assetType } } }
+          : {},
+
+        filters?.userName && filters.userName !== "all"
+          ? { employee: { name: { equals: filters.userName } } }
+          : {},
+
+        filters?.department && filters.department !== "all"
+          ? { department: { dept_name: { equals: filters.department } } }
+          : {},
+
+        filters?.status && filters.status !== "all"
+          ? { status: { equals: filters.status as AssetStatus } }
+          : {},
+
+        filters?.location && filters.location !== "all"
+          ? { location: { equals: filters.location } }
+          : {},
+
+        filters?.software && filters.software !== "all"
+          ? filters.software === "with-software"
+            ? { softwareInstallations: { some: {} } }
+            : { softwareInstallations: { none: {} } }
+          : {},
+      ].filter(Boolean) as Prisma.AssetWhereInput[],
+    };
+
+    const totalCount = await db.asset.count({ where: whereClause });
+    const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE_ASSET_ADMIN);
+
+    return totalPages;
   } catch (error) {
-    console.error("Error fetching asset pages", error);
-    throw new Error("Error fetching asset pages");
+    console.error("Can not count Asset List", error);
+    return 0;
   }
 };
 

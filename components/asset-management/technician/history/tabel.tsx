@@ -83,7 +83,7 @@ export default function HistoryTableClient({
     return (
         <div className="mt-0 flow-root">
             <div className="mx-auto max-w-8xl">
-                <Card className="p-2 rounded-lg bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+                <Card className="p-2 rounded-lg bg-gradient-to-b from-blue-50 to-blue-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                     <CardHeader className="px-4 py-2">
                         <CardTitle className="text-lg font-bold text-center">
                             Technician History Tickets
@@ -144,7 +144,7 @@ export default function HistoryTableClient({
                             {filteredData.map((ticket) => (
                                 <Card
                                     key={ticket.id}
-                                    className="mb-2 w-full rounded-md p-2 bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950"
+                                    className="mb-2 w-full rounded-md p-2 bg-gradient-to-b from-blue-100 to-blue-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950"
                                 >
                                     <div className="grid grid-cols-1 items-center justify-between pb-1">
                                         <div>
@@ -215,7 +215,7 @@ export default function HistoryTableClient({
                         {/* Tampilan untuk desktop */}
                         <Table className="hidden w-full max-w-full mt-2 md:table">
                             <TableHeader>
-                                <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+                                <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 dark:from-sky-500 dark:to-indigo-700 dark:hover:from-sky-600 dark:hover:to-indigo-800">
                                     <TableHead className="text-black dark:text-white">No</TableHead>
                                     <TableHead className="text-black dark:text-white text-center">
                                         Ticket

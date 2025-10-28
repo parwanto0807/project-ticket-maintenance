@@ -16,7 +16,7 @@ import {
     AlertOctagon,
     AlertTriangle,
     ArrowDownCircle,
-    ArrowLeft,
+    // ArrowLeft,
     CheckCircle,
     Clock,
     Loader2,
@@ -33,7 +33,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+// import Link from "next/link";
 import { Ticket } from "@/types/ticket";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
@@ -122,57 +122,61 @@ export default function HistoryTableTechnician({ offset, searchParams }: { offse
     return (
         <div className="mt-0 flow-root">
             <div className="mx-auto max-w-8xl">
-                <Card className="p-2 rounded-lg bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
+                <Card className="p-2 rounded-lg bg-gradient-to-b from-blue-50 to-blue-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
                     <CardHeader className="px-4 py-2 flex justify-between">
-                        <CardTitle className="text-lg font-bold text-center">
-                            Technician History Tickets
-                        </CardTitle>
+                        <div className="py-4 md:flex md:flex-row justify-between gap-4">
+                            <CardTitle className="text-lg font-bold text-center mb-6 md:mb-0">
+                                Technician History Tickets
+                            </CardTitle>
 
-                        {/* 🔹 Dropdown untuk memilih Role */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline">
-                                    {selectedEmployees.length > 0
-                                        ? selectedEmployees.join(", ")
-                                        : "All Employees"}
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuLabel>Select Employees</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                {employees.map((name) => (
-                                    <DropdownMenuCheckboxItem
-                                        key={name}
-                                        checked={selectedEmployees.includes(name)}
-                                        onCheckedChange={(checked) => toggleEmployee(name, checked)}
-                                    >
-                                        {name}
-                                    </DropdownMenuCheckboxItem>
-                                ))}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline">
-                                    {selectedTechnicians.length > 0
-                                        ? selectedTechnicians.join(", ")
-                                        : "All Technicians"}
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuLabel>Select Technicians</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                {technicians.map((name) => (
-                                    <DropdownMenuCheckboxItem
-                                        key={name}
-                                        checked={selectedTechnicians.includes(name)}
-                                        onCheckedChange={(checked) => toggleTechnician(name, checked)}
-                                    >
-                                        {name}
-                                    </DropdownMenuCheckboxItem>
-                                ))}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                            {/* 🔹 Dropdown untuk memilih Role */}
+                            <div className="flex gap-2">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline">
+                                            {selectedEmployees.length > 0
+                                                ? selectedEmployees.join(", ")
+                                                : "All Employees"}
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuLabel>Select Employees</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        {employees.map((name) => (
+                                            <DropdownMenuCheckboxItem
+                                                key={name}
+                                                checked={selectedEmployees.includes(name)}
+                                                onCheckedChange={(checked) => toggleEmployee(name, checked)}
+                                            >
+                                                {name}
+                                            </DropdownMenuCheckboxItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline">
+                                            {selectedTechnicians.length > 0
+                                                ? selectedTechnicians.join(", ")
+                                                : "All Technicians"}
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuLabel>Select Technicians</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        {technicians.map((name) => (
+                                            <DropdownMenuCheckboxItem
+                                                key={name}
+                                                checked={selectedTechnicians.includes(name)}
+                                                onCheckedChange={(checked) => toggleTechnician(name, checked)}
+                                            >
+                                                {name}
+                                            </DropdownMenuCheckboxItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                        </div>
                     </CardHeader>
                     <CardContent className="p-0">
                         {/* 🔹 Loader saat data masih di-fetch */}
@@ -185,7 +189,7 @@ export default function HistoryTableTechnician({ offset, searchParams }: { offse
                                 {/* 🔹 Tampilan untuk Mobile */}
                                 <div className="md:hidden">
                                     {filteredData.map((ticket) => (
-                                        <Card key={ticket.id} className="mb-2 w-full p-2 bg-orange-100 dark:bg-slate-800">
+                                        <Card key={ticket.id} className="mb-2 w-full p-2 bg-blue-100 dark:bg-slate-800">
                                             <div className="grid grid-cols-1">
                                                 <div>
                                                     <Badge className="font-mono tracking-widest uppercase">
@@ -218,25 +222,25 @@ export default function HistoryTableTechnician({ offset, searchParams }: { offse
                                 {/* 🔹 Tampilan untuk Desktop */}
                                 <Table className="hidden md:table">
                                     <TableHeader>
-                                        <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-b from-orange-100 to-orange-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
-                                            <TableHead className="text-black dark:text-white">No</TableHead>
-                                            <TableHead className="text-black dark:text-white text-center">
+                                        <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 dark:from-sky-500 dark:to-indigo-700 dark:hover:from-sky-600 dark:hover:to-indigo-800">
+                                            <TableHead className="text-white py-6">No</TableHead>
+                                            <TableHead className="text-white text-center py-6">
                                                 Ticket
                                             </TableHead>
-                                            <TableHead className="text-black dark:text-white">Title</TableHead>
-                                            <TableHead className="text-black dark:text-white">
+                                            <TableHead className="text-white">Title</TableHead>
+                                            <TableHead className="text-white">
                                                 Technician
                                             </TableHead>
-                                            <TableHead className="text-black dark:text-white text-center">
+                                            <TableHead className="text-white text-center py-6">
                                                 Status
                                             </TableHead>
-                                            <TableHead className="text-black dark:text-white text-center">
+                                            <TableHead className="text-white text-center py-6">
                                                 Priority
                                             </TableHead>
-                                            <TableHead className="text-black dark:text-white text-center">
+                                            <TableHead className="text-white text-center py-6">
                                                 Schedule Action
                                             </TableHead>
-                                            <TableHead className="text-black dark:text-white text-center">
+                                            <TableHead className="text-white text-center py-6">
                                                 Detail
                                             </TableHead>
                                         </TableRow>
@@ -287,7 +291,6 @@ export default function HistoryTableTechnician({ offset, searchParams }: { offse
                                                         <span>{ticket.priorityStatus}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>{ticket.priorityStatus}</TableCell>
                                                 <TableCell>{ticket.scheduledDate ? new Date(ticket.scheduledDate).toDateString() : "-"}
                                                 </TableCell>
                                                 <TableCell>
@@ -301,14 +304,14 @@ export default function HistoryTableTechnician({ offset, searchParams }: { offse
                         )}
                     </CardContent>
                 </Card>
-                <div className="flex justify-end items-end w-full pt-2">
+                {/* <div className="flex justify-end items-end w-full pt-2">
                     <Link href="/dashboard">
                         <Button variant="destructive" className="flex items-center gap-2">
                             <ArrowLeft className="w-4 h-4" />
                             Back to Dashboard
                         </Button>
                     </Link>
-                </div>
+                </div> */}
             </div>
         </div>
     );
