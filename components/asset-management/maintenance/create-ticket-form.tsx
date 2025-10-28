@@ -335,13 +335,13 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                 className="max-w-4xl mx-auto"
             >
                 {/* Header */}
-                <div className="text-center mb-8">
+                <div className="text-center mb-12">
                     <div className="inline-flex items-center gap-3 mb-4 p-4 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg">
                         <div className="p-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl text-white">
                             <FaTicketAlt className="w-6 h-6" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+                            <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
                                 Create Maintenance Ticket
                             </h1>
                             <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
