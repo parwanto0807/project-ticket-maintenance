@@ -213,7 +213,17 @@ const LoginForm = () => {
                                 "Sign In to Dashboard"
                             )}
                         </Button>
-
+                        {!showTwoFactor && (
+                            <div className="mt-3 sm:mt-4 text-center text-xs">
+                                Don&apos;t have an account?{" "}
+                                <a
+                                    href="/auth/login-admin"
+                                    className="text-primary hover:underline transition-colors"
+                                >
+                                    Sign up
+                                </a>
+                            </div>
+                        )}
                         {!showTwoFactor && (
                             <div className="text-center pt-2 sm:pt-3">
                                 <p className="text-blue-100 font-medium text-xs sm:text-sm">
