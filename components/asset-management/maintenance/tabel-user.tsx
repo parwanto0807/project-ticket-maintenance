@@ -97,10 +97,28 @@ export default function TicketTableUser({ query, currentPage }: TicketTableProps
                     throw new Error("Gagal mengambil data tiket");
                 }
                 const json = await res.json();
-                setData(json.tickets || []);
-                setTotalPages(json.totalPages || 1);
+
+                // Cek struktur response yang sebenarnya
+                console.log("API Response:", json);
+
+                // Coba beberapa kemungkinan struktur response
+                if (json.tickets) {
+                    // Jika response memiliki property tickets
+                    setData(json.tickets);
+                    setTotalPages(json.totalPages || 1);
+                } else if (Array.isArray(json)) {
+                    // Jika response langsung array
+                    setData(json);
+                    setTotalPages(1);
+                } else {
+                    // Fallback ke array kosong
+                    setData([]);
+                    setTotalPages(1);
+                }
             } catch (error) {
                 console.error("Error fetching ticket list:", error);
+                setData([]);
+                setTotalPages(1);
             } finally {
                 setLoading(false);
             }
