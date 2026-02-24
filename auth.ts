@@ -66,7 +66,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
 
   callbacks: {
-    async signIn({ user, account }: { user: any; account: any }) {
+    async signIn({ user, account }) {
       const email = user.email;
 
       if (!email || typeof email !== "string") {
