@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { FiAlertTriangle } from "react-icons/fi";
+import { Loader2 } from "lucide-react";
 
 interface Technician {
   id: string;
@@ -28,6 +28,23 @@ interface TicketMaintenanceUpdateSheetProps {
   children?: React.ReactNode;
 }
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { CalendarIcon, UserCheck, Wrench } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> = ({
   ticketId,
   technicians,
@@ -38,31 +55,20 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
 }) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [transformClass, setTransformClass] = useState("translate-x-10 opacity-0");
   const [technicianId, setTechnicianId] = useState(initialTechnicianId);
-  const [scheduledDate, setScheduledDate] = useState(initialScheduledDate);
+  const [scheduledDate, setScheduledDate] = useState<Date | undefined>(
+    initialScheduledDate ? new Date(initialScheduledDate) : undefined
+  );
   const [loading, setLoading] = useState(false);
 
-  // Reset state setiap kali sheet terbuka
   useEffect(() => {
     if (open) {
       setTechnicianId(initialTechnicianId);
-      setScheduledDate(initialScheduledDate);
+      setScheduledDate(initialScheduledDate ? new Date(initialScheduledDate) : undefined);
     }
   }, [open, initialTechnicianId, initialScheduledDate]);
 
-  // Animasi transisi sheet
-  useEffect(() => {
-    if (open) {
-      setTimeout(() => {
-        setTransformClass("translate-x-0 opacity-100");
-      }, 200);
-    } else {
-      setTransformClass("translate-x-10 opacity-0");
-    }
-  }, [open]);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!technicianId) {
@@ -75,7 +81,8 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
       return;
     }
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     if (scheduledDate < today) {
       alert("Tanggal schedule tidak boleh kurang dari hari ini.");
       return;
@@ -90,8 +97,8 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
         },
         body: JSON.stringify({
           technicianId,
-          scheduledDate,
-          status: "Assigned", // Set status ke "Assigned"
+          scheduledDate: scheduledDate.toISOString().split("T")[0],
+          status: "Assigned",
         }),
       });
 
@@ -116,55 +123,92 @@ const TicketMaintenanceUpdateSheet: React.FC<TicketMaintenanceUpdateSheetProps> 
         ) : (
           <Button
             variant="outline"
-            className="flex items-center gap-2 text-yellow-700 bg-white border border-yellow-600 rounded-md px-4 py-2 transition-all duration-200 hover:bg-yellow-600 hover:text-white hover:shadow-md"
+            className="flex items-center gap-2 text-blue-600 bg-white border border-blue-200 rounded-lg px-4 py-2 transition-all duration-200 hover:bg-blue-600 hover:text-white hover:shadow-md font-bold text-xs"
           >
-            <FiAlertTriangle className="w-5 h-5" />
-            <span className="font-semibold animate-blink">Assign Technician</span>
+            <Wrench className="w-4 h-4" />
+            Assign Technician
           </Button>
         )}
       </SheetTrigger>
-      <SheetContent className={`transition-transform duration-300 ease-out ${transformClass}`}>
-        <SheetHeader>
-          <SheetTitle>Update Ticket Maintenance</SheetTitle>
-          <SheetDescription>
-            Pilih technician dan tentukan jadwal action untuk tiket ini.
+      <SheetContent className="sm:max-w-md border-l-0 shadow-2xl">
+        <SheetHeader className="pb-6 border-b">
+          <SheetTitle className="text-xl font-bold flex items-center gap-2">
+            <UserCheck className="w-5 h-5 text-blue-600" />
+            Update Assignment
+          </SheetTitle>
+          <SheetDescription className="text-gray-500">
+            Pilih teknisi yang tersedia dan tetapkan jadwal pengerjaan untuk tiket ini.
           </SheetDescription>
         </SheetHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="technician" className="block text-sm font-medium text-gray-700">
+        <div className="py-8 space-y-6">
+          <div className="space-y-2">
+            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
               Technician
             </label>
-            <select
-              id="technician"
-              value={technicianId}
-              onChange={(e) => setTechnicianId(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            >
-              <option value="">Pilih Technician</option>
-              {technicians.map((tech) => (
-                <option key={tech.id} value={tech.id}>
-                  {tech.name} &nbsp; {tech.specialization}
-                </option>
-              ))}
-            </select>
+            <Select value={technicianId} onValueChange={setTechnicianId}>
+              <SelectTrigger className="w-full h-11 bg-gray-50/50 border-gray-100 focus:ring-blue-500 rounded-xl">
+                <SelectValue placeholder="Pilih Teknisi" />
+              </SelectTrigger>
+              <SelectContent>
+                {technicians.map((tech) => (
+                  <SelectItem key={tech.id} value={tech.id} className="py-3">
+                    <div className="flex flex-col">
+                      <span className="font-bold">{tech.name}</span>
+                      <span className="text-[10px] text-gray-400 uppercase tracking-tighter">{tech.specialization}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <div>
-            <label htmlFor="scheduledDate" className="block text-sm font-medium text-gray-700">
+
+          <div className="space-y-2">
+            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
               Schedule Date
             </label>
-            <input
-              type="date"
-              id="scheduledDate"
-              value={scheduledDate}
-              onChange={(e) => setScheduledDate(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full h-11 justify-start text-left font-normal bg-gray-50/50 border-gray-100 rounded-xl",
+                    !scheduledDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4 text-blue-500" />
+                  {scheduledDate ? format(scheduledDate, "PPP") : <span>Pilih Tanggal</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 rounded-xl shadow-2xl border-none" align="start">
+                <Calendar
+                  mode="single"
+                  selected={scheduledDate}
+                  onSelect={setScheduledDate}
+                  disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                  initialFocus
+                  className="rounded-xl"
+                />
+              </PopoverContent>
+            </Popover>
           </div>
-          <Button type="submit" disabled={loading}>
-            {loading ? "Updating..." : "Update"}
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0 p-6 bg-gray-50 border-t">
+          <Button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-200 transition-all uppercase tracking-widest text-xs"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Updating...
+              </>
+            ) : (
+              "Confirm Assignment"
+            )}
           </Button>
-        </form>
+        </div>
       </SheetContent>
     </Sheet>
   );

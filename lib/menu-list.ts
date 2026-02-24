@@ -47,21 +47,21 @@ export function getMenuList(pathname: string, role: string): Group[] {
   const additionalMenuItems: Menu[] = [
     {
       href: "/dashboard/maintenance/ticket",
-      label: "Ticket History",
+      label: "Riwayat Tiket",
       active: pathname === "/dashboard/maintenance/ticket",
       icon: FaHistory,
       submenus: [],
     },
     {
       href: "/dashboard/maintenance/ticket/create",
-      label: "Create Ticket",
+      label: "Buat Tiket",
       active: pathname === "/dashboard/maintenance/ticket/create",
       icon: FaTicketAlt,
       submenus: [],
     },
     {
       href: "/dashboard/asset/asset-list-user",
-      label: "User Asset",
+      label: "Aset Pengguna",
       active: pathname === "/dashboard/asset/asset-list-user",
       icon: FaArchive,
       submenus: [],
@@ -71,7 +71,7 @@ export function getMenuList(pathname: string, role: string): Group[] {
   if (role === "USER") {
     return [
       {
-        groupLabel: "ADDITIONAL SERVICES",
+        groupLabel: "LAYANAN TAMBAHAN",
         menus: additionalMenuItems,
       },
     ];
@@ -80,14 +80,14 @@ export function getMenuList(pathname: string, role: string): Group[] {
   const additionalMenuItemsTecnician: Menu[] = [
     {
       href: "/dashboard/technician/schedule",
-      label: "Technician Schedule",
+      label: "Jadwal Teknisi",
       active: pathname === "/dashboard/technician/schedule",
       icon: FaHistory,
       submenus: [],
     },
     {
       href: "/dashboard/technician/history",
-      label: "History Maintenance",
+      label: "Riwayat Pemeliharaan",
       active: pathname === "/dashboard/technician/history",
       icon: FaTicketAlt,
       submenus: [],
@@ -97,7 +97,7 @@ export function getMenuList(pathname: string, role: string): Group[] {
   if (role === "TECHNICIAN") {
     return [
       {
-        groupLabel: "ADDITIONAL SERVICES TECHNICIAN",
+        groupLabel: "LAYANAN TAMBAHAN TEKNISI",
         menus: additionalMenuItemsTecnician,
       },
     ];
@@ -116,32 +116,27 @@ export function getMenuList(pathname: string, role: string): Group[] {
       ],
     },
     {
-      groupLabel: "MASTER DATA",
+      groupLabel: "DATA MASTER",
       menus: [
         {
           href: "/dashboard/master",
-          label: "MASTER DATA",
+          label: "DATA MASTER",
           active: pathname.includes("/dashboard/master"),
           icon: Boxes,
           submenus: [
             {
               href: "/dashboard/master/products",
-              label: "Products",
+              label: "Produk",
               active: pathname === "/dashboard/master/products",
             },
             {
               href: "/dashboard/master/software",
-              label: "Software",
+              label: "Perangkat Lunak",
               active: pathname === "/dashboard/master/software",
             },
             {
-              href: "/dashboard/master/price-product",
-              label: "Products Price",
-              active: pathname === "/dashboard/master/price-product",
-            },
-            {
               href: "/dashboard/master/employees",
-              label: "Employees",
+              label: "Karyawan",
               active: pathname === "/dashboard/master/employees",
             },
           ].map((submenu) => ({
@@ -155,17 +150,22 @@ export function getMenuList(pathname: string, role: string): Group[] {
       })),
     },
     {
-      groupLabel: "ASSET MANAGEMENT",
+      groupLabel: "MANAJEMEN ASET",
       menus: [
         {
           href: "/dashboard/asset",
-          label: "ASSETS",
+          label: "ASET",
           active: pathname.includes("/dashboard/asset"),
           icon: HardDrive,
           submenus: [
             {
+              href: "/dashboard/asset/overview",
+              label: "Ikhtisar Aset",
+              active: pathname === "/dashboard/asset/overview",
+            },
+            {
               href: "/dashboard/asset/asset-list",
-              label: "Asset List",
+              label: "Daftar Aset",
               active: pathname === "/dashboard/asset/asset-list",
             },
           ],
@@ -173,32 +173,37 @@ export function getMenuList(pathname: string, role: string): Group[] {
       ],
     },
     {
-      groupLabel: "MAINTENANCE MANAGEMENT",
+      groupLabel: "MANAJEMEN PEMELIHARAAN",
       menus: [
         {
           href: "#",
-          label: "TECHNICIAN",
+          label: "TEKNISI",
           active: pathname.includes("#"),
           icon: Users,
           submenus: [
             {
               href: "/dashboard/technician/assign",
-              label: "Assign Technician",
+              label: "Penugasan Teknisi",
               active: pathname === "/dashboard/technician/assign",
             },
             {
+              href: "/dashboard/technician/planner",
+              label: "Penjadwalan Berkala",
+              active: pathname === "/dashboard/technician/planner",
+            },
+            {
               href: "/dashboard/technician/schedule",
-              label: "Technician Schedule",
+              label: "Jadwal Teknisi",
               active: pathname === "/dashboard/technician/schedule",
             },
             {
               href: "/dashboard/technician/history",
-              label: "Technician History",
+              label: "Riwayat Teknisi",
               active: pathname === "/dashboard/technician/history",
             },
             {
               href: "/dashboard/technician/list",
-              label: "Technician List",
+              label: "Daftar Teknisi",
               active: pathname === "/dashboard/technician/list",
             },
           ],

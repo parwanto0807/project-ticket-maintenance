@@ -17,60 +17,68 @@ import { Badge } from "@/components/ui/badge";
 import HistoryTableTechnician from "@/components/asset-management/technician/history/tabel-history-technician";
 
 const TicketPage = async ({ searchParams }: { searchParams: { query?: string; page?: string } }) => {
-  // const { query = "", page } = await searchParams || { query: "", page: "1" };
-  // const currentPage = Number(page) || 1;
-
-
   const query = searchParams.query || "";
   const currentPage = parseInt(searchParams.page || "1", 10);
   const totalPages = await fetchTicketListPages(query || "");
-  // const tickets = await fetchTicketListHistory(query, currentPage);
   const offset = (currentPage - 1);
 
   return (
     <ContentLayout title="Technician History">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Badge className="items-center justify-center text-center" variant="outline">
-                <Link href="/dashboard">Dashboard</Link>
-              </Badge>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Badge className="items-center justify-center text-center" variant="outline">
-                <Link href="/dashboard">Technician</Link>
-              </Badge>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <Badge className="items-center justify-center text-center" variant="outline">
-              <BreadcrumbPage>Technician History</BreadcrumbPage>
-            </Badge>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-      <div className="h-full w-full">
-        <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
-          <div className="flex items-center justify-between gap-2">
-            <Search placeholder="Search Ticket Assign..." />
-            {/* <CreateTicketButtonAssign /> */}
+      <div className="mb-6 space-y-4">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/dashboard" className="flex items-center gap-2 hover:text-blue-600 transition-colors">
+                  <Badge variant="outline" className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest border-blue-100 text-blue-600 bg-blue-50/50">
+                    Dashboard
+                  </Badge>
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/dashboard/technician/schedule" className="flex items-center gap-2 hover:text-blue-600 transition-colors">
+                  <Badge variant="outline" className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest border-blue-100 text-blue-600 bg-blue-50/50">
+                    Technician
+                  </Badge>
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>
+                <Badge variant="outline" className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest border-slate-200 text-slate-500 bg-slate-50">
+                  History
+                </Badge>
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+
+      <div className="space-y-6">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div className="w-full md:max-w-sm">
+              <Search placeholder="Search tickets..." />
+            </div>
+            <div className="flex justify-center">
+              <Pagination totalPages={totalPages} />
+            </div>
           </div>
 
           <div className="w-full">
-            <HistoryTableTechnician  offset={offset} searchParams={searchParams} />
+            <HistoryTableTechnician offset={offset} searchParams={searchParams} />
           </div>
 
-          <div className="flex justify-center mt-4">
+          <div className="mt-8 flex justify-center border-t border-slate-50 dark:border-slate-800 pt-6">
             <Pagination totalPages={totalPages} />
           </div>
         </div>
       </div>
-    </ContentLayout >
+    </ContentLayout>
   );
 };
 

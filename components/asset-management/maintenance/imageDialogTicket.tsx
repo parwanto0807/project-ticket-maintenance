@@ -17,14 +17,14 @@ export default function ImageDialogTicket({ src, alt }: ImageDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Image
-          src={imageSrc}
-          alt={alt}
-          width={40}
-          height={30}
-          className="rounded-lg cursor-pointer w-auto h-auto max-w-full max-h-full hover:scale-110 transition-transform duration-300"
-        
-        />
+        <div className="relative w-full h-full cursor-pointer overflow-hidden rounded-lg">
+          <Image
+            src={imageSrc}
+            alt={alt}
+            fill
+            className="object-cover hover:scale-110 transition-transform duration-300"
+          />
+        </div>
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center">
         <DialogHeader>

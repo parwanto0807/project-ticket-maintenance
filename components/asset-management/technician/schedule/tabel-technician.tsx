@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-// import Link from "next/link";
 import {
     Table,
     TableBody,
@@ -15,65 +14,29 @@ import TicketMaintenanceUpdateSheet from "./sheet-assign";
 import { Button } from "@/components/ui/button";
 import {
     AlertCircle,
-    AlertOctagon,
-    AlertTriangle,
-    ArrowDownCircle,
-    CheckCircle,
+    Activity,
+    CheckCircle2,
     Clock,
     FileEdit,
     Loader2,
-    UserCheck,
-    XCircle,
-    // ArrowLeft,
+    Calendar,
+    MapPin,
+    User,
+    Package,
+    ArrowRight
 } from "lucide-react";
-import ReadMoreText from "./read-more";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { PriorityStatus, StatusTicket } from "@prisma/client";
-import { FaCalendarAlt, FaExclamationCircle, FaHandsHelping, FaTicketAlt, FaUser } from "react-icons/fa";
+import { TicketDialog } from "./dialog-ticket-detail";
 import ImageDialogTicket from "../../maintenance/imageDialogTicket";
 import WhatsAppLinkButtonAdmin from "@/components/whatsappButtonTableAdmin";
-// import { TicketDialog } from "./dialog-ticket-detail";
+import { TicketMaintenance, Employee, Asset, Product, Technician } from "@prisma/client";
 
-interface Ticket {
-    id: string;
-    countNumber: number;
-    ticketNumber: string;
-    troubleUser: string;
-    analisaDescription?: string;
-    actionDescription?: string;
-    priorityStatus: PriorityStatus;
-    status: StatusTicket;
-    createdAt: Date;
-    updatedAt: Date;
-    scheduledDate?: Date;
-    actualCheckDate?: Date;
-    completedDate?: Date;
-    employeeId: string;
-    assetId: string;
-    technicianId?: string;
-    ticketImage1?: string;
-    ticketImage2?: string;
-    ticketImage3?: string;
-    employee: {
-        name: string;
-        email: string;
+interface Ticket extends TicketMaintenance {
+    employee: Employee;
+    asset: Asset & {
+        product: Product;
     };
-    asset: {
-        assetImage1?: string;
-        assetNumber: string;
-        product: {
-            part_name: string;
-        };
-        location: string;
-    };
-    technician?: {
-        id: string;
-        name: string;
-        phone: string;
-        email: string;
-        specialization: string;
-    };
+    technician?: Technician | null;
 }
 
 interface TechnicianScheduleTableProps {
@@ -81,9 +44,6 @@ interface TechnicianScheduleTableProps {
     currentPage: number;
 }
 
-const DATA_PER_PAGE_PRODUCT = 15;
-
-// Daftar nomor WhatsApp
 const whatsappNumbers = [
     { id: 1, label: "Admin Bpk. Ismanto", phone: "6281228046664" },
     { id: 2, label: "Admin Bpk. Nurmisbah", phone: "6287879032758" },
@@ -103,24 +63,20 @@ export default function TechnicianScheduleTable({
     const [error, setError] = useState<string | null>(null);
 
     const fetchTickets = useCallback(async () => {
-        if (!role) return; // Pastikan role sudah tersedia sebelum fetch
+        if (!role) return;
         setLoading(true);
         try {
             let apiUrl = "";
-
             if (role === "TECHNICIAN") {
                 apiUrl = `/api/schedule/technician?query=${encodeURIComponent(query)}&currentPage=${currentPage}&email=${encodeURIComponent(email)}`;
             } else if (role === "ADMIN") {
                 apiUrl = `/api/schedule/admin?query=${encodeURIComponent(query)}&currentPage=${currentPage}`;
             }
 
-            // console.log("Fetching data from:", apiUrl); 
-
             const res = await fetch(apiUrl);
+            if (!res.ok) throw new Error("Failed to fetch");
             const result = await res.json();
             setTickets(result);
-            console.log("Fetched tickets:", result);
-
         } catch (err) {
             console.error("Error fetching schedule:", err);
             setError("Terjadi kesalahan saat mengambil data.");
@@ -135,323 +91,205 @@ export default function TechnicianScheduleTable({
         }
     }, [fetchTickets, role]);
 
-    const offset = (currentPage - 1) * DATA_PER_PAGE_PRODUCT;
+    if (loading) return (
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+            <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">Loading Schedule...</p>
+        </div>
+    );
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>{error}</p>;
+    if (error) return (
+        <div className="flex flex-col items-center justify-center h-64 text-red-500 gap-2">
+            <AlertCircle className="w-8 h-8" />
+            <p>{error}</p>
+        </div>
+    );
 
     return (
-        <div className="mt-0 flow-root">
-            <div className="mx-auto max-w-8xl">
-                <Card className="p-2 rounded-lg bg-gradient-to-b from-blue-50 to-blue-100 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950">
-                    <CardHeader className="px-4 py-2">
-                        <CardTitle className="text-lg font-bold text-center">
-                            Technician Schedule Tickets
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        {/* Tampilan Mobile */}
-                        <div className="md:hidden">
-                            {Array.isArray(tickets) && tickets.map((data) => {
-                                const dynamicMessage =
-                                    `Saya telah mengerjakan Ticket Number: ${data.ticketNumber} 
-        Asset Name: ${data.asset.product.part_name} mohon di cek dan di Closing , 
-        Cek detail ticket di sini: https://solusiit.net/dashboard/technician/assign?ticket=${data.ticketNumber}`;
-                                return (
-                                    <Card
-                                        key={data.id}
-                                        className="mb-2 w-full rounded-md p-2 bg-gradient-to-b from-blue-100 to-blue-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950"
+        <div className="mt-0">
+            {/* Mobile View */}
+            <div className="md:hidden space-y-4">
+                {Array.isArray(tickets) && tickets.length > 0 ? (
+                    tickets.map((item) => {
+                        const dynamicMessage = `Saya telah mengerjakan Ticket Number: ${item.ticketNumber} Asset Name: ${item.asset.product.part_name} mohon di cek dan di Closing. Detail: https://solusiit.net/dashboard/technician/assign?ticket=${item.ticketNumber}`;
+                        return (
+                            <div key={item.id} className="bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-800 space-y-4">
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-1">
+                                        <div className="font-mono text-xs font-black text-blue-600 dark:text-blue-400">
+                                            {item.ticketNumber}
+                                        </div>
+                                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold uppercase">
+                                            <Calendar className="w-3 h-3" />
+                                            {new Date(item.createdAt).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                    <Badge
+                                        className={`text-[10px] font-black uppercase rounded-full px-3 ${item.status === "Pending" ? "bg-red-50 text-red-600 border-red-100" :
+                                            item.status === "Assigned" ? "bg-blue-50 text-blue-600 border-blue-100" :
+                                                item.status === "In_Progress" ? "bg-amber-50 text-amber-600 border-amber-100 animate-pulse" :
+                                                    "bg-emerald-50 text-emerald-600 border-emerald-100"
+                                            }`}
+                                        variant="outline"
                                     >
-                                        <Card className="mb-4 w-full rounded-lg p-4 bg-gradient-to-b from-blue-100 to-blue-200 dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950 shadow-md hover:shadow-lg transition-shadow">
-                                            <div className="flex flex-col gap-3">
-                                                {/* Header Card */}
-                                                <div className="flex justify-between datas-center">
-                                                    <Badge
-                                                        variant="secondary"
-                                                        className="font-mono tracking-widest uppercase h-8 border-orange-500 flex datas-center gap-2"
-                                                    >
-                                                        <FaTicketAlt className="w-4 h-4" />
-                                                        {data.ticketNumber}
-                                                    </Badge>
-                                                    <Badge
-                                                        className={`font-mono tracking-widest uppercase h-8 ${data.status === "Pending"
-                                                            ? "bg-red-100 text-red-500"
-                                                            : data.status === "Assigned"
-                                                                ? "bg-blue-100 text-blue-500"
-                                                                : data.status === "In_Progress"
-                                                                    ? "bg-orange-100 text-orange-500"
-                                                                    : data.status === "Completed"
-                                                                        ? "bg-green-100 text-green-500"
-                                                                        : data.status === "Canceled"
-                                                                            ? "bg-red-100 text-red-500"
-                                                                            : "bg-gray-100 text-gray-500"
-                                                            }`}
-                                                    >
-                                                        {data.status.replace("_", " ")}
-                                                    </Badge>
-                                                </div>
+                                        {item.status.replace("_", " ")}
+                                    </Badge>
+                                </div>
 
-                                                {/* Konten Card */}
-                                                <div className="space-y-0 items-end justify-end">
-                                                    <div className="flex datas-center gap-2">
-                                                        <FaExclamationCircle className="w-4 h-4 text-orange-500" />
-                                                        <p className="text-sm font-semibold">
-                                                            {data.asset.product.part_name}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex datas-center gap-2">
-                                                        <FaUser className="w-4 h-4 text-orange-500" />
-                                                        <p className="font-bold text-sm items-center justify-center text-nowrap">
-                                                            User Complain :
-                                                        </p>
-                                                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                                                            {data.employee?.name}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex datas-center gap-2">
-                                                        <FaHandsHelping className="w-4 h-4 text-orange-500" />
-                                                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                                                            {data.troubleUser}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex datas-center gap-2">
-                                                        <FaCalendarAlt className="w-4 h-4 text-orange-500" />
-                                                        <p className="font-bold text-sm items-center justify-center text-nowrap">
-                                                            Schedule Action :
-                                                        </p>
-                                                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                                                            {data.scheduledDate
-                                                                ? new Date(data.scheduledDate).toDateString()
-                                                                : "No Schedule"}
-                                                        </p>
-                                                    </div>
-                                                </div>
+                                <div className="flex gap-3 bg-gray-50/50 dark:bg-slate-800/50 rounded-xl p-3 border border-gray-100/50 dark:border-slate-800">
+                                    <div className="w-14 h-14 relative rounded-lg overflow-hidden border-2 border-white dark:border-slate-700 shadow-sm shrink-0">
+                                        <ImageDialogTicket src={item.asset.assetImage1 || "/noImage.jpg"} alt={item.asset.assetNumber} />
+                                    </div>
+                                    <div className="min-w-0 flex flex-col justify-center">
+                                        <div className="font-black text-[13px] text-gray-800 dark:text-gray-100 truncate leading-tight">
+                                            {item.asset.product.part_name}
+                                        </div>
+                                        <div className="flex items-center gap-1 text-[10px] text-blue-600 font-bold uppercase mt-1">
+                                            <MapPin className="w-2.5 h-2.5" />
+                                            {item.asset.location}
+                                        </div>
+                                    </div>
+                                </div>
 
-                                                {/* Gambar Tiket */}
-                                                <div className="flex full max-h-16 overflow-hidden rounded-lg gap-2">
-                                                    <ImageDialogTicket
-                                                        src={data.ticketImage1 || "/noImage.jpg"}
-                                                        alt={`${data.ticketImage1} Asset Image`}
-                                                    />
-                                                    <ImageDialogTicket
-                                                        src={data.ticketImage2 || "/noImage.jpg"}
-                                                        alt={`${data.ticketImage2} Asset Image`}
-                                                    />
-                                                    <ImageDialogTicket
-                                                        src={data.ticketImage3 || "/noImage.jpg"}
-                                                        alt={`${data.ticketImage3} Asset Image`}
-                                                    />
-                                                </div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 italic border-l-4 border-blue-500/20 pl-3 py-1 bg-slate-50/50 dark:bg-slate-800/30 rounded-r-lg">
+                                    "{item.troubleUser}"
+                                </div>
 
-                                                {/* Action Buttons */}
-                                                <div className="flex justify-end gap-2">
-                                                    <div className="flex datas-center justify-center gap-2">
-                                                        <WhatsAppLinkButtonAdmin
-                                                            numbers={whatsappNumbers}
-                                                            message={dynamicMessage}
-                                                        />
-                                                        <TicketMaintenanceUpdateSheet
-                                                            ticketId={data.id}
-                                                            technicians={data.technician ? [data.technician] : []}
-                                                            initialTechnicianId={data.technicianId || ""}
-                                                            initialScheduledDate={
-                                                                data.scheduledDate
-                                                                    ? new Date(data.scheduledDate)
-                                                                        .toISOString()
-                                                                        .split("T")[0]
-                                                                    : ""
-                                                            }
-                                                            initialAnalisaDescription={data.analisaDescription || ""}
-                                                            initialActionDescription={data.actionDescription || ""}
-                                                            initialTicketImage1={data.ticketImage1 || ""}
-                                                            initialTicketImage2={data.ticketImage2 || ""}
-                                                            initialTicketImage3={data.ticketImage3 || ""}
-                                                            initialTroubleUser={data.troubleUser || ""}
-                                                        >
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                disabled={!data.scheduledDate}
-                                                                className="flex datas-center gap-2 text-blue-500 bg-white border border-blue-500 rounded-md px-3 py-1 transition-all duration-200 transform hover:scale-105 hover:bg-blue-500 hover:text-white hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                                                            >
-                                                                <FileEdit className="w-4 h-4" />
-                                                                Action
-                                                            </Button>
-                                                        </TicketMaintenanceUpdateSheet>
+                                <div className="flex items-center justify-between pt-2">
+                                    <div className="flex gap-2">
+                                        <TicketDialog ticket={item} />
+                                        <WhatsAppLinkButtonAdmin numbers={whatsappNumbers} message={dynamicMessage} />
+                                    </div>
+                                    <TicketMaintenanceUpdateSheet ticket={item} technicians={[]}>
+                                        <Button size="sm" className="h-9 bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-widest px-6 rounded-lg shadow-lg shadow-blue-500/20">
+                                            Update Progress
+                                        </Button>
+                                    </TicketMaintenanceUpdateSheet>
+                                </div>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <div className="text-center py-20 bg-gray-50/50 dark:bg-slate-800/30 rounded-3xl border-2 border-dashed border-gray-100 dark:border-slate-800">
+                        <Package className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+                        <p className="text-sm font-black text-gray-400 uppercase tracking-widest">No scheduled tickets</p>
+                    </div>
+                )}
+            </div>
+
+            {/* Desktop View */}
+            <div className="hidden md:block overflow-hidden rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-none">
+                <Table>
+                    <TableHeader>
+                        <TableRow className="bg-slate-50/80 dark:bg-slate-800/50 hover:bg-slate-50/80 transition-none border-b-2 border-slate-100 dark:border-slate-800">
+                            <TableHead className="w-[140px] text-[10px] font-black uppercase tracking-widest py-5 px-6">Ticket ID</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest py-5">Asset & Problem</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest py-5">Assignment</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest py-5">Timeline</TableHead>
+                            <TableHead className="w-[150px] text-[10px] font-black uppercase tracking-widest py-5 text-center px-6">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {Array.isArray(tickets) && tickets.length > 0 ? (
+                            tickets.map((item) => {
+                                const dynamicMessage = `Saya telah mengerjakan Ticket Number: ${item.ticketNumber} Asset Name: ${item.asset.product.part_name} mohon di cek dan di Closing. Detail: https://solusiit.net/dashboard/technician/assign?ticket=${item.ticketNumber}`;
+                                return (
+                                    <TableRow key={item.id} className="group hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors border-b border-slate-100 dark:border-slate-800 last:border-0">
+                                        <TableCell className="px-6 py-4">
+                                            <div className="space-y-1.5">
+                                                <div className="font-mono text-xs font-black text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform origin-left inline-block">
+                                                    {item.ticketNumber}
+                                                </div>
+                                                <Badge
+                                                    className={`text-[9px] font-black uppercase h-5 rounded-full px-2.5 shadow-sm ${item.status === "Pending" ? "bg-red-50 text-red-600 border-red-100" :
+                                                        item.status === "Assigned" ? "bg-blue-50 text-blue-600 border-blue-100" :
+                                                            item.status === "In_Progress" ? "bg-amber-50 text-amber-600 border-amber-100 animate-pulse" :
+                                                                "bg-emerald-50 text-emerald-600 border-emerald-100"
+                                                        }`}
+                                                    variant="outline"
+                                                >
+                                                    {item.status.replace("_", " ")}
+                                                </Badge>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="py-4">
+                                            <div className="flex gap-4">
+                                                <div className="w-14 h-14 relative shrink-0 rounded-xl overflow-hidden border-2 border-white dark:border-slate-700 shadow-md">
+                                                    <ImageDialogTicket src={item.asset.assetImage1 || "/noImage.jpg"} alt={item.asset.assetNumber} />
+                                                </div>
+                                                <div className="min-w-0 flex flex-col justify-center">
+                                                    <div className="font-black text-sm text-gray-800 dark:text-gray-100 truncate group-hover:text-blue-600 transition-colors">
+                                                        {item.asset.product.part_name}
+                                                    </div>
+                                                    <div className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-1 mt-1 italic italic leading-tight">
+                                                        "{item.troubleUser}"
                                                     </div>
                                                 </div>
                                             </div>
-                                        </Card>
-                                    </Card>
+                                        </TableCell>
+                                        <TableCell className="py-4">
+                                            <div className="space-y-3">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                                                        <User className="w-3.5 h-3.5 text-slate-500" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Reporter</p>
+                                                        <p className="text-xs font-bold text-gray-700 dark:text-gray-300">{item.employee.name}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center border border-blue-100 dark:border-blue-900/30">
+                                                        <Activity className="w-3.5 h-3.5 text-blue-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[9px] font-black text-blue-400 uppercase tracking-tighter">Technician</p>
+                                                        <p className="text-xs font-black text-blue-700 dark:text-blue-400 uppercase">{item.technician?.name || "UNASSIGNED"}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="text-center bg-slate-50 dark:bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-100 dark:border-slate-700 min-w-[75px]">
+                                                    <p className="text-[8px] font-black text-gray-400 uppercase mb-0.5">Created</p>
+                                                    <p className="text-[10px] font-black text-slate-700 dark:text-slate-300">{new Date(item.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</p>
+                                                </div>
+                                                <ArrowRight className="w-3 h-3 text-slate-300" />
+                                                <div className="text-center bg-blue-50 dark:bg-blue-900/10 px-3 py-1.5 rounded-xl border border-blue-100 dark:border-blue-900/30 min-w-[75px] shadow-sm shadow-blue-500/5">
+                                                    <p className="text-[8px] font-black text-blue-400 uppercase mb-0.5">Schedule</p>
+                                                    <p className="text-[10px] font-black text-blue-700 dark:text-blue-400 uppercase">
+                                                        {item.scheduledDate ? new Date(item.scheduledDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : "TBD"}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="px-6 py-4">
+                                            <div className="flex items-center justify-center gap-2">
+                                                <TicketDialog ticket={item} />
+                                                <WhatsAppLinkButtonAdmin numbers={whatsappNumbers} message={dynamicMessage} />
+                                                <TicketMaintenanceUpdateSheet ticket={item} technicians={[]}>
+                                                    <Button variant="outline" size="icon" className="h-9 w-9 border-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-md rounded-xl">
+                                                        <FileEdit className="w-4 h-4" />
+                                                    </Button>
+                                                </TicketMaintenanceUpdateSheet>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
                                 );
-                            })}
-                        </div>
-
-
-                        {/* Tampilan Desktop */}
-                        <Table className="hidden w-full max-w-full mt-2 md:table">
-                            <TableHeader>
-                                <TableRow className="text-[12px] font-bold uppercase bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 dark:from-sky-500 dark:to-indigo-700 dark:hover:from-sky-600 dark:hover:to-indigo-800">
-                                    <TableHead className="text-white py-5">No</TableHead>
-                                    <TableHead className="text-white py-5 text-center">
-                                        Ticket
-                                    </TableHead>
-                                    <TableHead className="text-white py-5">
-                                        Title
-                                    </TableHead>
-                                    <TableHead className="text-white py-5">
-                                        Technician
-                                    </TableHead>
-                                    <TableHead className="text-white py-5 text-center">
-                                        Status
-                                    </TableHead>
-                                    <TableHead className="text-white py-5 text-center">
-                                        Priority
-                                    </TableHead>
-                                    <TableHead className="text-white py-5 text-center">
-                                        Schedule Action
-                                    </TableHead>
-                                    <TableHead className="text-white py-5 text-center">
-                                        Action
-                                    </TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody className="text-[12px] border-none">
-                                {Array.isArray(tickets) && tickets.map((data, index) => {
-                                    const dynamicMessage =
-                                        `Saya telah mengerjakan Ticket Number: ${data.ticketNumber} 
-        Asset Name: ${data.asset.product.part_name} mohon di cek dan di Closing , 
-        Cek detail ticket di sini: https://solusiit.net/dashboard/technician/assign?ticket=${data.ticketNumber}`;
-
-                                    return (
-                                        <TableRow key={data.id}>
-                                            <TableCell className="text-center">
-                                                {offset + index + 1}
-                                            </TableCell>
-                                            <TableCell className="text-center font-bold text-nowrap">
-                                                <Badge
-                                                    className={`
-                            font-mono tracking-widest uppercase
-                            ${data.status === "Pending"
-                                                            ? "bg-red-100 text-red-500"
-                                                            : data.status === "Assigned"
-                                                                ? "bg-blue-100 text-blue-500"
-                                                                : data.status === "In_Progress"
-                                                                    ? "bg-orange-100 text-orange-500"
-                                                                    : data.status === "Completed"
-                                                                        ? "bg-green-100 text-green-500"
-                                                                        : data.status === "Canceled"
-                                                                            ? "bg-red-100 text-red-500"
-                                                                            : "bg-gray-100 text-gray-500"
-                                                        }
-                        `}
-                                                >
-                                                    {data.ticketNumber.replace("_", " ")}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge
-                                                    variant="outline"
-                                                    className="font-mono bg-slate-100 dark:text-black"
-                                                >
-                                                    {data.employee.name}
-                                                </Badge>
-                                                &nbsp;
-                                                <Badge
-                                                    variant="outline"
-                                                    className="font-mono bg-slate-100 dark:text-black"
-                                                >
-                                                    {data.asset.location}
-                                                </Badge>
-                                                &nbsp;
-                                                <ReadMoreText text={data.troubleUser} />
-                                            </TableCell>
-                                            <TableCell>{data.technician?.name}</TableCell>
-                                            <TableCell className="text-center">
-                                                <div className="flex datas-center justify-center gap-1">
-                                                    {data.status === "Pending" && <Clock className="w-4 h-4 text-gray-500" />}
-                                                    {data.status === "Assigned" && <UserCheck className="w-4 h-4 text-blue-500" />}
-                                                    {data.status === "In_Progress" && <Loader2 className="w-4 h-4 text-orange-500 animate-spin" />}
-                                                    {data.status === "Completed" && <CheckCircle className="w-4 h-4 text-green-500" />}
-                                                    {data.status === "Canceled" && <XCircle className="w-4 h-4 text-red-500" />}
-                                                    <span className="ml-1">{data.status.replace("_", " ")}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-center">
-                                                <div className="flex datas-start justify-start gap-1">
-                                                    {data.priorityStatus === "Low" && <ArrowDownCircle className="w-4 h-4 text-green-500" />}
-                                                    {data.priorityStatus === "Medium" && <AlertTriangle className="w-4 h-4 text-yellow-500" />}
-                                                    {data.priorityStatus === "High" && <AlertOctagon className="w-4 h-4 text-orange-500" />}
-                                                    {data.priorityStatus === "Critical" && <AlertCircle className="w-4 h-4 text-red-500" />}
-                                                    <span>{data.priorityStatus}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                {data.scheduledDate ? new Date(data.scheduledDate).toDateString() : "-"}
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex datas-center justify-center gap-2">
-                                                    {data.completedDate ? (
-                                                        <WhatsAppLinkButtonAdmin
-                                                            numbers={whatsappNumbers}
-                                                            message={dynamicMessage}
-                                                            disabled
-                                                        />
-                                                    ) : (
-                                                        <WhatsAppLinkButtonAdmin
-                                                            numbers={whatsappNumbers}
-                                                            message={dynamicMessage}
-                                                        />
-                                                    )}
-                                                    <TicketMaintenanceUpdateSheet
-                                                        ticketId={data.id}
-                                                        technicians={data.technician ? [data.technician] : []}
-                                                        initialTechnicianId={data.technicianId || ""}
-                                                        initialScheduledDate={
-                                                            data.scheduledDate
-                                                                ? new Date(data.scheduledDate)
-                                                                    .toISOString()
-                                                                    .split("T")[0]
-                                                                : ""
-                                                        }
-                                                        initialAnalisaDescription={data.analisaDescription || ""}
-                                                        initialActionDescription={data.actionDescription || ""}
-                                                        initialTicketImage1={data.ticketImage1 || ""}
-                                                        initialTicketImage2={data.ticketImage2 || ""}
-                                                        initialTicketImage3={data.ticketImage3 || ""}
-                                                        initialTroubleUser={data.troubleUser || ""}
-                                                    >
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            disabled={!data.scheduledDate}
-                                                            className="flex datas-center gap-2 text-blue-500 bg-white border border-blue-500 rounded-md px-3 py-1 transition-all duration-200 transform hover:scale-105 hover:bg-blue-500 hover:text-white hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                                                        >
-                                                            <FileEdit className="w-4 h-4" />
-                                                            Action
-                                                        </Button>
-                                                    </TicketMaintenanceUpdateSheet>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })}
-                            </TableBody>
-
-                        </Table>
-                    </CardContent>
-                </Card>
-                {/* <div className="flex justify-end datas-end w-full pt-2">
-                    <Link href="/dashboard">
-                        <Button
-                            variant="destructive"
-                            className="flex datas-center gap-2"
-                        >
-                            <ArrowLeft className="w-4 h-4" />
-                            Back to Dashboard
-                        </Button>
-                    </Link>
-                </div> */}
+                            })
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={5} className="h-80 text-center">
+                                    <div className="flex flex-col items-center justify-center text-slate-200 dark:text-slate-800 gap-3">
+                                        <Package className="w-20 h-20 opacity-10" />
+                                        <p className="text-sm font-black uppercase tracking-[0.2em]">No Data Available</p>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
             </div>
         </div>
     );

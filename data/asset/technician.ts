@@ -74,7 +74,7 @@ export async function getTechnicians(query: string, currentPage: number) {
     }
 }
 export async function getTechniciansForData() {
-    no_store(); 
+    no_store();
     try {
         const technicians = await db.technician.findMany({
             orderBy: {
@@ -114,5 +114,30 @@ export const getTechniciansPages = async (query: string) => {
     } catch (error) {
         console.error('Error fetching asset', error)
         throw new Error('Error fetching asset');
+    }
+}
+
+export async function getTechnicianStats() {
+    no_store();
+    try {
+        const [total, active, inactive, specializations] = await Promise.all([
+            db.technician.count(),
+            db.technician.count({ where: { status: 'ACTIVE' } }),
+            db.technician.count({ where: { status: 'INACTIVE' } }),
+            db.technician.groupBy({
+                by: ['specialization'],
+                _count: { specialization: true },
+            }),
+        ]);
+
+        return {
+            total,
+            active,
+            inactive,
+            specializationCount: specializations.length,
+        };
+    } catch (error) {
+        console.error("Error fetching technician stats:", error);
+        return { total: 0, active: 0, inactive: 0, specializationCount: 0 };
     }
 }

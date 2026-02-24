@@ -7,9 +7,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { 
-  PencilIcon, 
-  PlusIcon, 
+import {
+  PencilIcon,
+  PlusIcon,
   ComputerDesktopIcon,
   PrinterIcon,
   TrashIcon,
@@ -39,11 +39,18 @@ export function CreateAssetButton() {
   );
 }
 
-export function UpdateAssetLink({ id }: { id: string }) {
+export function UpdateAssetLink({ id, searchParams }: { id: string; searchParams?: any }) {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/dashboard/asset/asset-list/edit/${id}`);
+    const params = new URLSearchParams();
+    if (searchParams) {
+      Object.entries(searchParams).forEach(([key, value]) => {
+        if (value) params.append(key, value.toString());
+      });
+    }
+    const queryString = params.toString();
+    router.push(`/dashboard/asset/asset-list/edit/${id}${queryString ? `?${queryString}` : ""}`);
   };
 
   return (
@@ -214,12 +221,12 @@ export function CreateSoftwareButton() {
 }
 
 // Button group untuk actions dalam table
-export function AssetActionButtons({ 
-  assetId, 
+export function AssetActionButtons({
+  assetId,
   softwareCount = 0,
-  onDelete 
-}: { 
-  assetId: string; 
+  onDelete
+}: {
+  assetId: string;
   softwareCount?: number;
   onDelete: (id: string) => void;
 }) {
@@ -238,14 +245,14 @@ export function AssetActionButtons({
 }
 
 // Secondary action buttons dengan tooltip
-export function SecondaryActionButton({ 
-  children, 
-  onClick, 
+export function SecondaryActionButton({
+  children,
+  onClick,
   variant = "outline",
   className = "",
   tooltip = ""
-}: { 
-  children: React.ReactNode; 
+}: {
+  children: React.ReactNode;
   onClick?: () => void;
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
   className?: string;

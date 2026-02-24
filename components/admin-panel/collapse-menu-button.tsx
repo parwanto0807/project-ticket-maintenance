@@ -52,7 +52,7 @@ export function CollapseMenuButton({
   submenus,
   isOpen,
   disabled = false, // Default disabled to false if not provided
-  
+
 }: CollapseMenuButtonProps) {
   const isSubmenuActive = submenus.some((submenu) => submenu.active);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(isSubmenuActive);
@@ -67,8 +67,8 @@ export function CollapseMenuButton({
     setIsCollapsed(!isCollapsed);
   };
 
-    // const router = useRouter();
-    const handleSubmenuClick = (e: React.MouseEvent, disabled: boolean = false) => {
+  // const router = useRouter();
+  const handleSubmenuClick = (e: React.MouseEvent, disabled: boolean = false) => {
     if (disabled) {
       e.preventDefault(); // Prevent default behavior (navigation)
       router.push("/dashboard"); // Redirect to /dashboard
@@ -87,13 +87,19 @@ export function CollapseMenuButton({
       >
         <Button
           variant={active ? "blue" : "ghost"}
-          className={cn("w-full justify-start h-10 hover:bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300 hover:text-white transition-all duration-300", disabled ? "opacity-50 cursor-not-allowed" : "")}
+          className={cn(
+            "w-full justify-start h-10 transition-all duration-300 group",
+            active
+              ? "shadow-lg shadow-blue-500/30 text-white"
+              : "hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400",
+            disabled ? "opacity-50 cursor-not-allowed" : ""
+          )}
           onClick={handleButtonClick}
           disabled={disabled} // Handle disabled state
         >
           <div className="w-full items-center flex justify-between">
             <div className="flex items-center">
-              <span className="mr-4">
+              <span className="mr-4 transition-transform duration-300 group-hover:scale-110">
                 <Icon size={18} />
               </span>
               <p
@@ -128,7 +134,13 @@ export function CollapseMenuButton({
           <Button
             key={index}
             variant={active ? "blue" : "ghost"}
-            className={cn("w-full justify-start h-10 hover:bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300 hover:text-white transition-all duration-300 mb-1", disabled ? "opacity-50 cursor-not-allowed" : "")}
+            className={cn(
+              "w-full justify-start h-10 mb-1 transition-all duration-300 group",
+              active
+                ? "shadow-md shadow-blue-500/20 text-white"
+                : "hover:bg-blue-50 dark:hover:bg-blue-900/10 hover:text-blue-600 dark:hover:text-blue-400",
+              disabled ? "opacity-50 cursor-not-allowed" : ""
+            )}
             asChild
             disabled={disabled} // Handle submenu disabled state
             onClick={(e) => handleSubmenuClick(e, disabled)} // Handle submenu click
@@ -160,7 +172,11 @@ export function CollapseMenuButton({
             <DropdownMenuTrigger asChild>
               <Button
                 variant={active ? "blue" : "ghost"}
-                className={cn("w-full justify-start h-10 hover:bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300 hover:text-white transition-all duration-300 mb-1",
+                className={cn(
+                  "w-full justify-start h-10 mb-1 transition-all duration-300 group",
+                  active
+                    ? "shadow-lg shadow-blue-500/30 text-white"
+                    : "hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400",
                   disabled ? "opacity-50 cursor-not-allowed" : ""
                 )}
                 disabled={disabled} // Handle disabled state on Dropdown

@@ -9,10 +9,10 @@ interface NavbarProps {
 export function Navbar({ title }: NavbarProps) {
   return (
     <header className="sticky top-0 z-10 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary">
-      <div className="mx-4 sm:mx-8 flex h-20 items-center">
-        <div className="flex items-center space-x-4 lg:space-x-0">
+      <div className="mx-2 sm:mx-8 flex h-16 sm:h-20 items-center">
+        <div className="flex items-center space-x-2 lg:space-x-0">
           <SheetMenu />
-          <h1 className="font-semibold">{title}</h1>
+          <h1 className="font-bold text-sm sm:text-lg tracking-tight">{title}</h1>
         </div>
         <div className="flex flex-1 items-center space-x-2 justify-end">
           <ModeToggle />

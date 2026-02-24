@@ -6,7 +6,7 @@ import { ReactNode } from "react";
 
 const font = Poppins({
     subsets: ["latin"],
-    weight: ["600"],
+    weight: ["400", "500", "600"],
 });
 
 interface HeaderProps {
@@ -15,21 +15,10 @@ interface HeaderProps {
 
 export const Header = ({ label }: HeaderProps) => {
     return (
-        <div className="w-full flex flex-col gap-y-4 items-center justify-center">
-            <div className="flex items-center gap-x-2">
-                <div className="p-2 bg-green-500/20 rounded-xl border border-green-400/80">
-                    <Shield className="w-6 h-6 text-green-400" />
-                </div>
-                <h1 className={cn(
-                    "text-2xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent",
-                    font.className
-                )}>
-                    AssetFlow
-                </h1>
-            </div>
-            <div className="text-blue-200 text-sm text-center">
+        <div className="w-full flex flex-col gap-y-2 items-center justify-center">
+            <p className="text-slate-400 text-sm font-medium">
                 {typeof label === 'string' ? label : label}
-            </div>
+            </p>
         </div>
     );
 };

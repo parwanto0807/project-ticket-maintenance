@@ -67,81 +67,73 @@ const LoginAdminForm = () => {
 
     return (
         <CardWrapper
-            headerLabel="Login Admin to register account"
-            backButtonLabel=""
-            backButtonHref=""
-            //showSocial
+            headerLabel="Otorisasi Admin Luar"
+            backButtonLabel="Kembali ke halaman masuk"
+            backButtonHref="/auth/login"
         >
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-6"
+                    className="space-y-4 sm:space-y-6"
                 >
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                         {showTwofactor && (
                             <FormField
                                 control={form.control}
                                 name="code"
                                 render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Two Factor Code</FormLabel>
+                                    <FormItem className="space-y-1 sm:space-y-2">
+                                        <FormLabel className="text-slate-700 font-semibold text-xs sm:text-base">Kode Otentikasi Dua Faktor</FormLabel>
                                         <FormControl>
                                             <Input
                                                 {...field}
                                                 disabled={isPending}
                                                 placeholder="123456"
+                                                className="bg-slate-50 border-slate-200 h-10 sm:h-14 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all duration-300 px-4 text-sm font-medium rounded-xl shadow-sm"
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-red-600 font-medium text-[10px] sm:text-sm" />
                                     </FormItem>
                                 )}
                             />
                         )}
                         {!showTwofactor && (
                             <>
-                             <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                disabled={isPending}
-                                                placeholder="admin@email.com"
-                                                type="email"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
                                 <FormField
                                     control={form.control}
-                                    name="password"
+                                    name="email"
                                     render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Password</FormLabel>
+                                        <FormItem className="space-y-1 sm:space-y-2">
+                                            <FormLabel className="text-slate-700 font-semibold text-xs sm:text-base">Email</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     {...field}
                                                     disabled={isPending}
-                                                    placeholder="******"
-                                                    type="password"
+                                                    placeholder="admin@email.com"
+                                                    type="email"
+                                                    className="bg-slate-50 border-slate-200 h-10 sm:h-14 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all duration-300 px-4 text-sm font-medium rounded-xl shadow-sm"
                                                 />
                                             </FormControl>
-                                            {/* <Button
-                                                size="sm"
-                                                variant="link"
-                                                asChild
-                                                className="px-0 font-normal"
-                                            >
-                                                <Link href="/auth/reset">
-                                                    Forgot password?
-                                                </Link>
-                                            </Button> */}
-                                            <FormMessage />
+                                            <FormMessage className="text-red-600 font-medium text-[10px] sm:text-sm" />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="password"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-1 sm:space-y-2">
+                                            <FormLabel className="text-slate-700 font-semibold text-xs sm:text-base">Kata Sandi</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    disabled={isPending}
+                                                    placeholder="Masukkan kata sandi"
+                                                    type="password"
+                                                    className="bg-slate-50 border-slate-200 h-10 sm:h-14 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all duration-300 px-4 text-sm font-medium rounded-xl shadow-sm"
+                                                />
+                                            </FormControl>
+                                            <FormMessage className="text-red-600 font-medium text-[10px] sm:text-sm" />
                                         </FormItem>
                                     )}
                                 />
@@ -153,9 +145,9 @@ const LoginAdminForm = () => {
                     <Button
                         disabled={isPending}
                         type="submit"
-                        className="w-full"
+                        className="w-full h-11 sm:h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-blue-500/10 border-0 font-bold text-sm sm:text-base"
                     >
-                        Login to register Account
+                        {isPending ? "Memproses..." : "Masuk sebagai Admin"}
                     </Button>
                 </form>
             </Form>

@@ -28,7 +28,6 @@ import {
   Wrench,
   Settings,
   Package,
-  DollarSign,
   UserCog
 } from "lucide-react";
 import Link from "next/link";
@@ -122,12 +121,6 @@ const MobileShortcutMenu = () => {
             label: "Software",
             icon: Settings,
             description: "Software licenses and management"
-          },
-          {
-            href: "/dashboard/master/price-product",
-            label: "Product Prices",
-            icon: DollarSign,
-            description: "Product pricing management"
           },
           {
             href: "/dashboard/master/employees",

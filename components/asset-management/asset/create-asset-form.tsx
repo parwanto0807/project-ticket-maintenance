@@ -89,6 +89,8 @@ const CreateAssetForm = ({
     const [selectedDepartmentId, setSelectedDepartmentId] = useState<{ id: string } | null>(null);
     const [selectedDepartmentName, setSelectedDepartmentName] = useState<{ dept_name: string } | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [lifeUnit, setLifeUnit] = useState<'years' | 'months'>('years');
+    const [displayLife, setDisplayLife] = useState<number>(0);
 
     const form = useForm<z.infer<typeof AssetSchema>>({
         resolver: zodResolver(AssetSchema),
@@ -652,45 +654,120 @@ const CreateAssetForm = ({
                                     <FormField
                                         control={form.control}
                                         name="residualValue"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Residual Value</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.01"
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        className="h-11"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
+                                        render={({ field }) => {
+                                            const purchaseCost = form.watch("purchaseCost") || 0;
+                                            const isLowResidual = purchaseCost > 0 && (field.value ?? 0) > 0 && (field.value ?? 0) < (purchaseCost * 0.05);
+
+                                            return (
+                                                <FormItem>
+                                                    <div className="flex items-center justify-between">
+                                                        <FormLabel>Residual Value</FormLabel>
+                                                        {isLowResidual && (
+                                                            <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-600 border-amber-200 animate-pulse">
+                                                                Low Value {"(< 5%)"}
+                                                            </Badge>
+                                                        )}
+                                                    </div>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            type="number"
+                                                            min="0"
+                                                            step="0.01"
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            className={cn(
+                                                                "h-11",
+                                                                isLowResidual && "border-amber-300 focus-visible:ring-amber-500"
+                                                            )}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
                                     />
 
-                                    <FormField
-                                        control={form.control}
-                                        name="usefulLife"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Useful Life (Years)</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        type="number"
-                                                        min="1"
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        className="h-11"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                    <div className="space-y-4 pt-2">
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                                Useful Life
+                                            </label>
+                                            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border gap-1">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        if (lifeUnit === 'months') {
+                                                            setLifeUnit('years');
+                                                            setDisplayLife(prev => Math.floor(prev / 12));
+                                                        }
+                                                    }}
+                                                    className={cn(
+                                                        "px-3 py-1 text-[10px] font-bold rounded-md transition-all",
+                                                        lifeUnit === 'years'
+                                                            ? "bg-white dark:bg-slate-950 shadow-sm text-blue-600"
+                                                            : "text-slate-500 hover:text-slate-700"
+                                                    )}
+                                                >
+                                                    YEARS
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        if (lifeUnit === 'years') {
+                                                            setLifeUnit('months');
+                                                            setDisplayLife(prev => prev * 12);
+                                                        }
+                                                    }}
+                                                    className={cn(
+                                                        "px-3 py-1 text-[10px] font-bold rounded-md transition-all",
+                                                        lifeUnit === 'months'
+                                                            ? "bg-white dark:bg-slate-950 shadow-sm text-blue-600"
+                                                            : "text-slate-500 hover:text-slate-700"
+                                                    )}
+                                                >
+                                                    MONTHS
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <FormField
+                                            control={form.control}
+                                            name="usefulLife"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <div className="relative">
+                                                            <Input
+                                                                {...field}
+                                                                value={displayLife}
+                                                                disabled={isPending}
+                                                                type="number"
+                                                                min="1"
+                                                                onChange={(e) => {
+                                                                    const val = Number(e.target.value);
+                                                                    setDisplayLife(val);
+                                                                    // Auto convert to months for internal state
+                                                                    const months = lifeUnit === 'years' ? val * 12 : val;
+                                                                    field.onChange(months);
+                                                                }}
+                                                                className="h-11 pr-16"
+                                                            />
+                                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400 uppercase">
+                                                                {lifeUnit}
+                                                            </div>
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                    <p className="text-[10px] text-slate-400 font-medium">
+                                                        {lifeUnit === 'years'
+                                                            ? `Equals to ${displayLife * 12} months for depreciation accuracy.`
+                                                            : `Stored directly as ${displayLife} months.`}
+                                                    </p>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
                                 </CardContent>
                             </Card>
 

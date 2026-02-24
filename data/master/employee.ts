@@ -34,6 +34,9 @@ export async function getEmployeesFindAll(query: string, currentPage: number) {
       take: ITEMS_PER_PAGE_EMPLOYEES,
       include: {
         department: true,
+        _count: {
+          select: { asset: true },
+        },
       },
       where: {
         OR: [
@@ -163,3 +166,38 @@ export const getDeptById = async (dept_name: string) => {
     return { error: "Filed get data department by id" };
   }
 };
+
+export async function getEmployeeStats() {
+  no_store();
+  try {
+    const [totalEmployees, totalDepartments] = await Promise.all([
+      db.employee.count(),
+      db.department.count(),
+    ]);
+
+    // Get recent activity (e.g., employees added in the last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const recentHires = await db.employee.count({
+      where: {
+        createdAt: {
+          gte: thirtyDaysAgo,
+        },
+      },
+    });
+
+    return {
+      totalEmployees,
+      totalDepartments,
+      recentHires,
+    };
+  } catch (error) {
+    console.error("Error fetching employee stats:", error);
+    return {
+      totalEmployees: 0,
+      totalDepartments: 0,
+      recentHires: 0,
+    };
+  }
+}

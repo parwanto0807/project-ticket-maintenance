@@ -20,6 +20,7 @@ export function Sidebar() {
     <aside
       className={cn(
         "fixed top-0 left-0 z-20 h-screen -translate-x-full lg:translate-x-0 transition-[width] ease-in-out duration-300",
+        "bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-r border-zinc-200/50 dark:border-zinc-800/50",
         sidebar?.isOpen === false ? "w-[90px]" : "w-72"
       )}
     >
@@ -44,7 +45,7 @@ export function Sidebar() {
             />
             <span
               className={cn(
-                "text-sm text-blue-500 whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300 dark:text-white",
+                "font-semibold text-lg tracking-tight text-blue-600 whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300 dark:text-blue-400",
                 sidebar?.isOpen === false
                   ? "-translate-x-96 opacity-0 hidden"
                   : "translate-x-0 opacity-100"

@@ -33,7 +33,7 @@ export function Menu({ isOpen }: MenuProps) { // Menggunakan role dari props
           {menuList.map(({ groupLabel, menus }, index) => (
             <li className={cn("w-full", groupLabel ? "pt-5" : "")} key={index}>
               {(isOpen && groupLabel) || isOpen === undefined ? (
-                <p className="text-sm font-medium text-muted-foreground px-4 pb-2 max-w-[248px] truncate">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 px-4 pb-2 max-w-[248px] truncate">
                   {groupLabel}
                 </p>
               ) : !isOpen && isOpen !== undefined && groupLabel ? (
@@ -61,19 +61,27 @@ export function Menu({ isOpen }: MenuProps) { // Menggunakan role dari props
                           <TooltipTrigger asChild>
                             <Button
                               variant={active ? "blue" : "ghost"}
-                              className="w-full justify-start h-10 mb-1 hover:bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300 hover:text-white transition-all duration-300"
+                              className={cn(
+                                "w-full justify-start h-10 mb-1 transition-all duration-300 group",
+                                active
+                                  ? "shadow-lg shadow-blue-500/30 text-white"
+                                  : "hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400"
+                              )}
                               asChild
                               disabled={disabled}
                             >
-                              <Link href={href}>
+                              <Link href={href} className="flex items-center">
                                 <span
-                                  className={cn(isOpen === false ? "" : "mr-4")}
+                                  className={cn(
+                                    "transition-transform duration-300 group-hover:scale-110",
+                                    isOpen === false ? "" : "mr-4"
+                                  )}
                                 >
                                   <Icon width={18} height={18} />
                                 </span>
                                 <p
                                   className={cn(
-                                    "max-w-[200px] truncate",
+                                    "max-w-[200px] truncate font-medium",
                                     isOpen === false
                                       ? "-translate-x-96 opacity-0"
                                       : "translate-x-0 opacity-100"
@@ -94,7 +102,7 @@ export function Menu({ isOpen }: MenuProps) { // Menggunakan role dari props
                     </div>
                   ) : (
                     <div className="w-full" key={index}>
-                      <CollapseMenuButton 
+                      <CollapseMenuButton
                         icon={Icon as LucideIcon}
                         label={label}
                         active={active}

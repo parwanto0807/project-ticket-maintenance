@@ -31,11 +31,11 @@ export default function ImageDialogEmployee({ src, alt }: ImageDialogProps) {
         <Image
           src={imageUrl} // 🔥 Cache Bypass
           alt={alt}
-          width={50}
-          height={30}
+          width={100}
+          height={100}
           unoptimized={true} // ✅ Hindari optimasi Next.js (Fix error 400)
           onError={handleError} // ✅ Ganti gambar jika gagal dimuat
-          className="rounded-lg cursor-pointer w-auto h-auto max-w-full max-h-full hover:scale-110 transition-transform duration-300"
+          className="rounded-lg cursor-pointer w-full h-full object-cover hover:scale-110 transition-transform duration-300"
         />
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center">

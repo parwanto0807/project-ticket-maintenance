@@ -20,7 +20,14 @@ import { Button } from "@/components/ui/button";
 import { FormError } from "../../../project-ticket-maintenance/components/form-error";
 import { FormSuccess } from "../../../project-ticket-maintenance/components/form-success";
 import { login } from "@/action/auth/login";
-import { Eye, EyeOff, Mail, Lock, Key } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Key, Wrench } from "lucide-react";
+import { Poppins } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const font = Poppins({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700", "800", "900"],
+});
 
 const LoginForm = () => {
     const searchParams = useSearchParams();
@@ -65,27 +72,30 @@ const LoginForm = () => {
     };
 
     return (
-        <div className="w-full max-w-[90vw] sm:max-w-md mx-auto md:p-2 flex items-center justify-center min-h-[80vh]">
+        <div className="w-full max-w-[95vw] sm:max-w-md mx-auto flex items-center justify-center min-h-[70vh] sm:min-h-[80vh] py-4 sm:py-8">
             <CardWrapper
-                headerLabel="Welcome to AssetFlow"
+                headerLabel="Selamat datang di AxonService"
                 showSocial
             >
                 {/* Custom Header */}
-                <div className="text-center space-y-2 sm:space-y-6 mb-4 sm:mb-8">
+                <div className="text-center space-y-1 sm:space-y-6 mb-3 sm:mb-8">
                     <div className="flex justify-center">
-                        {/* <div className="p-2 sm:p-3 bg-green-500/40 rounded-lg sm:rounded-xl backdrop-blur-sm border border-green-400 shadow-lg">
-                            <Shield className="w-6 h-6 sm:w-7 sm:h-7 text-green-200" />
-                        </div> */}
+                        <div className="p-2 sm:p-3 bg-blue-50/50 rounded-2xl border border-blue-100 shadow-sm">
+                            <Wrench className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                        </div>
                     </div>
-                    <div className="space-y-1 sm:space-y-2">
-                        <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                            AssetFlow
+                    <div className="space-y-0.5 sm:space-y-2">
+                        <h1 className={cn(
+                            "text-3xl sm:text-5xl font-black bg-gradient-to-r from-blue-950 via-blue-800 to-blue-600 bg-clip-text text-transparent tracking-tighter antialiased drop-shadow-sm",
+                            font.className
+                        )}>
+                            AxonService
                         </h1>
-                        <p className="text-blue-100 font-medium text-sm sm:text-base">
-                            Maintenance & Asset Management
+                        <p className="text-slate-600 font-semibold text-xs sm:text-base tracking-tight">
+                            Manajemen Aset & Pemeliharaan
                         </p>
-                        <p className="text-blue-200 text-xs sm:text-sm">
-                            Secure access to your dashboard
+                        <p className="text-slate-400 text-[10px] sm:text-sm font-medium">
+                            Akses aman ke dasbor Anda
                         </p>
                     </div>
                 </div>
@@ -93,23 +103,23 @@ const LoginForm = () => {
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-4 sm:space-y-6"
+                        className="space-y-3 sm:space-y-6"
                     >
-                        <div className="space-y-4 sm:space-y-5">
+                        <div className="space-y-3 sm:space-y-5">
                             {showTwoFactor ? (
-                                <div className="space-y-4 sm:space-y-5">
-                                    <div className="flex justify-center mb-4 sm:mb-6">
-                                        <div className="p-2 sm:p-3 bg-purple-500/40 rounded-lg sm:rounded-xl border border-purple-400 shadow-md">
-                                            <Key className="w-5 h-5 sm:w-6 sm:h-6 text-purple-200" />
+                                <div className="space-y-3 sm:space-y-5">
+                                    <div className="flex justify-center mb-2 sm:mb-6">
+                                        <div className="p-2 bg-purple-100 rounded-xl border border-purple-200 shadow-sm">
+                                            <Key className="w-4 h-4 sm:w-6 sm:h-6 text-purple-600" />
                                         </div>
                                     </div>
                                     <FormField
                                         control={form.control}
                                         name="code"
                                         render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-white font-semibold text-sm sm:text-base">
-                                                    Two-Factor Code
+                                            <FormItem className="space-y-1 sm:space-y-2">
+                                                <FormLabel className="text-slate-700 font-semibold text-xs sm:text-base">
+                                                    Kode Otentikasi Dua Faktor
                                                 </FormLabel>
                                                 <FormControl>
                                                     <div className="relative">
@@ -117,17 +127,17 @@ const LoginForm = () => {
                                                             {...field}
                                                             disabled={isPending}
                                                             placeholder="123456"
-                                                            className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition-all duration-300 pl-9 sm:pl-10 pr-4 py-3 sm:py-4 text-base font-medium rounded-lg"
+                                                            className="bg-slate-50 border-slate-200 h-10 sm:h-14 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all duration-300 pl-8 sm:pl-10 pr-4 text-sm font-medium rounded-xl shadow-sm"
                                                         />
-                                                        <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-300" />
+                                                        <Key className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-blue-600" />
                                                     </div>
                                                 </FormControl>
-                                                <FormMessage className="text-red-300 font-medium text-xs sm:text-sm" />
+                                                <FormMessage className="text-red-600 font-medium text-[10px] sm:text-sm" />
                                             </FormItem>
                                         )}
                                     />
-                                    <p className="text-blue-100 text-center font-medium text-xs sm:text-sm">
-                                        Enter verification code from your authenticator app
+                                    <p className="text-slate-500 text-center font-medium text-[10px] sm:text-sm">
+                                        Masukkan kode verifikasi Anda
                                     </p>
                                 </div>
                             ) : (
@@ -136,8 +146,8 @@ const LoginForm = () => {
                                         control={form.control}
                                         name="email"
                                         render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-white font-semibold text-sm sm:text-base">
+                                            <FormItem className="space-y-1 sm:space-y-2">
+                                                <FormLabel className="text-slate-700 font-semibold text-xs sm:text-base">
                                                     Email
                                                 </FormLabel>
                                                 <FormControl>
@@ -145,14 +155,14 @@ const LoginForm = () => {
                                                         <Input
                                                             {...field}
                                                             disabled={isPending}
-                                                            placeholder="admin@assetflow.com"
+                                                            placeholder="admin@axonservice.com"
                                                             type="email"
-                                                            className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition-all duration-300 pl-9 sm:pl-10 pr-4 py-3 sm:py-4 text-sm font-medium rounded-lg"
+                                                            className="bg-slate-50 border-slate-200 h-10 sm:h-14 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all duration-300 pl-8 sm:pl-10 pr-4 text-sm font-medium rounded-xl shadow-sm"
                                                         />
-                                                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-300" />
+                                                        <Mail className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-blue-600" />
                                                     </div>
                                                 </FormControl>
-                                                <FormMessage className="text-red-300 font-medium text-xs sm:text-sm" />
+                                                <FormMessage className="text-red-600 font-medium text-[10px] sm:text-sm" />
                                             </FormItem>
                                         )}
                                     />
@@ -160,33 +170,35 @@ const LoginForm = () => {
                                         control={form.control}
                                         name="password"
                                         render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="text-white font-semibold text-sm sm:text-base">
-                                                    Password
-                                                </FormLabel>
+                                            <FormItem className="space-y-1 sm:space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <FormLabel className="text-slate-700 font-semibold text-xs sm:text-base">
+                                                        Kata Sandi
+                                                    </FormLabel>
+                                                </div>
                                                 <FormControl>
                                                     <div className="relative">
                                                         <Input
                                                             {...field}
                                                             disabled={isPending}
-                                                            placeholder="Enter your password"
+                                                            placeholder="Masukkan kata sandi Anda"
                                                             type={showPassword ? "text" : "password"}
-                                                            className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition-all duration-300 pl-9 sm:pl-10 pr-9 sm:pr-10 py-3 sm:py-4 text-sm font-medium rounded-lg"
+                                                            className="bg-slate-50 border-slate-200 h-10 sm:h-14 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all duration-300 pl-8 sm:pl-10 pr-9 text-sm font-medium rounded-xl shadow-sm"
                                                         />
-                                                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-300" />
+                                                        <Lock className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-blue-600" />
                                                         <button
                                                             type="button"
                                                             onClick={() => setShowPassword(!showPassword)}
-                                                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-300 hover:text-blue-200 transition-colors p-1"
+                                                            className="absolute right-2.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors p-1"
                                                         >
                                                             {showPassword ?
-                                                                <EyeOff className="w-4 h-4" /> :
-                                                                <Eye className="w-4 h-4" />
+                                                                <EyeOff className="w-3.5 h-3.5" /> :
+                                                                <Eye className="w-3.5 h-3.5" />
                                                             }
                                                         </button>
                                                     </div>
                                                 </FormControl>
-                                                <FormMessage className="text-red-300 font-medium text-xs sm:text-sm" />
+                                                <FormMessage className="text-red-600 font-medium text-[10px] sm:text-sm" />
                                             </FormItem>
                                         )}
                                     />
@@ -200,34 +212,34 @@ const LoginForm = () => {
                         <Button
                             disabled={isPending}
                             type="submit"
-                            className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white py-3 sm:py-4 rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-blue-500/30 border-0 font-bold text-sm sm:text-base"
+                            className="w-full h-11 sm:h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-blue-500/10 border-0 font-bold text-sm sm:text-base"
                         >
                             {isPending ? (
                                 <div className="flex items-center space-x-2">
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                    <span className="text-sm">Signing in...</span>
+                                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    <span className="text-xs">Memproses...</span>
                                 </div>
                             ) : showTwoFactor ? (
-                                "Verify & Continue"
+                                "Verifikasi & Lanjutkan"
                             ) : (
-                                "Sign In to Dashboard"
+                                "Masuk ke Dasbor"
                             )}
                         </Button>
                         {!showTwoFactor && (
-                            <div className="mt-3 sm:mt-4 text-center text-xs">
-                                Don&apos;t have an account?{" "}
+                            <div className="mt-2 text-center text-[10px] sm:text-xs text-slate-500 font-medium">
+                                Belum punya akun?{" "}
                                 <a
                                     href="/auth/login-admin"
-                                    className="text-primary hover:underline transition-colors"
+                                    className="text-blue-500 hover:text-blue-400 font-bold transition-colors"
                                 >
-                                    Sign up
+                                    Daftar sekarang
                                 </a>
                             </div>
                         )}
                         {!showTwoFactor && (
-                            <div className="text-center pt-2 sm:pt-3">
-                                <p className="text-blue-100 font-medium text-xs sm:text-sm">
-                                    Manage your maintenance operations securely
+                            <div className="text-center pt-1.5 sm:pt-4">
+                                <p className="text-slate-600 font-bold text-[9px] sm:text-xs uppercase tracking-[0.15em]">
+                                    Akses Dasbor Terenkripsi
                                 </p>
                             </div>
                         )}

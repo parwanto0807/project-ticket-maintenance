@@ -72,6 +72,22 @@ export const fetchAllAssetsGeneral = async () => {
         assetType: { select: { id: true, name: true } },
         department: { select: { id: true, dept_name: true } },
         softwareInstallations: { include: { software: true } },
+        tickets: {
+          select: {
+            id: true,
+            ticketNumber: true,
+            troubleUser: true,
+            analisaDescription: true,
+            actionDescription: true,
+            priorityStatus: true,
+            status: true,
+            createdAt: true,
+            completedDate: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
       orderBy: [{ departmentId: "asc" }, { createdAt: "desc" }],
     });
@@ -225,6 +241,22 @@ export const fetchAssetList = async (
             },
           },
         },
+        tickets: {
+          select: {
+            id: true,
+            ticketNumber: true,
+            troubleUser: true,
+            analisaDescription: true,
+            actionDescription: true,
+            priorityStatus: true,
+            status: true,
+            createdAt: true,
+            completedDate: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
       where: whereClause,
       orderBy: [{ departmentId: "asc" }, { createdAt: "desc" }],
@@ -274,7 +306,15 @@ export const fetchAssetListPages = async (
   try {
     const validStatuses = Object.values(AssetStatus);
     const orFilters: Prisma.AssetWhereInput[] = [
-      // ... (sama seperti di fetchAssetList)
+      { assetNumber: { contains: query, mode: "insensitive" } },
+      { location: { contains: query, mode: "insensitive" } },
+      { assetType: { name: { contains: query, mode: "insensitive" } } },
+      { department: { dept_name: { contains: query, mode: "insensitive" } } },
+      { employee: { name: { contains: query, mode: "insensitive" } } },
+      { product: { part_name: { contains: query, mode: "insensitive" } } },
+      { product: { part_number: { contains: query, mode: "insensitive" } } },
+      { product: { nick_name: { contains: query, mode: "insensitive" } } },
+      { product: { description: { contains: query, mode: "insensitive" } } },
     ];
 
     const upperQuery = query.toUpperCase();

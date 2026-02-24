@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 import {
     Sheet,
     SheetContent,
@@ -30,7 +32,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrencyQtt } from "@/lib/utils";
 import ImageDialog from "./imageDialog";
-import { Package } from "lucide-react";
+import { Package, TrendingDown, Info, ShieldCheck } from "lucide-react";
+import { calculateAssetDepreciation } from "@/lib/finance";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Progress } from "@/components/ui/progress";
 
 interface AssetDetailSheetProps {
     asset: {
@@ -64,6 +69,10 @@ interface AssetDetailSheetProps {
             id: string;
             name: string;
         };
+        location: string | null;
+        purchaseCost?: number | null;
+        purchaseDate?: Date | string | null;
+        residualValue?: number | null;
         usefulLife: number | null;
         employee: {
             name: string;
@@ -74,9 +83,6 @@ interface AssetDetailSheetProps {
             id: string;
             dept_name: string;
         } | null;
-        location: string | null;
-        purchaseCost?: number | null;
-        purchaseDate?: Date | null;
         status: string;
         assetImage1?: string | null;
         softwareInstallations: {
@@ -129,7 +135,7 @@ export function AssetDetailSheet({ asset }: AssetDetailSheetProps) {
         return life !== null ? `${life} years` : 'Not specified';
     };
 
-    const formatDate = (date: Date | null | undefined) => {
+    const formatDate = (date: Date | string | null | undefined) => {
         if (!date) return 'N/A';
         try {
             const dateObj = new Date(date);
@@ -144,6 +150,13 @@ export function AssetDetailSheet({ asset }: AssetDetailSheetProps) {
     };
 
     const softwareCount = asset.softwareInstallations?.length || 0;
+
+    const dep = React.useMemo(() => calculateAssetDepreciation(
+        asset.purchaseCost,
+        asset.purchaseDate,
+        asset.usefulLife,
+        asset.residualValue
+    ), [asset.purchaseCost, asset.purchaseDate, asset.usefulLife, asset.residualValue]);
 
     return (
         <Sheet>
@@ -301,33 +314,73 @@ export function AssetDetailSheet({ asset }: AssetDetailSheetProps) {
                         </Card>
 
                         {/* Financial Information */}
-                        <Card>
-                            <CardContent className="p-4">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <CurrencyDollarIcon className="w-5 h-5 text-amber-600" />
-                                    <h3 className="font-semibold text-slate-900 dark:text-white">Financial</h3>
+                        <Card className="overflow-hidden border-amber-200/50 dark:border-amber-900/30">
+                            <CardContent className="p-0">
+                                <div className="p-4 bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-900/10 dark:to-orange-900/10 border-b border-amber-100 dark:border-amber-900/30">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <CurrencyDollarIcon className="w-5 h-5 text-amber-600" />
+                                            <h3 className="font-semibold text-slate-900 dark:text-white">Financial & Depreciation</h3>
+                                        </div>
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    <Info className="w-4 h-4 text-slate-400" />
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p className="text-xs">Method: Straight-Line Depreciation</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    </div>
                                 </div>
-                                <div className="space-y-3">
-                                    <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
-                                        <span className="text-slate-600 dark:text-slate-400">Purchase Cost</span>
-                                        <span className="font-bold text-green-600 dark:text-green-400">
-                                            {formatCurrency(asset.purchaseCost)}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
-                                        <span className="text-slate-600 dark:text-slate-400">Purchase Date</span>
-                                        <span className="font-medium">
-                                            {formatDate(asset.purchaseDate)}
-                                        </span>
-                                    </div>
-                                    {asset.warrantyExpiry && (
-                                        <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
-                                            <span className="text-slate-600 dark:text-slate-400">Warranty Expiry</span>
-                                            <span className="font-medium">
-                                                {formatDate(asset.warrantyExpiry)}
+                                <div className="p-4 space-y-4">
+                                    {/* Health Meter */}
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between items-end">
+                                            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Asset Value Health</span>
+                                            <span className={`text-sm font-bold ${dep.percentRemaining > 50 ? 'text-green-600' : dep.percentRemaining > 20 ? 'text-amber-600' : 'text-red-600'}`}>
+                                                {dep.percentRemaining.toFixed(1)}%
                                             </span>
                                         </div>
-                                    )}
+                                        <Progress
+                                            value={dep.percentRemaining}
+                                            className="h-2 bg-slate-100 dark:bg-slate-800"
+                                        // indicatorClassName dibaca sebagai prop di shadcn UI standard, tapi di sini kita pakai div style jika tidak ada
+                                        />
+                                        <p className="text-[10px] text-slate-400 italic">
+                                            Estimated {dep.totalMonths - dep.monthsElapsed > 0 ? `${dep.totalMonths - dep.monthsElapsed} months` : '0 months'} of useful life remaining
+                                        </p>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4 pt-2">
+                                        <div className="space-y-1">
+                                            <span className="text-[10px] text-slate-500 uppercase font-semibold">Purchase Cost</span>
+                                            <p className="font-bold text-slate-900 dark:text-white">{formatCurrency(asset.purchaseCost)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[10px] text-slate-500 uppercase font-semibold">Current Book Value</span>
+                                            <p className="font-bold text-blue-600 dark:text-blue-400">{formatCurrency(dep.bookValue)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[10px] text-slate-500 uppercase font-semibold">Accumulated Depr.</span>
+                                            <p className="font-medium text-red-600/80 dark:text-red-400/80">-{formatCurrency(dep.accumulatedDepreciation)}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <span className="text-[10px] text-slate-500 uppercase font-semibold">Residual Value</span>
+                                            <p className="font-medium text-slate-600">{formatCurrency(asset.residualValue)}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs">
+                                        <span className="text-slate-500">Purchase Date</span>
+                                        <span className="font-medium text-slate-700 dark:text-slate-300">{formatDate(asset.purchaseDate)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="text-slate-500">Useful Life</span>
+                                        <span className="font-medium text-slate-700 dark:text-slate-300">{formatUsefulLife(asset.usefulLife)}</span>
+                                    </div>
+
                                 </div>
                             </CardContent>
                         </Card>
@@ -398,6 +451,6 @@ export function AssetDetailSheet({ asset }: AssetDetailSheetProps) {
 
                 </div>
             </SheetContent>
-        </Sheet>
+        </Sheet >
     );
 }

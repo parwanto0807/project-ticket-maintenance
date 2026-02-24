@@ -226,7 +226,7 @@ export const EmployeeSchemaCreate = z.object({
         message: "Depteartment is required"
     }),
     emailCorporate: z.string().optional(),
-    picture:z.union([z.instanceof(File), z.null(), z.undefined()]).optional(),
+    picture: z.union([z.instanceof(File), z.null(), z.undefined()]).optional(),
 })
 
 export const DeptSchema = z.object({
@@ -305,7 +305,7 @@ export const AssetSchema = z.object({
     purchaseDate: z.date().optional().refine(date => date !== undefined && !isNaN(date.getTime()), { message: "Invalid purchase date" }),
     purchaseCost: z.number().nonnegative({ message: "Purchase cost must be a non-negative number" }).optional(),
     residualValue: z.number().nonnegative({ message: "Residual value must be a non-negative number" }).optional(),
-    usefulLife: z.number().int().nonnegative({ message: "Useful life must be a non-negative integer" }).optional(),
+    usefulLife: z.number().int().nonnegative({ message: "Useful life must be a non-negative integer (months)" }).optional(),
     createdAt: z.date().default(() => new Date()),
     updatedAt: z.date().default(() => new Date()).refine(date => date <= new Date(), { message: "UpdatedAt can't be in the future" }),
     assetTypeId: z.string().nonempty({ message: "Asset type ID cannot be empty" }),
@@ -313,6 +313,13 @@ export const AssetSchema = z.object({
     departmentId: z.string().nonempty({ message: "Department ID cannot be empty" }),
     employeeId: z.string().nullable().optional().or(z.literal("")),
     assetImage1: z.instanceof(File).refine((file) => file.size > 0, { message: "Asset image is requires" }).refine((file) => file.size === 0 || file.type.startsWith("image/"), { message: "Only Images Allowed", }).refine((file) => file.size < 4000000, { message: "Asset image size is too large" }),
+}).refine((data) => {
+    const cost = data.purchaseCost ?? 0;
+    const residual = data.residualValue ?? 0;
+    return residual < cost;
+}, {
+    message: "Residual value must be less than purchase cost",
+    path: ["residualValue"]
 });
 
 export const AssetTypeSchema = z.object({
@@ -335,57 +342,57 @@ export const CreateTicketMaintenanceSchema = z.object({
     updatedAt: z.date().default(new Date()), // Tanggal diperbarui, default sekarang
     scheduledDate: z.date().optional(), // Opsional
     completedDate: z.date().optional(), // Opsional
-    employeeId: z.string().min(1,"User asset is required"), // UUID validasi
+    employeeId: z.string().min(1, "User asset is required"), // UUID validasi
     assetId: z.string().min(1, "Asset name is required"), // UUID validasi
     ticketNumber: z.string().min(1, "Ticket number is required"), // ✅ Tambahkan ticketNumber
     countNumber: z.number().int().min(1, "Count number is required"), // ✅ Tambahkan countNumber
     ticketImage1: z.string().nullable().optional(), // Opsional
-  });
+});
 
-  export const CreateTicketMaintenanceOnAssignSchema = z.object({
+export const CreateTicketMaintenanceOnAssignSchema = z.object({
     troubleUser: z.string().min(1, "Trouble user is required"), // User yang melaporkan masalah wajib diisi
     analisaDescription: z.string().nullable().optional(), // Opsional
     actionDescription: z.string().nullable().optional(), // Opsional
     priorityStatus: z.enum(["Low", "Medium", "High", "Critical"]).default("Low"), // Enum dengan nilai default
-    status: z.enum(["Pending","Assigned", "In_Progress", "Completed"]).default("Pending"), // Enum dengan nilai default
+    status: z.enum(["Pending", "Assigned", "In_Progress", "Completed"]).default("Pending"), // Enum dengan nilai default
     createdAt: z.date().default(new Date()), // Tanggal dibuat, default sekarang
     updatedAt: z.date().default(new Date()), // Tanggal diperbarui, default sekarang
     scheduledDate: z.date().optional(), // Opsional
     completedDate: z.date().optional(), // Opsional
-    employeeId: z.string().min(1,"User asset is required"), // UUID validasi
+    employeeId: z.string().min(1, "User asset is required"), // UUID validasi
     technicianId: z.string().optional(),
     assetId: z.string().min(1, "Asset name is required"), // UUID validasi
     ticketNumber: z.string().min(1, "Ticket number is required"), // ✅ Tambahkan ticketNumber
     countNumber: z.number().int().min(1, "Count number is required"), // ✅ Tambahkan countNumber
-  });
-  
+});
+
 // Schema untuk memperbarui TicketMaintenance (opsional fields)
 export const UpdateTicketMaintenanceSchema = CreateTicketMaintenanceSchema.partial();
 
 
 // Schema untuk ScheduleMaintenance
 export const ScheduleMaintenanceSchema = z.object({
-  id: z.string().uuid(), // UUID validasi
-  scheduledDate: z.date(), // Tanggal penjadwalan wajib diisi
-  completedDate: z.date().optional(), // Opsional
-  notes: z.string().optional(), // Opsional
-  ticketId: z.string().uuid(), // UUID validasi
+    id: z.string().uuid(), // UUID validasi
+    scheduledDate: z.date(), // Tanggal penjadwalan wajib diisi
+    completedDate: z.date().optional(), // Opsional
+    notes: z.string().optional(), // Opsional
+    ticketId: z.string().uuid(), // UUID validasi
 });
 
 // Schema untuk membuat ScheduleMaintenance baru (tanpa id)
 export const CreateScheduleMaintenanceSchema = ScheduleMaintenanceSchema.omit({
-  id: true,
+    id: true,
 });
 
 // Schema untuk memperbarui ScheduleMaintenance (opsional fields)
 export const UpdateScheduleMaintenanceSchema = CreateScheduleMaintenanceSchema.partial();
 
 export const TechnicianSchema = z.object({
-  name: z.string().min(3, "Nama minimal 3 karakter").max(100, "Nama maksimal 100 karakter"),
-  phone: z.string().optional().refine((val) => !val || /^[0-9+]{10,15}$/.test(val), {
-    message: "Nomor telepon harus valid (10-15 digit angka atau + untuk kode negara)",
-  }),
-  email: z.string().email("Format email tidak valid").optional(),
-  specialization: z.string().min(3, "Spesialisasi minimal 3 karakter").max(200, "Spesialisasi maksimal 200 karakter"),
-  status: z.enum(["ACTIVE", "INACTIVE", "ON_LEAVE"]),
+    name: z.string().min(3, "Nama minimal 3 karakter").max(100, "Nama maksimal 100 karakter"),
+    phone: z.string().optional().refine((val) => !val || /^[0-9+]{10,15}$/.test(val), {
+        message: "Nomor telepon harus valid (10-15 digit angka atau + untuk kode negara)",
+    }),
+    email: z.string().email("Format email tidak valid").optional(),
+    specialization: z.string().min(3, "Spesialisasi minimal 3 karakter").max(200, "Spesialisasi maksimal 200 karakter"),
+    status: z.enum(["ACTIVE", "INACTIVE", "ON_LEAVE"]),
 });

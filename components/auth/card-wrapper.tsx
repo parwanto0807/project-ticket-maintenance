@@ -1,7 +1,7 @@
 // components/auth/card-wrapper.tsx
 "use client";
 
-import { 
+import {
   Card,
   CardContent,
   CardFooter,
@@ -27,20 +27,20 @@ export const CardWrapper = ({
   showSocial,
 }: CardWrapperProps) => {
   return (
-    <Card className="w-[400px] shadow-md bg-white/5 backdrop-blur-sm border-white/10">
-      <CardHeader>
+    <Card className="w-full max-w-md shadow-2xl bg-white/70 backdrop-blur-xl border-white/40 mx-auto">
+      <CardHeader className="space-y-1 pt-6 sm:pt-8 px-4 sm:px-6">
         <Header label={headerLabel} />
       </CardHeader>
-      <CardContent>
+      <CardContent className="pb-6 sm:pb-8 px-4 sm:px-6">
         {children}
       </CardContent>
       {showSocial && (
-        <CardFooter>
+        <CardFooter className="pb-6 sm:pb-8 px-4 sm:px-6">
           <Social />
         </CardFooter>
       )}
       {backButtonLabel && backButtonHref && (
-        <CardFooter>
+        <CardFooter className="pb-4 sm:pb-8 px-4 sm:px-6 border-t border-slate-100">
           <BackButton
             label={backButtonLabel}
             href={backButtonHref}

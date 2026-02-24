@@ -155,33 +155,33 @@ export default function DashboardChartSection() {
       </Card>
 
       {/* Card Recent tickets */}
-      <Card className="col-span-2 lg:col-span-3 bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply mb-20">
-        <CardHeader>
-          <CardTitle>Recent tickets</CardTitle>
-          <CardDescription>You made 5 tickets this month from all user.</CardDescription>
+      <Card className="col-span-2 lg:col-span-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/50 dark:border-gray-700/50 rounded-xl sm:rounded-2xl shadow-lg shadow-blue-500/5">
+        <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-6">
+          <CardTitle className="text-sm sm:text-base font-bold uppercase tracking-widest text-slate-500">Tiket Terbaru</CardTitle>
+          <CardDescription className="text-[10px] sm:text-sm font-medium">Monitoring status pemeliharaan terkini</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-8">
+        <CardContent className="p-2 sm:p-6">
+          <div className="space-y-3 sm:space-y-6">
             {ticketData.map((ticket, index) => (
-              <div key={index} className="flex items-center">
-                <Avatar className="size-9">
-                  <AvatarFallback>{initials(ticket.name)}</AvatarFallback>
+              <div key={index} className="flex items-center p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                <Avatar className="h-8 w-8 sm:h-9 sm:w-9 border border-slate-100 dark:border-slate-800 shadow-sm">
+                  <AvatarFallback className="text-[10px] sm:text-xs font-bold bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">{initials(ticket.name)}</AvatarFallback>
                 </Avatar>
-                <div className="ml-4 space-y-1">
-                  <p className="text-sm font-medium leading-none">{ticket.name}</p>
-                  <p className="text-xs text-muted-foreground md:text-sm">{ticket.email}</p>
+                <div className="ml-3 sm:ml-4 space-y-0.5 min-w-0 flex-1">
+                  <p className="text-[12px] sm:text-sm font-bold leading-none truncate dark:text-white">{ticket.name}</p>
+                  <p className="text-[10px] sm:text-xs text-slate-400 font-medium truncate">{ticket.email}</p>
                 </div>
-                <div className={`ml-auto font-medium px-2 py-1 text-xs rounded-md ${ticket.status === "Pending"
-                  ? "bg-red-100 text-red-500"
+                <div className={`ml-2 font-black px-2 py-1 text-[9px] sm:text-[10px] rounded-full uppercase tracking-tight shadow-sm ${ticket.status === "Pending"
+                  ? "bg-red-50 text-red-600 border border-red-100"
                   : ticket.status === "Assigned"
-                    ? "bg-blue-100 text-blue-500"
+                    ? "bg-blue-50 text-blue-600 border border-blue-100"
                     : ticket.status === "In_Progress"
-                      ? "bg-orange-100 text-orange-500"
+                      ? "bg-orange-50 text-orange-600 border border-orange-100"
                       : ticket.status === "Completed"
-                        ? "bg-green-100 text-green-500"
+                        ? "bg-green-50 text-green-600 border border-green-100"
                         : ticket.status === "Canceled"
-                          ? "bg-red-100 text-red-500"
-                          : "bg-gray-100 text-gray-500"
+                          ? "bg-slate-100 text-slate-600 border border-slate-200"
+                          : "bg-gray-50 text-gray-600 border border-gray-100"
                   }`}>
                   {ticket.assetName}
                 </div>

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { PrintAssetButton, UpdateAssetLink } from "./buttons";
 import DeleteAlertProduct from "./alert-delete";
@@ -21,11 +20,14 @@ import { formatCurrencyQtt } from "@/lib/utils";
 import ImageDialog from "./imageDialog";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { PrinterIcon } from "@heroicons/react/24/outline";
+import { PrinterIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AssetDetailSheet } from "./detailSheet";
 import { AssetFilters } from "./asset-filters";
+import { calculateAssetDepreciation } from "@/lib/finance";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { MaintenanceHistoryDialog } from "./maintenance-history-dialog";
 
 export default async function AssetTable({
     query,
@@ -201,447 +203,555 @@ export default async function AssetTable({
         }
     };
 
-    const getSoftwareBadgeVariant = (count: number) => {
-        if (count === 0) return "outline";
-        if (count <= 2) return "secondary";
-        if (count <= 5) return "default";
-        return "destructive";
-    };
-
-    const getSoftwareBadgeColor = (count: number) => {
-        if (count === 0) return "text-gray-500 bg-gray-50 border-gray-200 dark:bg-gray-900/30 dark:text-gray-400 dark:border-gray-700";
-        if (count <= 2) return "text-blue-700 bg-blue-50 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800";
-        if (count <= 5) return "text-green-700 bg-green-50 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800";
-        return "text-red-700 bg-red-50 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800";
-    };
-
     return (
-        <div className="mt-6 flow-root">
-            {/* Detailed Asset Statistics from dataGeneral */}
-            <div className="mb-8">
-                <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="asset-overview" className="border rounded-lg bg-white/50 dark:bg-slate-800/50">
-                        <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-slate-50/50 dark:hover:bg-slate-700/50">
-                            <div className="flex items-center">
-                                <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center">
-                                    📈 Asset Overview
-                                    <Badge variant="outline" className="ml-2 bg-blue-500 text-white">
-                                        General Statistics
-                                    </Badge>
-                                </h2>
-                            </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="px-4 pb-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-                                {statsCards.map((card, index) => (
-                                    <Card
-                                        key={index}
-                                        className={`bg-gradient-to-r ${card.gradient} border ${card.darkGradient} shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}
-                                    >
-                                        <CardContent className="p-4">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex-1">
-                                                    <p className={`text-sm font-medium ${card.textColor} mb-1`}>
-                                                        {card.title}
-                                                    </p>
-                                                    <p className={`text-base font-bold ${card.valueColor} mb-1`}>
-                                                        {card.value}
-                                                    </p>
-                                                    <p className="text-xs text-slate-600 dark:text-slate-400 truncate">
-                                                        {card.description}
-                                                    </p>
-                                                </div>
-                                                <div className="w-12 h-12 bg-white/50 dark:bg-black/20 rounded-full flex items-center justify-center ml-2">
-                                                    <span className="text-lg">{card.icon}</span>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                ))}
-                            </div>
-
-                            {/* Additional Summary Card */}
-                            <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                <Card className="bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200 dark:from-slate-800/20 dark:to-slate-700/20 dark:border-slate-700">
+        <div className="flow-root space-y-6">
+            {/* Statistik lengkap — accordion */}
+            <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="asset-overview" className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm overflow-hidden">
+                    <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                        <span className="font-inter text-sm font-semibold text-slate-800 dark:text-slate-200">
+                            Statistik lengkap
+                        </span>
+                        <Badge variant="outline" className="ml-2 font-inter text-[10px] font-medium">
+                            Semua metrik
+                        </Badge>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-5 pb-5 pt-0">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {statsCards.map((card, index) => (
+                                <Card
+                                    key={index}
+                                    className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 shadow-sm"
+                                >
                                     <CardContent className="p-4">
                                         <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                                    📋 Status Distribution
-                                                </p>
-                                                <div className="space-y-1">
-                                                    <div className="flex justify-between text-sm">
-                                                        <span>In Use:</span>
-                                                        <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                                                            {statusCount.inUse} ({totalAssets > 0 ? Math.round((statusCount.inUse / totalAssets) * 100) : 0}%)
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex justify-between text-sm">
-                                                        <span>Available:</span>
-                                                        <span className="font-semibold text-amber-600 dark:text-amber-400">
-                                                            {statusCount.available} ({totalAssets > 0 ? Math.round((statusCount.available / totalAssets) * 100) : 0}%)
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex justify-between text-sm">
-                                                        <span>Maintenance:</span>
-                                                        <span className="font-semibold text-red-600 dark:text-red-400">
-                                                            {statusCount.maintenance} ({totalAssets > 0 ? Math.round((statusCount.maintenance / totalAssets) * 100) : 0}%)
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="w-16 h-16 bg-white/50 dark:bg-black/20 rounded-full flex items-center justify-center">
-                                                <span className="text-2xl">📊</span>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-
-                                <Card className="bg-gradient-to-r from-cyan-50 to-cyan-100 border-cyan-200 dark:from-cyan-900/20 dark:to-cyan-800/20 dark:border-cyan-700">
-                                    <CardContent className="p-4">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm font-medium text-cyan-700 dark:text-cyan-300 mb-2">
-                                                    💾 Software Distribution
-                                                </p>
-                                                <div className="space-y-1">
-                                                    <div className="flex justify-between text-sm">
-                                                        <span>Total Software:</span>
-                                                        <span className="font-semibold text-cyan-600 dark:text-cyan-400">
-                                                            {totalSoftwareInstallations}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex justify-between text-sm">
-                                                        <span>Assets with Software:</span>
-                                                        <span className="font-semibold text-cyan-600 dark:text-cyan-400">
-                                                            {assetsData.filter(asset => (asset.softwareInstallations?.length || 0) > 0).length}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex justify-between text-sm">
-                                                        <span>Avg per Asset:</span>
-                                                        <span className="font-semibold text-cyan-600 dark:text-cyan-400">
-                                                            {totalAssets > 0 ? (totalSoftwareInstallations / totalAssets).toFixed(1) : 0}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="w-16 h-16 bg-white/50 dark:bg-black/20 rounded-full flex items-center justify-center">
-                                                <span className="text-2xl">💻</span>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
-            </div>
-
-            <div className="mb-6">
-                <div className="flex flex-col space-y-4">
-                    <div className="mb-6">
-                        <AssetFilters
-                            assetTypes={assetTypes}
-                            userNames={userNames}
-                            departments={departments}
-                            statuses={statuses}
-                            locations={locations}
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Asset Table Section */}
-            <div className="min-w-full align-middle">
-                {/* Mobile View */}
-                <div className="lg:hidden space-y-4">
-                    {assetsWithSoftwareCount.map((data, index) => (
-                        <Card
-                            key={data.id}
-                            className="bg-white/80 backdrop-blur-sm border-l-4 border-l-blue-500 shadow-lg hover:shadow-xl transition-all duration-300 dark:bg-slate-800/80 dark:border-l-blue-400"
-                        >
-                            <CardContent className="p-4">
-                                <div className="space-y-3">
-                                    {/* Header */}
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex items-center space-x-2">
-                                            <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                                                #{data.assetNumber}
-                                            </Badge>
-                                            <Badge variant={getStatusVariant(data.status)} className="text-xs">
-                                                {data.status}
-                                            </Badge>
-                                            <Badge
-                                                variant={getSoftwareBadgeVariant(data.softwareCount)}
-                                                className={`text-xs ${getSoftwareBadgeColor(data.softwareCount)}`}
-                                            >
-                                                {data.softwareCount} software
-                                            </Badge>
-                                        </div>
-                                        <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                                            {index + 1}
-                                        </span>
-                                    </div>
-
-                                    {/* Content */}
-                                    <div className="grid grid-cols-1 gap-2">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-16 h-16 overflow-hidden rounded-lg border border-blue-200 dark:border-blue-800">
-                                                <ImageDialog
-                                                    src={data.assetImage1 || "/noImage.jpg"}
-                                                    alt={`${data.assetNumber} Asset Image`}
-                                                />
-                                            </div>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-semibold text-slate-900 dark:text-white truncate">
-                                                    {data.product.part_name}
-                                                </h3>
-                                                <p className="text-sm text-slate-600 dark:text-slate-400">
-                                                    {data.product.part_number}
+                                                <p className="font-inter text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1 truncate">
+                                                    {card.title}
                                                 </p>
+                                                <p className="font-inter text-xl font-bold text-slate-900 dark:text-white tabular-nums">
+                                                    {card.value}
+                                                </p>
+                                                <p className="font-inter text-[10px] text-slate-500 dark:text-slate-500 truncate mt-0.5">
+                                                    {card.description}
+                                                </p>
+                                            </div>
+                                            <div className="w-9 h-9 rounded-lg bg-white dark:bg-slate-700/50 flex items-center justify-center shrink-0 ml-2">
+                                                <span className="text-base">{card.icon}</span>
                                             </div>
                                         </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
 
-                                        <div className="grid grid-cols-2 gap-2 text-sm">
-                                            <div>
-                                                <span className="text-slate-500 dark:text-slate-400">Type:</span>
-                                                <p className="font-medium text-slate-900 dark:text-white">
-                                                    {data.assetType.name}
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <span className="text-slate-500 dark:text-slate-400">Life:</span>
-                                                <p className="font-medium text-slate-900 dark:text-white">
-                                                    {data.usefulLife}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-1 text-sm">
-                                            <div className="flex items-center space-x-2">
-                                                <span className="text-slate-500 dark:text-slate-400">👤</span>
-                                                <span className="font-medium text-slate-900 dark:text-white">
-                                                    {data.employee?.name || 'Unassigned'}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center space-x-2">
-                                                <span className="text-slate-500 dark:text-slate-400">🏢</span>
-                                                <span className="font-medium text-slate-900 dark:text-white">
-                                                    {data.department?.dept_name || 'Unassigned'}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center space-x-2">
-                                                <span className="text-slate-500 dark:text-slate-400">📍</span>
-                                                <span className="font-medium text-slate-900 dark:text-white">
-                                                    {data.location}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-2 gap-2 text-sm">
-                                            <div>
-                                                <span className="text-slate-500 dark:text-slate-400">Cost:</span>
-                                                <p className="font-medium text-green-600 dark:text-green-400">
-                                                    {formatCurrencyQtt(Number(data.purchaseCost?.toString()))}
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <span className="text-slate-500 dark:text-slate-400">Date:</span>
-                                                <p className="font-medium text-slate-900 dark:text-white">
-                                                    {data.purchaseDate?.toLocaleDateString()}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Actions */}
-                                    <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-                                        <UpdateAssetLink id={data.id} />
-                                        <DeleteAlertProduct id={data.id} />
-                                        <Link href={`/dashboard/asset/generate-pdf/${data.id}`} passHref>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="text-blue-600 border-blue-200 hover:bg-blue-600 hover:text-white dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-800"
-                                            >
-                                                <PrinterIcon className="w-4 h-4" />
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-
-                {/* Desktop View */}
-                <div className="hidden lg:block">
-                    <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0 dark:bg-slate-800/80">
-                        <Table className="border-separate border-spacing-0">
-                            <TableHeader>
-                                <TableRow className="bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 dark:from-sky-500 dark:to-indigo-700 dark:hover:from-sky-600 dark:hover:to-indigo-800">
-                                    <TableHead className="w-12 text-white font-semibold border-r border-blue-500/30 py-4 text-center">
-                                        No
-                                    </TableHead>
-                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
-                                        Asset Number
-                                    </TableHead>
-                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
-                                        Description
-                                    </TableHead>
-                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
-                                        Asset Type
-                                    </TableHead>
-                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
-                                        Useful Life
-                                    </TableHead>
-                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
-                                        User Name
-                                    </TableHead>
-                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
-                                        Department
-                                    </TableHead>
-                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
-                                        Location
-                                    </TableHead>
-                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
-                                        Cost Purchase
-                                    </TableHead>
-                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
-                                        Date Purchase
-                                    </TableHead>
-                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
-                                        Status
-                                    </TableHead>
-                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
-                                        Software
-                                    </TableHead>
-                                    <TableHead className="text-white font-semibold border-r border-blue-500/30 py-4">
-                                        Image
-                                    </TableHead>
-                                    <TableHead className="text-white font-semibold py-4 text-center">
-                                        Actions
-                                    </TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody className="bg-transparent">
-                                {Object.entries(groupedData).map(([deptName, items]) => (
-                                    <React.Fragment key={deptName}>
-                                        {/* Department Header */}
-                                        <TableRow className="bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 dark:from-blue-900/20 dark:to-blue-800/20 dark:hover:from-blue-800/30 dark:hover:to-blue-700/30">
-                                            <TableCell
-                                                colSpan={14}
-                                                className="font-bold text-lg text-blue-900 dark:text-blue-100 py-3 px-6 border-b border-blue-200 dark:border-blue-700"
-                                            >
-                                                <div className="flex items-center space-x-3">
-                                                    <div className="w-2 h-6 bg-blue-500 rounded-full"></div>
-                                                    <span>🏢 {deptName}</span>
-                                                    <Badge variant="secondary" className="ml-2 bg-blue-500 text-white">
-                                                        {items.length} assets
-                                                    </Badge>
-                                                    <Badge variant="outline" className="ml-2 bg-green-500 text-white">
-                                                        {items.reduce((sum, item) => sum + item.softwareCount, 0)} total software
-                                                    </Badge>
+                        <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <Card className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 shadow-sm">
+                                <CardContent className="p-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="font-inter text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                                                📋 Status Distribution
+                                            </p>
+                                            <div className="space-y-1">
+                                                <div className="flex justify-between font-inter text-[11px]">
+                                                    <span>In Use:</span>
+                                                    <span className="font-asset-num font-medium text-emerald-600 dark:text-emerald-400 tabular-nums">
+                                                        {statusCount.inUse} ({totalAssets > 0 ? Math.round((statusCount.inUse / totalAssets) * 100) : 0}%)
+                                                    </span>
                                                 </div>
-                                            </TableCell>
-                                        </TableRow>
+                                                <div className="flex justify-between font-inter text-[11px]">
+                                                    <span>Available:</span>
+                                                    <span className="font-asset-num font-medium text-amber-600 dark:text-amber-400 tabular-nums">
+                                                        {statusCount.available} ({totalAssets > 0 ? Math.round((statusCount.available / totalAssets) * 100) : 0}%)
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between font-inter text-[11px]">
+                                                    <span>Maintenance:</span>
+                                                    <span className="font-asset-num font-medium text-red-600 dark:text-red-400 tabular-nums">
+                                                        {statusCount.maintenance} ({totalAssets > 0 ? Math.round((statusCount.maintenance / totalAssets) * 100) : 0}%)
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="w-16 h-16 bg-white/50 dark:bg-black/20 rounded-full flex items-center justify-center">
+                                            <span className="text-2xl">📊</span>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
 
-                                        {/* Department Data */}
-                                        {items.map((data, index) => (
-                                            <TableRow
-                                                key={`${deptName}-${data.id}`}
-                                                className="bg-white/50 hover:bg-blue-50/80 dark:bg-slate-800/50 dark:hover:bg-blue-900/20 transition-colors duration-200 border-b border-slate-200/50 dark:border-slate-700/50"
-                                            >
-                                                <TableCell className="text-center font-medium text-slate-600 dark:text-slate-400 py-3">
-                                                    {index + 1}
-                                                </TableCell>
-                                                <TableCell className="font-semibold text-blue-700 dark:text-blue-300 py-3">
-                                                    <div className="flex items-center space-x-2">
-                                                        <span className="text-lg">🎫</span>
-                                                        <span>{data.assetNumber}</span>
+                            <Card className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 shadow-sm">
+                                <CardContent className="p-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="font-inter text-[12px] font-semibold text-cyan-700 dark:text-cyan-300 mb-2">
+                                                💾 Software Distribution
+                                            </p>
+                                            <div className="space-y-1">
+                                                <div className="flex justify-between font-inter text-[11px]">
+                                                    <span>Total Software:</span>
+                                                    <span className="font-asset-num font-medium text-cyan-600 dark:text-cyan-400 tabular-nums">
+                                                        {totalSoftwareInstallations}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between font-inter text-[11px]">
+                                                    <span>Assets with Software:</span>
+                                                    <span className="font-asset-num font-medium text-cyan-600 dark:text-cyan-400 tabular-nums">
+                                                        {assetsData.filter(asset => (asset.softwareInstallations?.length || 0) > 0).length}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between font-inter text-[11px]">
+                                                    <span>Avg per Asset:</span>
+                                                    <span className="font-asset-num font-medium text-cyan-600 dark:text-cyan-400 tabular-nums">
+                                                        {totalAssets > 0 ? (totalSoftwareInstallations / totalAssets).toFixed(1) : 0}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="w-16 h-16 bg-white/50 dark:bg-black/20 rounded-full flex items-center justify-center">
+                                            <span className="text-2xl">💻</span>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+
+            {/* Filter */}
+            <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm overflow-hidden">
+                <AssetFilters
+                    assetTypes={assetTypes}
+                    userNames={userNames}
+                    departments={departments}
+                    statuses={statuses}
+                    locations={locations}
+                />
+            </section>
+
+            {/* Daftar Aset — Tabel */}
+            <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm overflow-hidden">
+                <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <h2 className="font-inter text-sm font-semibold text-slate-800 dark:text-slate-200">
+                        Daftar Aset
+                    </h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                        Menampilkan halaman {currentPage} — {assetsWithSoftwareCount.length} aset
+                    </p>
+                </div>
+                <div className="w-full">
+                    <TooltipProvider delayDuration={0}>
+                        {/* Mobile View */}
+                        <div className="lg:hidden p-4 space-y-4">
+                            {assetsWithSoftwareCount.map((data) => (
+                                <Card key={data.id} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 shadow-sm overflow-hidden">
+                                    <CardContent className="p-0">
+                                        <div className="p-4 space-y-4">
+                                            {/* Baris 1: No. Aset (utama) + Status */}
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div className="flex items-center gap-3 min-w-0">
+                                                    <div className="w-14 h-14 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-600 shrink-0">
+                                                        <ImageDialog src={data.assetImage1 || "/noImage.jpg"} alt={data.assetNumber} />
                                                     </div>
-                                                </TableCell>
-                                                <TableCell className="py-3">
-                                                    <div>
-                                                        <div className="font-medium text-slate-900 dark:text-white">
-                                                            {data.product.part_name}
-                                                        </div>
-                                                        <div className="text-sm text-slate-500 dark:text-slate-400">
-                                                            {data.product.part_number}
-                                                        </div>
+                                                    <div className="min-w-0">
+                                                        <div className="font-inter text-sm font-semibold text-slate-900 dark:text-white truncate">#{data.assetNumber}</div>
+                                                        <div className="font-inter text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">{data.assetType.name}</div>
                                                     </div>
-                                                </TableCell>
-                                                <TableCell className="py-3">
-                                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                                                        {data.assetType.name}
+                                                </div>
+                                                <Badge variant={getStatusVariant(data.status)} className="font-inter shrink-0 rounded-md px-2 py-0.5 font-medium text-[10px] uppercase">
+                                                    {data.status}
+                                                </Badge>
+                                            </div>
+                                            {/* Baris 2: Nama produk */}
+                                            <div className="rounded-lg bg-slate-50 dark:bg-slate-800/50 p-3 border border-slate-100 dark:border-slate-700/50">
+                                                <div className="font-inter font-medium text-[12px] text-slate-900 dark:text-white line-clamp-1">
+                                                    {data.product.part_name}
+                                                </div>
+                                                <div className="font-inter text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                                    Part: {data.product.part_number}
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-3 items-center">
+                                                <div className="space-y-1.5">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-xs opacity-60">👤</span>
+                                                        <span className="font-inter text-[12px] font-normal text-slate-700 dark:text-slate-300 truncate">{data.employee?.name || 'Unassigned'}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-xs opacity-60">📍</span>
+                                                        <span className="font-inter text-[11px] font-normal text-slate-500 dark:text-slate-400 truncate tracking-tight">{data.location}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex flex-col items-end justify-center border-l dark:border-slate-800 pl-3">
+                                                    {(() => {
+                                                        const dep = calculateAssetDepreciation(
+                                                            data.purchaseCost,
+                                                            data.purchaseDate,
+                                                            data.usefulLife,
+                                                            data.residualValue
+                                                        );
+                                                        return (
+                                                            <>
+                                                                <div className="font-asset-num text-[12px] text-blue-600 dark:text-blue-400 leading-none flex items-center gap-1 tabular-nums">
+                                                                    {formatCurrencyQtt(dep.bookValue)}
+                                                                    <div className={`w-1.5 h-1.5 rounded-full ${dep.percentRemaining > 50 ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]' : dep.percentRemaining > 20 ? 'bg-amber-500' : 'bg-red-500'}`} />
+                                                                </div>
+                                                                <div className="font-asset-num text-[11px] text-slate-400 uppercase mt-1 text-right tracking-tight tabular-nums">
+                                                                    {dep.percentRemaining.toFixed(0)}% Health
+                                                                </div>
+                                                            </>
+                                                        );
+                                                    })()}
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800/50">
+                                                <div className="flex gap-2">
+                                                    <Badge variant="outline" className="font-inter text-[10px] font-medium px-2 py-0.5 border-blue-100 dark:border-blue-900/30 bg-blue-50/50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 uppercase tracking-tighter">
+                                                        {data.softwareCount} Software
                                                     </Badge>
-                                                </TableCell>
-                                                <TableCell className="text-center text-slate-700 dark:text-slate-300 py-3">
-                                                    {data.usefulLife}
-                                                </TableCell>
-                                                <TableCell className="py-3">
-                                                    <div className="flex items-center space-x-2">
-                                                        <span className="text-slate-400">👤</span>
-                                                        <span className="text-slate-700 dark:text-slate-300">
-                                                            {data.employee?.name || 'Unassigned'}
-                                                        </span>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="text-slate-700 dark:text-slate-300 py-3">
-                                                    {data.department?.dept_name || 'Unassigned'}
-                                                </TableCell>
-                                                <TableCell className="text-slate-700 dark:text-slate-300 py-3">
-                                                    {data.location}
-                                                </TableCell>
-                                                <TableCell className="font-semibold text-green-600 dark:text-green-400 py-3">
-                                                    {formatCurrencyQtt(Number(data.purchaseCost?.toString()))}
-                                                </TableCell>
-                                                <TableCell className="text-slate-700 dark:text-slate-300 py-3">
-                                                    {data.purchaseDate?.toLocaleDateString()}
-                                                </TableCell>
-                                                <TableCell className="py-3">
-                                                    <Badge variant={getStatusVariant(data.status)}>
-                                                        {data.status}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="py-3">
-                                                    <Badge
-                                                        variant={getSoftwareBadgeVariant(data.softwareCount)}
-                                                        className={getSoftwareBadgeColor(data.softwareCount)}
-                                                    >
-                                                        {data.softwareCount === 0 ? 'No software' : `${data.softwareCount} installed`}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="py-3">
-                                                    <div className="w-12 h-12 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
-                                                        <ImageDialog
-                                                            src={data.assetImage1 || "/noImage.jpg"}
-                                                            alt={`${data.assetNumber} Asset Image`}
-                                                        />
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="py-3">
-                                                    <div className="flex items-center justify-center space-x-1">
-                                                        <AssetDetailSheet asset={data} />
-                                                        <Link href={`/dashboard/asset/asset-software/create/${data.id}`}>
-                                                            <Button variant="outline" size="sm">
-                                                                Assign Software
-                                                            </Button>
-                                                        </Link>
-                                                        <PrintAssetButton id={data.id} />
-                                                        <UpdateAssetLink id={data.id} />
-                                                        <DeleteAlertProduct id={data.id} />
+                                                    <MaintenanceHistoryDialog
+                                                        tickets={data.tickets || []}
+                                                        assetNumber={data.assetNumber}
+                                                    />
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <div>
+                                                                <AssetDetailSheet asset={data} />
+                                                            </div>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Lihat Detail Aset</TooltipContent>
+                                                    </Tooltip>
+
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Link href={`/dashboard/asset/asset-software/create/${data.id}`}>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    className="w-8 h-8 bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800 dark:hover:bg-indigo-600 transition-all duration-200 group p-0"
+                                                                >
+                                                                    <PlusIcon className="w-4 h-4 group-hover:scale-110 transition-transform duration-200 text-indigo-600 dark:text-indigo-400 group-hover:text-white" />
+                                                                </Button>
+                                                            </Link>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Pasang Software</TooltipContent>
+                                                    </Tooltip>
+
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <div>
+                                                                <UpdateAssetLink id={data.id} />
+                                                            </div>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Ubah Aset</TooltipContent>
+                                                    </Tooltip>
+
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <div>
+                                                                <DeleteAlertProduct id={data.id} />
+                                                            </div>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Hapus Aset</TooltipContent>
+                                                    </Tooltip>
+
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Link href={`/dashboard/asset/generate-pdf/${data.id}`}>
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className="w-8 h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
+                                                                >
+                                                                    <PrinterIcon className="w-4 h-4" />
+                                                                </Button>
+                                                            </Link>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>Cetak PDF</TooltipContent>
+                                                    </Tooltip>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+
+                        {/* Desktop View - Fixed table without overflow */}
+                        <div className="hidden lg:block overflow-x-auto">
+                            <Table className="w-full">
+                                <TableHeader>
+                                    <TableRow className="bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-900">
+                                        <TableHead className="font-inter w-12 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-800 py-5 text-center uppercase text-[12px] tracking-widest whitespace-nowrap">
+                                            #
+                                        </TableHead>
+                                        <TableHead className="font-inter text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-800 py-5 uppercase text-[12px] tracking-widest whitespace-nowrap">
+                                            Asset Info
+                                        </TableHead>
+                                        <TableHead className="font-inter text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-800 py-5 uppercase text-[12px] tracking-widest whitespace-nowrap">
+                                            Product Details
+                                        </TableHead>
+                                        <TableHead className="font-inter text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-800 py-5 uppercase text-[12px] tracking-widest whitespace-nowrap">
+                                            Assignment
+                                        </TableHead>
+                                        <TableHead className="font-inter text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-800 py-5 uppercase text-[12px] tracking-widest text-center whitespace-nowrap">
+                                            Financial
+                                        </TableHead>
+                                        <TableHead className="font-inter text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-800 py-5 uppercase text-[12px] tracking-widest text-center whitespace-nowrap">
+                                            Status
+                                        </TableHead>
+                                        <TableHead className="font-inter text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-800 py-5 uppercase text-[12px] tracking-widest text-center whitespace-nowrap">
+                                            Maintenance
+                                        </TableHead>
+                                        <TableHead className="font-inter text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-100 dark:border-slate-800 py-5 text-center uppercase text-[12px] tracking-widest whitespace-nowrap">
+                                            Actions
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {Object.entries(groupedData).map(([deptName, items]) => (
+                                        <React.Fragment key={deptName}>
+                                            {/* Department Header */}
+                                            <TableRow className="bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 dark:from-blue-900/20 dark:to-blue-800/20 dark:hover:from-blue-800/30 dark:hover:to-blue-700/30">
+                                                <TableCell
+                                                    colSpan={14}
+                                                    className="font-inter font-bold text-[15px] text-blue-900 dark:text-blue-100 py-3 px-6 border-b border-blue-200 dark:border-blue-700"
+                                                >
+                                                    <div className="flex items-center space-x-3">
+                                                        <div className="w-2 h-6 bg-blue-500 rounded-full"></div>
+                                                        <span>🏢 {deptName}</span>
+                                                        <Badge variant="secondary" className="font-inter ml-2 bg-blue-500 text-white text-[10px] font-medium">
+                                                            {items.length} assets
+                                                        </Badge>
+                                                        <Badge variant="outline" className="font-inter ml-2 bg-green-500 text-white text-[10px] font-medium">
+                                                            {items.reduce((sum, item) => sum + item.softwareCount, 0)} total software
+                                                        </Badge>
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
-                                        ))}
-                                    </React.Fragment>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </Card>
+
+                                            {/* Department Data */}
+                                            {items.map((data, index) => (
+                                                <TableRow
+                                                    key={`${deptName}-${data.id}`}
+                                                    className="bg-transparent hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-all duration-300"
+                                                >
+                                                    <TableCell className="font-asset-num text-[11px] text-center font-normal text-slate-400 py-4 border-b border-slate-50 dark:border-slate-800/30 tabular-nums">
+                                                        {index + 1}
+                                                    </TableCell>
+                                                    <TableCell className="py-4 border-b border-slate-50 dark:border-slate-800/30">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-12 h-12 overflow-hidden rounded-xl border-2 border-zinc-100 dark:border-zinc-800 group-hover:border-blue-500/30 transition-colors duration-300 shadow-sm shrink-0">
+                                                                <ImageDialog src={data.assetImage1 || "/noImage.jpg"} alt={data.assetNumber} />
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <div className="font-inter text-[12px] font-normal text-blue-600 dark:text-blue-400 tracking-tight truncate">#{data.assetNumber}</div>
+                                                                <div className="font-inter text-[11px] font-normal text-slate-400 uppercase tracking-widest truncate">{data.assetType.name}</div>
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="py-4 border-b border-slate-50 dark:border-slate-800/30">
+                                                        <div className="max-w-[200px]">
+                                                            <div className="font-inter font-normal text-[12px] text-slate-900 dark:text-white truncate" title={data.product.part_name}>
+                                                                {data.product.part_name}
+                                                            </div>
+                                                            <div className="font-inter text-[11px] font-normal text-slate-500 dark:text-slate-400 truncate tracking-tight">
+                                                                {data.product.part_number}
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="py-4 border-b border-slate-50 dark:border-slate-800/30">
+                                                        <div className="space-y-1">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span
+                                                                    className="font-inter text-[12px] font-normal text-slate-900 dark:text-slate-100 truncate max-w-[120px]"
+                                                                    // Menggunakan ?? undefined untuk menangani tipe null
+                                                                    title={data.employee?.name ?? 'Unassigned'}
+                                                                >
+                                                                    {data.employee?.name || 'Unassigned'}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 opacity-70">
+                                                                <span
+                                                                    className="font-inter text-[11px] font-normal text-slate-500 truncate max-w-[120px]"
+                                                                    // Tambahkan ?? undefined di sini
+                                                                    title={data.location ?? undefined}
+                                                                >
+                                                                    📍 {data.location}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="py-4 border-b border-slate-50 dark:border-slate-800/30 text-center">
+                                                        <div className="flex flex-col items-center gap-1">
+                                                            {(() => {
+                                                                const dep = calculateAssetDepreciation(
+                                                                    data.purchaseCost,
+                                                                    data.purchaseDate,
+                                                                    data.usefulLife,
+                                                                    data.residualValue
+                                                                );
+                                                                return (
+                                                                    <Tooltip>
+                                                                        <TooltipTrigger asChild>
+                                                                            <div className="cursor-help flex flex-col items-center text-center border-b border-dotted border-blue-200 dark:border-blue-800/50 pb-0.5">
+                                                                                <div className="flex items-center gap-1">
+                                                                                    <span className="font-asset-num text-[12px] text-blue-600 dark:text-blue-400 tabular-nums whitespace-nowrap">
+                                                                                        {formatCurrencyQtt(dep.bookValue)}
+                                                                                    </span>
+                                                                                    <div className={`w-2 h-2 rounded-full ${dep.percentRemaining > 50 ? 'bg-green-500' : dep.percentRemaining > 20 ? 'bg-amber-500' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'}`} />
+                                                                                    {dep.isValid && dep.isNearingEndOfLife && (
+                                                                                        <Badge variant="outline" className="font-inter ml-1 px-1 h-3.5 text-[10px] font-medium bg-red-50 text-red-600 border-red-200 animate-pulse whitespace-nowrap">
+                                                                                            SOON EXPIRED
+                                                                                        </Badge>
+                                                                                    )}
+                                                                                </div>
+                                                                                <span className="font-asset-num text-[11px] text-slate-400 uppercase tracking-tighter tabular-nums whitespace-nowrap">
+                                                                                    Cost: {formatCurrencyQtt(dep.purchaseCost)}
+                                                                                </span>
+                                                                            </div>
+                                                                        </TooltipTrigger>
+                                                                        <TooltipContent className="bg-slate-900 text-white border-slate-800 p-3 rounded-xl shadow-2xl z-50 max-w-[220px]">
+                                                                            <div className="space-y-2">
+                                                                                <div className="flex items-center justify-between border-b border-slate-700 pb-1.5 mb-1.5">
+                                                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">Ringkasan Finansial</span>
+                                                                                    <Badge variant="outline" className="font-inter font-medium h-4 text-[10px] border-slate-700 text-slate-400 px-1">
+                                                                                        Sisa {dep.percentRemaining.toFixed(0)}%
+                                                                                    </Badge>
+                                                                                </div>
+
+                                                                                {!dep.isValid ? (
+                                                                                    <div className="text-[10px] text-amber-400 italic py-1">
+                                                                                        ⚠️ Data tidak lengkap untuk kalkulasi
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px]">
+                                                                                        <span className="text-slate-400">Harga Beli:</span>
+                                                                                        <span className="text-right font-asset-num tabular-nums">{formatCurrencyQtt(dep.purchaseCost)}</span>
+
+                                                                                        <span className="text-slate-400">Akum. Penyusutan:</span>
+                                                                                        <span className="text-right font-asset-num text-red-400 tabular-nums">-{formatCurrencyQtt(dep.accumulatedDepreciation)}</span>
+
+                                                                                        <span className="text-slate-400">Nilai Sisa:</span>
+                                                                                        <span className="text-right font-asset-num text-green-400 tabular-nums">{formatCurrencyQtt(dep.residualValue)}</span>
+
+                                                                                        <div className="col-span-2 border-t border-slate-800 my-1 pt-1 flex justify-between">
+                                                                                            <span className="text-slate-400">Progress Umur:</span>
+                                                                                            <span className="font-bold whitespace-nowrap">{dep.monthsElapsed} / {dep.totalMonths} Bln</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                )}
+
+                                                                                <div className="pt-2 border-t border-slate-800 mt-2">
+                                                                                    <p className="text-[10px] text-yellow-500 leading-tight italic">
+                                                                                        * Dihitung menggunakan **Metode Garis Lurus**. Nilai aset berkurang secara seragam selama masa manfaatnya hingga mencapai nilai sisa.
+                                                                                    </p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </TooltipContent>
+                                                                    </Tooltip>
+                                                                );
+                                                            })()}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="py-4 border-b border-slate-50 dark:border-slate-800/30 text-center">
+                                                        <div className="flex flex-col items-center gap-1.5">
+                                                            <Badge variant={getStatusVariant(data.status)} className="font-inter rounded-md px-2 py-0 font-medium text-[10px] uppercase tracking-tighter whitespace-nowrap">
+                                                                {data.status}
+                                                            </Badge>
+                                                            <Badge variant="outline" className="font-inter text-[10px] font-medium px-1.5 py-0 border-blue-100 dark:border-blue-900/30 bg-blue-50/50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 whitespace-nowrap">
+                                                                {data.softwareCount} SW
+                                                            </Badge>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="py-4 border-b border-slate-50 dark:border-slate-800/30 text-center">
+                                                        <MaintenanceHistoryDialog
+                                                            tickets={data.tickets || []}
+                                                            assetNumber={data.assetNumber}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell className="py-4 border-b border-slate-50 dark:border-slate-800/30">
+                                                        <div className="flex items-center justify-center space-x-1">
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <div>
+                                                                        <AssetDetailSheet asset={data} />
+                                                                    </div>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>Lihat Detail Aset</TooltipContent>
+                                                            </Tooltip>
+
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <Link href={`/dashboard/asset/asset-software/create/${data.id}`}>
+                                                                        <Button
+                                                                            variant="outline"
+                                                                            size="sm"
+                                                                            className="w-8 h-8 bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800 dark:hover:bg-indigo-600 transition-all duration-200 group p-0"
+                                                                        >
+                                                                            <PlusIcon className="w-4 h-4 group-hover:scale-110 transition-transform duration-200 text-indigo-600 dark:text-indigo-400 group-hover:text-white" />
+                                                                        </Button>
+                                                                    </Link>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>Pasang Software</TooltipContent>
+                                                            </Tooltip>
+
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <div>
+                                                                        <PrintAssetButton id={data.id} />
+                                                                    </div>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>Cetak PDF</TooltipContent>
+                                                            </Tooltip>
+
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <div>
+                                                                        <UpdateAssetLink
+                                                                            id={data.id}
+                                                                            searchParams={{
+                                                                                page: currentPage,
+                                                                                query,
+                                                                                assetType,
+                                                                                userName,
+                                                                                department,
+                                                                                status,
+                                                                                location,
+                                                                                software
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>Ubah Aset</TooltipContent>
+                                                            </Tooltip>
+
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <div>
+                                                                        <DeleteAlertProduct id={data.id} />
+                                                                    </div>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>Hapus Aset</TooltipContent>
+                                                            </Tooltip>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </React.Fragment>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </TooltipProvider>
                 </div>
-            </div>
+            </section>
         </div>
     );
 }

@@ -48,6 +48,13 @@ import { ArrowLeftIcon, PlusCircleIcon, Package, Layers, Tag, Box, Warehouse, Ma
 import LokasiRakForm from "./lokasi-rak-form";
 import RakForm from "./rak-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Poppins } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const font = Poppins({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700", "800", "900"],
+});
 
 const CreateProductForm = ({
     unitFind,
@@ -124,10 +131,11 @@ const CreateProductForm = ({
 
     return (
         <Form {...form}>
-            <div className="max-w-7xl mx-auto rounded-xl border bg-white dark:bg-gray-950 shadow-sm mt-6">
+            <div className={cn("max-w-7xl mx-auto rounded-xl border bg-white dark:bg-gray-950 shadow-sm mt-6 mb-10 overflow-hidden", font.className)}>
                 {/* Header */}
-                <div className="border-b bg-gradient-to-r from-blue-600 to-indigo-600 rounded-t-xl p-6 text-white">
-                    <div className="flex items-center justify-between">
+                <div className="border-b bg-slate-900 dark:bg-slate-900 p-6 text-white relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 opacity-50"></div>
+                    <div className="relative flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-white/20 rounded-lg">
                                 <Package className="h-6 w-6" />

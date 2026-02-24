@@ -217,6 +217,9 @@ export async function fetchProducts(query: string, currentPage: number) {
         kategoriproduct: true,
         jenisproduct: true,
         group: true,
+        _count: {
+          select: { assets: true },
+        },
       },
       where: {
         OR: [
@@ -474,3 +477,30 @@ export const fetchProductBySelect = async (
     return [];
   }
 };
+
+export async function fetchProductOverviewStats() {
+  noStore();
+  try {
+    const [totalProducts, totalCategories, totalTypes, totalBrands] = await Promise.all([
+      db.product.count(),
+      db.kategoriProduct.count(),
+      db.jenisProduct.count(),
+      db.brand.count(),
+    ]);
+
+    return {
+      totalProducts,
+      totalCategories,
+      totalTypes,
+      totalBrands,
+    };
+  } catch (error) {
+    console.error("Error Fetching Product Stats:", error);
+    return {
+      totalProducts: 0,
+      totalCategories: 0,
+      totalTypes: 0,
+      totalBrands: 0,
+    };
+  }
+}

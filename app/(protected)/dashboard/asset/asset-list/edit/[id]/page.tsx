@@ -14,7 +14,13 @@ import EditAssetForm from "@/components/asset-management/asset/edit-asset-form";
 import { $Enums, Employee } from "@prisma/client";
 
 
-const UpdateAsset = async ({ params }: { params: { id: string } }) => {
+const UpdateAsset = async ({
+    params,
+    searchParams
+}: {
+    params: { id: string },
+    searchParams: { [key: string]: string | string[] | undefined }
+}) => {
     const { id = "" } = params;
 
     const assetFind = await fetchAssetById(id);
@@ -55,6 +61,7 @@ const UpdateAsset = async ({ params }: { params: { id: string } }) => {
 
             {/* Form untuk update asset */}
             <EditAssetForm
+                returnParams={searchParams}
                 employeeDataFind={employeeFind}
                 assetTypeFind={Array.isArray(assetType) ? assetType : []}
                 assetFind={assetFind as {
@@ -74,12 +81,12 @@ const UpdateAsset = async ({ params }: { params: { id: string } }) => {
                     productId: string;
                     employeeId: string | null;
                     assetType: { id: string; name: string; createdAt: Date; updatedAt: Date; description: string | null; kode: string; };
-                    department: { 
-                        id: string; 
-                        dept_name: string; 
-                        note: string; 
-                        createdAt: Date; 
-                        updatedAt: Date; 
+                    department: {
+                        id: string;
+                        dept_name: string;
+                        note: string;
+                        createdAt: Date;
+                        updatedAt: Date;
                     };
                     product: { id: string, part_name: string };
                     employee?: Employee | null;

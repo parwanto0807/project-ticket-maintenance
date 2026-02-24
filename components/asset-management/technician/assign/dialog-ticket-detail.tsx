@@ -8,158 +8,179 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Card, CardContent } from "@/components/ui/card";
-import { TicketMaintenance } from "@prisma/client";
+import { TicketMaintenance, Technician } from "@prisma/client";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import ReadMoreText from "../../maintenance/read-more";
 import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2, Circle, Clock, Loader2 } from "lucide-react";
 
-export function TicketDialog({ ticket }: { ticket: TicketMaintenance }) {
+interface TicketWithRelations extends TicketMaintenance {
+  technician?: Technician | null;
+}
+
+export function TicketDialog({ ticket }: { ticket: TicketWithRelations }) {
   // Pastikan URL gambar tidak kosong, gunakan fallback "/noImage.jpg"
-  const imageSrc1 =
-    ticket.ticketImage1 && ticket.ticketImage1.trim() !== ""
-      ? ticket.ticketImage1
-      : "/noImage.jpg";
-  const imageSrc2 =
-    ticket.ticketImage2 && ticket.ticketImage2.trim() !== ""
-      ? ticket.ticketImage2
-      : "/noImage.jpg";
-  const imageSrc3 =
-    ticket.ticketImage3 && ticket.ticketImage3.trim() !== ""
-      ? ticket.ticketImage3
-      : "/noImage.jpg";
+  const imageSrc1 = ticket.ticketImage1?.trim() || "/noImage.jpg";
+  const imageSrc2 = ticket.ticketImage2?.trim() || "/noImage.jpg";
+  const imageSrc3 = ticket.ticketImage3?.trim() || "/noImage.jpg";
 
-  // Jika ticket.createdAt bukan objek Date, pastikan dikonversi
-  const createdAt = ticket.createdAt instanceof Date
-    ? ticket.createdAt
-    : new Date(ticket.createdAt);
+  const createdAt = ticket.createdAt instanceof Date ? ticket.createdAt : new Date(ticket.createdAt);
+
+  const statuses = [
+    { label: "Pending", value: "Pending", icon: Clock },
+    { label: "Assigned", value: "Assigned", icon: Circle },
+    { label: "In Progress", value: "In_Progress", icon: Loader2 },
+    { label: "Completed", value: "Completed", icon: CheckCircle2 },
+  ];
+
+  const currentStatusIndex = statuses.findIndex(s => s.value === ticket.status);
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="rounded-md border p-2 bg-green-500 text-white hover:bg-green-600 h-8 w-8 md:h-8 md:w-auto text-center hover:text-white flex justify-center items-center"
+          size="sm"
+          className="h-8 border-emerald-200 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
         >
-          <MagnifyingGlassIcon className="w-4 h-4" />
-          <span className="sr-only md:not-sr-only md:ml-2 md:inline">View</span>
+          <MagnifyingGlassIcon className="w-3.5 h-3.5 mr-1.5" />
+          Detail
         </Button>
       </DialogTrigger>
-      <DialogContent className="
-        w-[95vw] max-w-lg max-h-[85vh] 
-        md:max-w-2xl md:max-h-[70vh]
-        overflow-y-auto rounded-lg shadow-lg
-        mx-auto my-4
-      ">
-        <DialogHeader className="px-4 md:px-6 pt-4 md:pt-6">
-          <DialogTitle className="text-lg md:text-xl font-bold text-gray-800 dark:text-white text-center md:text-left">
-            {ticket.ticketNumber}
-          </DialogTitle>
-          <DialogDescription className="text-sm text-gray-600 dark:text-gray-300 text-center md:text-left">
-            Created on {createdAt.toDateString()}
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="px-4 md:px-6 pb-4 md:pb-6">
-          <Card className="border rounded-lg shadow-sm bg-gray-50 dark:bg-gray-800">
-            <CardContent className="grid gap-4 text-sm p-4 md:p-6">
-              {/* Trouble User Section */}
-              <div className="space-y-2">
-                <strong className="text-gray-700 dark:text-gray-300 block text-base">
-                  Trouble Report:
-                </strong>
-                <div className="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
-                  <ReadMoreText text={ticket.troubleUser} />
-                </div>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-none shadow-2xl">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white">
+          <DialogHeader>
+            <div className="flex justify-between items-start">
+              <div>
+                <DialogTitle className="text-2xl font-bold tracking-tight">
+                  {ticket.ticketNumber}
+                </DialogTitle>
+                <DialogDescription className="text-blue-100 mt-1">
+                  Created on {createdAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}
+                </DialogDescription>
               </div>
-
-              {/* Analysis Section */}
-              {ticket.analisaDescription && (
-                <div className="space-y-2">
-                  <strong className="text-gray-700 dark:text-gray-300 block text-base">
-                    Technician Analysis:
-                  </strong>
-                  <div className="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
-                    <ReadMoreText text={ticket.analisaDescription} />
-                  </div>
-                </div>
-              )}
-
-              {/* Action Section */}
-              {ticket.actionDescription && (
-                <div className="space-y-2">
-                  <strong className="text-gray-700 dark:text-gray-300 block text-base">
-                    Action Taken:
-                  </strong>
-                  <div className="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
-                    <ReadMoreText text={ticket.actionDescription} />
-                  </div>
-                </div>
-              )}
-
-              {/* Images Section */}
-              <div className="space-y-3">
-                <strong className="text-gray-700 dark:text-gray-300 block text-base">
-                  Documentation:
-                </strong>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                      Issue Image
-                    </div>
-                    <div className="w-24 h-24 md:w-28 md:h-28 rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600 shadow-sm">
-                      <Image
-                        src={imageSrc1}
-                        alt="Issue documentation"
-                        width={112}
-                        height={112}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                      Analysis Image
-                    </div>
-                    <div className="w-24 h-24 md:w-28 md:h-28 rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600 shadow-sm">
-                      <Image
-                        src={imageSrc2}
-                        alt="Analysis documentation"
-                        width={112}
-                        height={112}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                      Action Image
-                    </div>
-                    <div className="w-24 h-24 md:w-28 md:h-28 rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600 shadow-sm">
-                      <Image
-                        src={imageSrc3}
-                        alt="Action documentation"
-                        width={112}
-                        height={112}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-md uppercase tracking-wider text-[10px]">
+                {ticket.priorityStatus} Priority
+              </Badge>
+            </div>
+          </DialogHeader>
         </div>
 
-        <DialogFooter className="px-4 md:px-6 pb-4 md:pb-6">
+        <div className="p-6 space-y-8">
+          {/* Status Timeline */}
+          <div className="relative">
+            <div className="flex justify-between">
+              {statuses.map((s, i) => {
+                const Icon = s.icon;
+                const isActive = i <= currentStatusIndex;
+                const isCurrent = i === currentStatusIndex;
+
+                return (
+                  <div key={s.value} className="flex flex-col items-center relative z-10 w-1/4">
+                    <div className={`
+                      w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500
+                      ${isActive ? "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-200" : "bg-white border-gray-200 text-gray-300"}
+                      ${isCurrent ? "ring-4 ring-blue-100 animate-pulse" : ""}
+                    `}>
+                      <Icon className={`w-5 h-5 ${isCurrent && s.value === "In_Progress" ? "animate-spin" : ""}`} />
+                    </div>
+                    <span className={`text-[10px] font-bold mt-2 uppercase tracking-tighter ${isActive ? "text-blue-600" : "text-gray-400"}`}>
+                      {s.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            {/* Timeline Line */}
+            <div className="absolute top-5 left-[12.5%] right-[12.5%] h-0.5 bg-gray-100 -z-0">
+              <div
+                className="h-full bg-blue-600 transition-all duration-1000"
+                style={{ width: `${(currentStatusIndex / (statuses.length - 1)) * 100}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              <section>
+                <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Problem Description</h4>
+                <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-4 border border-gray-100 dark:border-slate-700">
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {ticket.troubleUser}
+                  </p>
+                </div>
+              </section>
+
+              {ticket.analisaDescription && (
+                <section>
+                  <h4 className="text-[11px] font-bold text-emerald-600 uppercase tracking-widest mb-3">Technician Analysis</h4>
+                  <div className="bg-emerald-50/50 dark:bg-emerald-900/10 rounded-xl p-4 border border-emerald-100 dark:border-emerald-900/30 font-medium italic text-emerald-800 dark:text-emerald-400">
+                    {ticket.analisaDescription}
+                  </div>
+                </section>
+              )}
+
+              {ticket.actionDescription && (
+                <section>
+                  <h4 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest mb-3">Resolution Action</h4>
+                  <div className="bg-blue-50/50 dark:bg-blue-900/10 rounded-xl p-4 border border-blue-100 dark:border-blue-900/30 font-medium text-blue-800 dark:text-blue-400">
+                    {ticket.actionDescription}
+                  </div>
+                </section>
+              )}
+            </div>
+
+            <div className="space-y-6">
+              <section>
+                <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Documentation</h4>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { src: imageSrc1, label: "Issue" },
+                    { src: imageSrc2, label: "Analysis" },
+                    { src: imageSrc3, label: "Action" }
+                  ].map((img, i) => (
+                    <div key={i} className="space-y-1.5">
+                      <div className="aspect-square rounded-lg overflow-hidden border border-gray-100 bg-gray-50 shadow-sm transition-transform hover:scale-105 cursor-zoom-in">
+                        <Image
+                          src={img.src}
+                          alt={img.label}
+                          width={200}
+                          height={200}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <p className="text-[9px] text-center font-bold text-gray-400 uppercase">{img.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <section className="bg-gray-900 rounded-xl p-4 text-white shadow-xl">
+                <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-3">Execution Info</h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-400">Schedule</span>
+                    <span className="font-mono">{ticket.scheduledDate ? new Date(ticket.scheduledDate).toLocaleDateString() : "TBD"}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-400">Completed</span>
+                    <span className="font-mono">{ticket.completedDate ? new Date(ticket.completedDate).toLocaleDateString() : "--"}</span>
+                  </div>
+                  <div className="h-px bg-gray-800 my-1" />
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-400">Technician Name</span>
+                    <span className="text-blue-400 font-bold truncate ml-4 text-right">{ticket.technician?.name || "UNASSIGNED"}</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <DialogFooter className="p-4 border-t border-gray-100 bg-gray-50 dark:bg-slate-900 dark:border-slate-800">
           <DialogTrigger asChild>
-            <Button 
-              variant="outline" 
-              className="w-full md:w-auto bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-white"
-            >
-              Close
+            <Button variant="ghost" className="w-full md:w-auto font-bold uppercase text-[11px]">
+              Close Overview
             </Button>
           </DialogTrigger>
         </DialogFooter>

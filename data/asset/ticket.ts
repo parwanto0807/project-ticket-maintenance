@@ -40,6 +40,31 @@ export async function generateTicketNumber() {
     throw new Error("Failed to generate ticket number");
   }
 }
+
+export async function fetchTicketAssignStats() {
+  noStore();
+  try {
+    const [total, pending, assigned, inProgress] = await Promise.all([
+      db.ticketMaintenance.count({
+        where: { NOT: { status: { in: ["Completed", "Canceled"] } } }
+      }),
+      db.ticketMaintenance.count({
+        where: { status: "Pending" }
+      }),
+      db.ticketMaintenance.count({
+        where: { status: "Assigned" }
+      }),
+      db.ticketMaintenance.count({
+        where: { status: "In_Progress" }
+      }),
+    ]);
+
+    return { total, pending, assigned, inProgress };
+  } catch (error) {
+    console.error("Failed to fetch ticket assign stats", error);
+    throw new Error("Failed to fetch ticket assign stats");
+  }
+}
 export const fetchTicketListAssign = async (
   query: string,
   currentPage: number
@@ -105,7 +130,7 @@ export const fetchTicketListSchedule = async (
         },
       },
       orderBy: {
-        updatedAt: "desc",
+        scheduledDate: "asc",
       },
       where: {
         AND: [
@@ -286,7 +311,7 @@ export const fetchTicketListTechnician = async (
         },
       },
       orderBy: {
-        updatedAt: "desc",
+        scheduledDate: "asc",
       },
       where: {
         AND: [
@@ -657,5 +682,45 @@ export const fetchTicketAnalistDepartment = async () => {
   } catch (error) {
     console.error("Failed to fetch ticket list", error);
     throw new Error("Failed to fetch ticket list");
+  }
+};
+
+export const fetchTicketCalendarData = async (query: string = "") => {
+  noStore();
+  try {
+    const tickets = await db.ticketMaintenance.findMany({
+      where: {
+        AND: [
+          { scheduledDate: { not: null } },
+          {
+            OR: [
+              { ticketNumber: { contains: query, mode: "insensitive" } },
+              { troubleUser: { contains: query, mode: "insensitive" } },
+              { asset: { product: { part_name: { contains: query, mode: "insensitive" } } } },
+              { technician: { name: { contains: query, mode: "insensitive" } } },
+            ],
+          },
+          {
+            NOT: { status: { in: ["Completed", "Canceled"] } },
+          },
+        ],
+      },
+      include: {
+        employee: true,
+        technician: true,
+        asset: {
+          include: {
+            product: true,
+          },
+        },
+      },
+      orderBy: {
+        scheduledDate: "asc",
+      },
+    });
+    return tickets;
+  } catch (error) {
+    console.error("Failed to fetch calendar data", error);
+    throw new Error("Failed to fetch calendar data");
   }
 };

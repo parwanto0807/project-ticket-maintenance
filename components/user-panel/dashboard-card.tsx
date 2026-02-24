@@ -11,6 +11,13 @@ import {
   FaMoneyBillWave,
   FaSpinner,
 } from "react-icons/fa";
+import { Poppins } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const font = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
 
 interface CardItem {
   title: string;
@@ -98,43 +105,62 @@ const DashboardCards = () => {
 
   return (
     <Tooltip.Provider delayDuration={200}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         {cardData
-        .filter((card) => card.title !== "Total Purchase Cost")
-        .map((card, index) => (
-          <Tooltip.Root key={index}>
-            <Tooltip.Trigger asChild>
-              <motion.div
-                className="bg-gradient-to-r from-orange-100 to-orange-200 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950 relative overflow-hidden"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                {/* Icon */}
-                <div className="absolute top-4 right-4 opacity-90">{card.icon}</div>
-                {/* Konten Card */}
-                <div className="text-gray-700 text-sm font-semibold dark:text-white">
-                  {card.title}
-                </div>
-                {/* Tampilkan Nilai atau Spinner Jika Masih Loading */}
-                <div className="mt-2 text-3xl font-bold text-orange-700 dark:text-white flex justify-start">
-                  {card.value}
-                </div>
-              </motion.div>
-            </Tooltip.Trigger>
-            {card.tooltip && (
-              <Tooltip.Portal>
-                <Tooltip.Content
-                  className="bg-gray-700 text-white px-3 py-2 rounded-lg text-xs shadow-lg"
-                  side="top"
-                  sideOffset={8}
+          .filter((card) => card.title !== "Total Purchase Cost")
+          .map((card, index) => (
+            <Tooltip.Root key={index}>
+              <Tooltip.Trigger asChild>
+                <motion.div
+                  className={cn(
+                    "bg-gradient-to-br from-white to-orange-50/50 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm border border-orange-100/50 hover:shadow-md transition-all dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950 relative overflow-hidden group",
+                    font.className
+                  )}
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  {card.tooltip}
-                  <Tooltip.Arrow className="fill-gray-700" />
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            )}
-          </Tooltip.Root>
-        ))}
+                  {/* Decorative background element */}
+                  <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-orange-500/5 rounded-full blur-2xl group-hover:bg-orange-500/10 transition-colors" />
+
+                  {/* Icon */}
+                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 sm:p-2 bg-orange-500/10 rounded-lg sm:rounded-xl">
+                    <div className="w-4 h-4 sm:w-6 sm:h-6 text-orange-600 dark:text-orange-400">
+                      {card.icon}
+                    </div>
+                  </div>
+
+                  {/* Konten Card */}
+                  <div className="text-slate-500 text-[10px] sm:text-xs font-bold dark:text-slate-400 uppercase tracking-widest mb-1 sm:mb-2 text-left">
+                    {card.title === "Total Asset User" ? "Total Aset" : card.title === "Total Ticket Maintenance" ? "Total Tiket" : "Tiket Aktif"}
+                  </div>
+
+                  {/* Tampilkan Nilai atau Spinner Jika Masih Loading */}
+                  <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex justify-start items-baseline gap-1 tracking-tighter">
+                    {typeof card.value === 'string' && card.value.includes(' ') ? (
+                      <>
+                        <span>{card.value.split(' ')[0]}</span>
+                        <span className="text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 tracking-normal uppercase ml-0.5">
+                          {card.value.split(' ')[1]}
+                        </span>
+                      </>
+                    ) : card.value}
+                  </div>
+                </motion.div>
+              </Tooltip.Trigger>
+              {card.tooltip && (
+                <Tooltip.Portal>
+                  <Tooltip.Content
+                    className="bg-gray-700 text-white px-3 py-2 rounded-lg text-xs shadow-lg"
+                    side="top"
+                    sideOffset={8}
+                  >
+                    {card.tooltip}
+                    <Tooltip.Arrow className="fill-gray-700" />
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              )}
+            </Tooltip.Root>
+          ))}
       </div>
     </Tooltip.Provider>
   );

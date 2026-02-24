@@ -34,98 +34,61 @@ const RegisterForm = () => {
         },
     });
 
-const onSubmit = (values: z.infer<typeof RegisterSchemaEmail>) => {
-    setError("");
-    setSuccess("");
+    const onSubmit = (values: z.infer<typeof RegisterSchemaEmail>) => {
+        setError("");
+        setSuccess("");
 
-    startTransition(() => {
-        registerEmail(values)
-            .then((data)=> {
-                setError(data.error);
-                setSuccess(data.success);
-            });
-    });
-}
+        startTransition(() => {
+            registerEmail(values)
+                .then((data) => {
+                    setError(data.error);
+                    setSuccess(data.success);
+                });
+        });
+    }
 
 
 
     return (
         <CardWrapper
-            headerLabel="Create an account"
-            backButtonLabel="Back to login "
+            headerLabel="Buat akun baru"
+            backButtonLabel="Kembali ke halaman masuk"
             backButtonHref="/auth/login"
-            // showSocial
         >
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-6"
+                    className="space-y-4 sm:space-y-6"
                 >
-                    <div className="space-y-4">
-                    {/* <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Name</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            disabled={isPending}
-                                            placeholder="Your name"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        /> */}
-
+                    <div className="space-y-3 sm:space-y-4">
                         <FormField
                             control={form.control}
                             name="email"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email</FormLabel>
+                                <FormItem className="space-y-1 sm:space-y-2">
+                                    <FormLabel className="text-slate-700 font-semibold text-xs sm:text-base">Email</FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
                                             disabled={isPending}
                                             placeholder="admin@example.com"
                                             type="email"
+                                            className="bg-slate-50 border-slate-200 h-10 sm:h-14 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all duration-300 px-4 text-sm font-medium rounded-xl shadow-sm"
                                         />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage className="text-red-600 font-medium text-[10px] sm:text-sm" />
                                 </FormItem>
                             )}
                         />
-
-                        {/* <FormField
-                            control={form.control}
-                            name="password"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Password</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            disabled={isPending}
-                                            placeholder="******"
-                                            type="password"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        /> */}
                     </div>
-                    <FormError message={error}/>
-                    <FormSuccess message={success}/>
-                    <Button 
-                    disabled={isPending}
-                    type="submit"
-                    className="w-full"
+                    <FormError message={error} />
+                    <FormSuccess message={success} />
+                    <Button
+                        disabled={isPending}
+                        type="submit"
+                        className="w-full h-11 sm:h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-blue-500/10 border-0 font-bold text-sm sm:text-base"
                     >
-                         Create an account           
+                        {isPending ? "Memproses..." : "Daftar Akun"}
                     </Button>
                 </form>
             </Form>

@@ -649,3 +649,43 @@ export const fetchSoftwareById = async (id: string) => {
     throw new Error("Gagal mengambil data software");
   }
 };
+
+export const fetchSoftwareOverviewStats = async () => {
+  noStore();
+  try {
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + 30);
+
+    const [totalSoftware, totalInstallations, expiringLicenses, inactiveInstallations] = await Promise.all([
+      db.software.count(),
+      db.softwareInstallation.count(),
+      db.softwareInstallation.count({
+        where: {
+          licenseExpiry: {
+            lte: targetDate,
+            gte: new Date(),
+          },
+          isActive: true,
+        }
+      }),
+      db.softwareInstallation.count({
+        where: { isActive: false }
+      })
+    ]);
+
+    return {
+      totalSoftware,
+      totalInstallations,
+      expiringLicenses,
+      inactiveInstallations,
+    };
+  } catch (error) {
+    console.error("Error fetching software stats:", error);
+    return {
+      totalSoftware: 0,
+      totalInstallations: 0,
+      expiringLicenses: 0,
+      inactiveInstallations: 0,
+    };
+  }
+};
