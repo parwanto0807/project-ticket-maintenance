@@ -1,12 +1,15 @@
 import NextAuth, { User as NextAuthUser } from "next-auth";
 import { UserRole } from "@prisma/client";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import bcrypt from "bcryptjs";
+import Credentials from "next-auth/providers/credentials";
 
 import { db } from "@/lib/db";
 import authConfig from "@/auth.config";
-import { getUserById, getEmailMaster } from "@/data/auth/user";
+import { getUserByEmail, getUserById, getEmailMaster } from "@/data/auth/user";
 import { getTwoFactorConfirmationByUserId } from "@/data/auth/two-factor-confirmation";
 import { getAccountByUserId } from "./data/auth/account";
+import { LoginSchema } from "@/schemas";
 
 declare module "next-auth" {
   interface Session {
@@ -19,7 +22,32 @@ declare module "next-auth" {
   }
 }
 
+const { providers: authConfigProviders, ...restAuthConfig } = authConfig;
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  providers: [
+    Credentials({
+      async authorize(credentials) {
+        const validatedFields = LoginSchema.safeParse(credentials);
+        if (validatedFields.success) {
+          const { email, password } = validatedFields.data;
+
+          const user = await getUserByEmail(email);
+
+          if (!user || !user.password) {
+            console.log('Pengguna tidak ditemukan atau tidak memiliki password');
+            return null;
+          }
+
+          const passwordMatch = await bcrypt.compare(password, user.password);
+
+          if (passwordMatch) return user;
+        }
+        return null;
+      }
+    }),
+    ...(authConfigProviders || [])
+  ],
   pages: {
     signIn: "/auth/login",
     error: "/auth/error",
@@ -38,7 +66,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
 
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account }: { user: any; account: any }) {
       const email = user.email;
 
       if (!email || typeof email !== "string") {
@@ -81,7 +109,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return true;
     },
 
-    async session({ token, session }) {
+    async session({ token, session }: { token: any; session: any }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
@@ -100,7 +128,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
 
-    async jwt({ token }) {
+    async jwt({ token }: { token: any }) {
       if (!token.sub) return token;
 
       const existingUser = await getUserById(token.sub);
@@ -118,5 +146,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
-  ...authConfig,
+  ...restAuthConfig,
 });

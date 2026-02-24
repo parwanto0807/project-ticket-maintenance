@@ -1,7 +1,10 @@
 import Link from "next/link";
-import { FaSignOutAlt } from "react-icons/fa";
+import { FaSignOutAlt, FaHome } from "react-icons/fa";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface Menu {
   label: string;
@@ -16,151 +19,135 @@ interface BottomNavProps {
 
 export default function BottomNav({ menus }: BottomNavProps) {
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const pathname = usePathname();
 
-  // Fungsi Logout yang diperbaiki
   const handleSignOut = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    if (isSigningOut) return; // Prevent multiple clicks
-    
+    if (isSigningOut) return;
     setIsSigningOut(true);
-    
     try {
-      await signOut({ 
-        redirect: false,
-        callbackUrl: "/auth/login" 
-      });
-      
-      // Redirect manual setelah signOut selesai
+      await signOut({ redirect: false, callbackUrl: "/auth/login" });
       window.location.href = "/auth/login";
     } catch (error) {
       console.error("Sign out error:", error);
-      // Fallback redirect
       window.location.href = "/auth/login";
     } finally {
       setIsSigningOut(false);
     }
   };
 
-  // Jika menus kosong, jangan tampilkan apa-apa
-  if (!menus || menus.length === 0) {
-    return null;
-  }
+  if (!menus || menus.length === 0) return null;
 
-  // Bagi menu menjadi dua grup: ambil item tengah sebagai tombol utama
   const midIndex = Math.floor(menus.length / 2);
   const centerItem = menus[midIndex];
   const leftMenus = menus.slice(0, midIndex);
   const rightMenus = menus.slice(midIndex + 1);
 
-  return (
-    <nav className="fixed -bottom-1 left-0 right-0 bg-white border-t border-orange-200 shadow h-20 flex items-center justify-between px-4 dark:bg-gradient-to-t from-slate-800 to-slate-900 dark:text-white dark:border-orange-600">
-      {/* Bagian Kiri: Tombol Home + grup kiri */}
-      <div className="flex items-center gap-4">
-        <Link
-          href="/dashboard"
-          className="flex flex-col items-center justify-center text-orange-600 hover:scale-105 transition-transform duration-200"
-        >
-          <span className="text-2xl">🏠</span>
-          <span className="text-xs">Home</span>
-        </Link>
-        {leftMenus.map((menu, index) => {
-          if (menu.disabled) return null;
-          if (menu.label === "Sign Out") {
-            return (
-              <button
-                key={index}
-                onClick={handleSignOut}
-                disabled={isSigningOut}
-                className="flex flex-col items-center justify-center text-orange-600 hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {menu.icon ? (
-                  <menu.icon className="text-2xl" />
-                ) : (
-                  <FaSignOutAlt className="text-2xl" />
-                )}
-                <span className="text-xs">{menu.label}</span>
-              </button>
-            );
-          }
-          return (
-            <Link
-              key={index}
-              href={menu.href}
-              className="flex flex-col items-center justify-center text-orange-600 hover:scale-105 transition-transform duration-200"
-            >
-              {menu.icon && <menu.icon className="text-2xl" />}
-              <span className="text-xs">{menu.label}</span>
-            </Link>
-          );
-        })}
-      </div>
+  const NavItem = ({ menu, isSignOut = false }: { menu: Menu; isSignOut?: boolean }) => {
+    const isActive = pathname === menu.href;
+    const Icon = menu.icon || (isSignOut ? FaSignOutAlt : FaHome);
 
-      {/* Tombol Tengah (Floating Button) */}
-      <div className="relative">
-        {centerItem && (
-          <Link
-            href={centerItem.href}
-            className="flex items-center justify-center w-16 h-16 rounded-full bg-yellow-400 shadow -translate-y-6 hover:scale-105 transition-transform duration-200"
+    return (
+      <motion.div
+        whileTap={{ scale: 0.9 }}
+        className="flex-1 flex justify-center"
+      >
+        {isSignOut ? (
+          <button
+            onClick={handleSignOut}
+            disabled={isSigningOut}
+            className={cn(
+              "relative flex flex-col items-center gap-1 py-1 transition-all duration-300",
+              isSigningOut ? "opacity-50" : "opacity-100"
+            )}
           >
-            {centerItem.icon ? (
-              <centerItem.icon className="text-2xl" />
-            ) : (
-              <span className="text-sm font-bold">{centerItem.label}</span>
+            <div className="relative">
+              <Icon className="text-[18px] text-slate-500" />
+              {isSigningOut && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-3 h-3 border-2 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
+            </div>
+            <span className="text-[8px] font-black uppercase tracking-tighter text-slate-500">
+              Logout
+            </span>
+          </button>
+        ) : (
+          <Link
+            href={menu.href}
+            className={cn(
+              "relative flex flex-col items-center gap-1 py-1 transition-all duration-300",
+              isActive ? "text-blue-600" : "text-slate-500"
+            )}
+          >
+            <Icon className={cn("text-[20px]", isActive ? "text-blue-600" : "text-slate-400")} />
+            <span className={cn(
+              "text-[8px] font-black uppercase tracking-tighter",
+              isActive ? "text-blue-700" : "text-slate-500"
+            )}>
+              {menu.label}
+            </span>
+            {isActive && (
+              <motion.div
+                layoutId="activeTab"
+                className="absolute -top-1 w-1 h-1 bg-blue-600 rounded-full"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
             )}
           </Link>
         )}
-      </div>
+      </motion.div>
+    );
+  };
 
-      {/* Bagian Kanan: Grup kanan + Tombol Sign Out */}
-      <div className="flex items-center gap-4">
-        {rightMenus.map((menu, index) => {
-          if (menu.disabled) return null;
-          if (menu.label === "Sign Out") {
-            return (
-              <button
-                key={index}
-                onClick={handleSignOut}
-                disabled={isSigningOut}
-                className="flex flex-col items-center justify-center text-orange-600 hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {menu.icon ? (
-                  <menu.icon className="text-2xl" />
-                ) : (
-                  <FaSignOutAlt className="text-2xl" />
-                )}
-                <span className="text-xs">{menu.label}</span>
-              </button>
-            );
-          }
-          return (
-            <Link
-              key={index}
-              href={menu.href}
-              className="flex flex-col items-center justify-center text-orange-600 hover:scale-105 transition-transform duration-200"
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none md:hidden">
+      <nav className="w-full h-16 flex items-center justify-between pointer-events-auto
+        bg-white/95 dark:bg-slate-900/98 backdrop-blur-xl
+        border-t border-slate-200/50 dark:border-slate-800/50 
+        shadow-[0_-1px_12px_rgba(0,0,0,0.05)] overflow-visible px-2">
+
+        {/* Left Section */}
+        <div className="flex-1 flex items-center justify-around">
+          <NavItem menu={{ label: "Home", href: "/dashboard", icon: FaHome }} />
+          {leftMenus.map((menu, i) => !menu.disabled && <NavItem key={i} menu={menu} />)}
+        </div>
+
+        {/* Center Button - Increased width for wider gap */}
+        <div className="relative flex justify-center w-24 overflow-visible">
+          {centerItem && (
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="absolute -top-7"
             >
-              {menu.icon && <menu.icon className="text-2xl" />}
-              <span className="text-xs">{menu.label}</span>
-            </Link>
-          );
-        })}
-        
-        {/* Tombol Sign Out tambahan */}
-        <button
-          onClick={handleSignOut}
-          disabled={isSigningOut}
-          className="flex flex-col items-center justify-center text-orange-600 hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <FaSignOutAlt className="text-2xl" />
-          <span className="text-xs">Sign Out</span>
-          {isSigningOut && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-50 rounded">
-              <div className="w-4 h-4 border-2 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
-            </div>
+              <Link
+                href={centerItem.href}
+                className="flex items-center justify-center w-14 h-14 rounded-2xl
+                  bg-gradient-to-br from-orange-500 to-amber-600 
+                  shadow-[0_8px_20px_-4px_rgba(249,115,22,0.4)] 
+                  border-2 border-white/50 dark:border-slate-800/50
+                  text-white relative z-10"
+              >
+                {centerItem.icon ? (
+                  <centerItem.icon className="text-2xl drop-shadow-sm" />
+                ) : (
+                  <span className="text-[10px] font-black uppercase tracking-tighter">{centerItem.label}</span>
+                )}
+              </Link>
+              <div className="absolute inset-0 bg-orange-500/20 blur-xl rounded-full -z-10 animate-pulse" />
+            </motion.div>
           )}
-        </button>
-      </div>
-    </nav>
+        </div>
+
+        {/* Right Section */}
+        <div className="flex-1 flex items-center justify-around">
+          {rightMenus.map((menu, i) => !menu.disabled && <NavItem key={i} menu={menu} />)}
+          <NavItem menu={{ label: "Sign Out", href: "#" }} isSignOut />
+        </div>
+      </nav>
+    </div>
   );
 }

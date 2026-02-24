@@ -105,7 +105,7 @@ const DashboardCards = () => {
 
   return (
     <Tooltip.Provider delayDuration={200}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         {cardData
           .filter((card) => card.title !== "Total Purchase Cost")
           .map((card, index) => (
@@ -113,7 +113,7 @@ const DashboardCards = () => {
               <Tooltip.Trigger asChild>
                 <motion.div
                   className={cn(
-                    "bg-gradient-to-br from-white to-orange-50/50 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm border border-orange-100/50 hover:shadow-md transition-all dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950 relative overflow-hidden group",
+                    "bg-gradient-to-br from-white to-orange-50/50 p-3 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm border border-orange-100/50 hover:shadow-md transition-all dark:bg-gradient-to-b dark:from-slate-800 dark:to-slate-950 relative overflow-hidden group",
                     font.className
                   )}
                   whileHover={{ scale: 1.02 }}
@@ -130,16 +130,16 @@ const DashboardCards = () => {
                   </div>
 
                   {/* Konten Card */}
-                  <div className="text-slate-500 text-[10px] sm:text-xs font-bold dark:text-slate-400 uppercase tracking-widest mb-1 sm:mb-2 text-left">
+                  <div className="text-slate-500 text-[9px] sm:text-xs font-black dark:text-slate-400 uppercase tracking-widest mb-1 sm:mb-2 text-left">
                     {card.title === "Total Asset User" ? "Total Aset" : card.title === "Total Ticket Maintenance" ? "Total Tiket" : "Tiket Aktif"}
                   </div>
 
                   {/* Tampilkan Nilai atau Spinner Jika Masih Loading */}
-                  <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex justify-start items-baseline gap-1 tracking-tighter">
+                  <div className="text-[16px] sm:text-2xl font-black text-slate-900 dark:text-white flex justify-start items-baseline gap-1 tracking-tighter uppercase">
                     {typeof card.value === 'string' && card.value.includes(' ') ? (
                       <>
                         <span>{card.value.split(' ')[0]}</span>
-                        <span className="text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 tracking-normal uppercase ml-0.5">
+                        <span className="text-[8px] sm:text-xs font-black text-slate-400 dark:text-slate-500 tracking-widest uppercase ml-0.5">
                           {card.value.split(' ')[1]}
                         </span>
                       </>

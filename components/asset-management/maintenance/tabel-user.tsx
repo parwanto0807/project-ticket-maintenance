@@ -18,6 +18,7 @@ import ImageDialogTicket from "./imageDialogTicket";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { Card } from "@/components/ui/card";
 import WhatsAppLinkButtonTable from "@/components/whatsappButtonTable";
+import { cn } from "@/lib/utils";
 import {
     FaTicketAlt,
     FaExclamationCircle,
@@ -33,6 +34,7 @@ import {
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Pagination from "@/components/ui/pagination";
+import { CardSkeleton, TableSkeleton } from "@/components/skeleton/common-skeleton";
 
 const ITEMS_PER_PAGE_PRODUCT = 10;
 
@@ -182,8 +184,15 @@ export default function TicketTableUser({ query, currentPage }: TicketTableProps
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+            <div className="mt-6 space-y-4">
+                <div className="md:hidden space-y-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                        <CardSkeleton key={i} />
+                    ))}
+                </div>
+                <div className="hidden md:block">
+                    <TableSkeleton rows={10} />
+                </div>
             </div>
         );
     }
@@ -191,10 +200,10 @@ export default function TicketTableUser({ query, currentPage }: TicketTableProps
     return (
         <div className="mt-6 flow-root">
             <div className="inline-block min-w-full align-middle">
-                <div className="rounded-xl p-2 md:pt-4 bg-gradient-to-br from-orange-50 via-white to-orange-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 shadow-lg border border-orange-100 dark:border-slate-700 mx-auto max-w-7xl">
+                <div className="rounded-xl p-0.5 md:pt-4 bg-gradient-to-br from-orange-50 via-white to-orange-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 shadow-lg border border-orange-100 dark:border-slate-700 mx-auto max-w-7xl">
 
                     {/* Mobile View: Cards */}
-                    <div className="md:hidden grid grid-cols-1 gap-4 p-2">
+                    <div className="md:hidden grid grid-cols-1 gap-4 p-0.5">
                         {Array.isArray(data) && data.length > 0 ? (
                             data.map((item) => {
                                 const dynamicMessage = `Halo, saya ingin menanyakan status ticket maintenance:\n\nTicket Number: ${item.ticketNumber}\nAsset: ${item.asset.product.part_name}\nStatus: ${item.status}`;
@@ -208,54 +217,66 @@ export default function TicketTableUser({ query, currentPage }: TicketTableProps
                                         <Card className="rounded-xl border-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-md hover:shadow-xl transition-all duration-300">
                                             <div className="p-4">
                                                 {/* Header */}
-                                                <div className="flex justify-between items-start mb-3">
+                                                <div className="flex justify-between items-start mb-2">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="p-2 rounded-lg bg-orange-500 text-white">
-                                                            <FaTicketAlt className="w-4 h-4" />
+                                                        <div className="p-1.5 rounded-lg bg-orange-500 text-white shadow-sm">
+                                                            <FaTicketAlt className="w-3 h-3" />
                                                         </div>
-                                                        <div>
-                                                            <Badge className="font-mono text-xs bg-orange-50 text-orange-700 border-orange-200">
+                                                        <div className="flex flex-col">
+                                                            <span className="font-black text-[10px] text-slate-900 dark:text-white uppercase tracking-tighter">
                                                                 {item.ticketNumber}
-                                                            </Badge>
-                                                            <div className={getPriorityBadge(item.priorityStatus) + " mt-1"}>
+                                                            </span>
+                                                            <div className={cn(getPriorityBadge(item.priorityStatus), "mt-0.5 text-[8px] font-black uppercase tracking-widest px-1.5 py-0")}>
                                                                 {item.priorityStatus}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className={getStatusBadge(item.status)}>
+                                                    <div className={cn(getStatusBadge(item.status), "px-2 py-0.5 text-[9px] font-black uppercase tracking-widest")}>
                                                         {getStatusIcon(item.status)}
-                                                        <span className="text-xs">
+                                                        <span>
                                                             {item.status.replace("_", " ")}
                                                         </span>
                                                     </div>
                                                 </div>
 
                                                 {/* Content */}
-                                                <div className="space-y-3">
-                                                    <div className="flex items-center gap-3">
-                                                        <FaExclamationCircle className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-2.5">
+                                                        <FaExclamationCircle className="w-3 h-3 text-orange-500 flex-shrink-0" />
                                                         <div className="min-w-0 flex-1">
-                                                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                                            <p className="text-[10px] font-black text-slate-800 dark:text-white truncate uppercase tracking-tight">
                                                                 {item.asset.product.part_name}
                                                             </p>
-                                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                            <p className="text-[8px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-tighter">
                                                                 {item.asset.assetNumber}
                                                             </p>
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex items-center gap-3">
-                                                        <FaUser className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                                                        <span className="text-sm text-gray-700 dark:text-gray-300">
-                                                            {item.employee.name}
-                                                        </span>
+                                                    <div className="grid grid-cols-2 gap-2 mt-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <FaUser className="w-2.5 h-2.5 text-blue-500 flex-shrink-0" />
+                                                            <span className="text-[9px] font-bold text-slate-600 dark:text-gray-300 uppercase tracking-tighter truncate">
+                                                                {item.employee.name}
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-2">
+                                                            <FaCalendarAlt className="w-2.5 h-2.5 text-purple-500 flex-shrink-0" />
+                                                            <span className="text-[9px] font-bold text-slate-600 dark:text-gray-300 uppercase tracking-tighter">
+                                                                {item.scheduledDate
+                                                                    ? new Date(item.scheduledDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })
+                                                                    : "Pending"
+                                                                }
+                                                            </span>
+                                                        </div>
                                                     </div>
 
                                                     {item.technician && (
-                                                        <div className="flex items-center gap-3">
-                                                            <FaTools className="w-4 h-4 text-green-500 flex-shrink-0" />
-                                                            <span className="text-sm text-gray-700 dark:text-gray-300">
-                                                                {item.technician.name}
+                                                        <div className="flex items-center gap-2">
+                                                            <FaTools className="w-2.5 h-2.5 text-green-500 flex-shrink-0" />
+                                                            <span className="text-[9px] font-bold text-slate-600 dark:text-gray-300 uppercase tracking-tighter">
+                                                                Tech: {item.technician.name}
                                                             </span>
                                                         </div>
                                                     )}
@@ -271,11 +292,13 @@ export default function TicketTableUser({ query, currentPage }: TicketTableProps
                                                     </div>
 
                                                     {/* Trouble Description */}
-                                                    <div className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3">
-                                                        <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                            Deskripsi Masalah:
+                                                    <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-2 border border-slate-100 dark:border-slate-700/30">
+                                                        <p className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-0.5">
+                                                            Description:
                                                         </p>
-                                                        <ReadMoreText text={item.troubleUser} />
+                                                        <div className="text-[9px] font-medium text-slate-700 dark:text-slate-300 uppercase tracking-tight leading-relaxed">
+                                                            <ReadMoreText text={item.troubleUser} />
+                                                        </div>
                                                     </div>
 
                                                     {/* Images */}

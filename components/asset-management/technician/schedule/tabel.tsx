@@ -92,20 +92,13 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                                 <div className="flex items-end justify-end gap-2">
                                                     <TicketDialog ticket={data} />
                                                     <TicketMaintenanceUpdateSheet
-                                                        ticketId={data.id}
+                                                        ticket={data}
                                                         technicians={data.technician ? [data.technician] : []}
-                                                        initialTicketImage1={data.ticketImage1 ?? undefined}
-                                                        initialTicketImage2={data.ticketImage2 ?? undefined}
-                                                        initialTicketImage3={data.ticketImage3 ?? undefined}
-                                                        initialTroubleUser={data.troubleUser}
-                                                        initialTechnicianId={data.technicianId ? data.technicianId : ""}
-                                                        initialScheduledDate={
-                                                            data.scheduledDate
-                                                                ? new Date(data.scheduledDate).toISOString().split("T")[0]
-                                                                : ""
-                                                        }
-                                                        initialAnalisaDescription={data.analisaDescription || ""}
-                                                        initialActionDescription={data.actionDescription || ""}
+                                                        onUpdate={async () => {
+                                                            "use border";
+                                                            // Optional: add refresh logic if needed, 
+                                                            // though router.refresh is handled in the sheet
+                                                        }}
                                                     >
                                                         <Button
                                                             variant="ghost"
@@ -215,20 +208,8 @@ export default async function AssignTable({ query, currentPage }: { query: strin
                                             <TableCell>
                                                 <div className="flex items-center justify-center gap-2">
                                                     <TicketMaintenanceUpdateSheet
-                                                        ticketId={data.id}
+                                                        ticket={data}
                                                         technicians={data.technician ? [data.technician] : []}
-                                                        initialTechnicianId={data.technicianId ? data.technicianId : ""}
-                                                        initialScheduledDate={
-                                                            data.scheduledDate
-                                                                ? new Date(data.scheduledDate).toISOString().split("T")[0]
-                                                                : ""
-                                                        }
-                                                        initialAnalisaDescription={data.analisaDescription || ""}
-                                                        initialActionDescription={data.actionDescription || ""}
-                                                        initialTicketImage1={data.ticketImage1 || ""}
-                                                        initialTicketImage2={data.ticketImage2 || ""}
-                                                        initialTicketImage3={data.ticketImage3 || ""}
-                                                        initialTroubleUser={data.troubleUser || ""}
                                                     >
                                                         <Button
                                                             variant="ghost"

@@ -7,10 +7,10 @@ import { motion } from "framer-motion";
 import {
   FaSpinner,
 } from "react-icons/fa";
-import { 
-  Package, 
-  Ticket, 
-  AlertCircle, 
+import {
+  Package,
+  Ticket,
+  AlertCircle,
   DollarSign,
   TrendingUp,
   BarChart3,
@@ -99,10 +99,10 @@ const DashboardCardsAdmin = () => {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="text-xl md:text-2xl font-bold"
+          className="text-[16px] md:text-2xl font-black uppercase tracking-tight"
         >
           {totalAssetUser.toLocaleString()}
-          <span className="text-xs md:text-sm font-normal text-slate-600 dark:text-slate-400 ml-1">
+          <span className="text-[8px] md:text-sm font-bold text-slate-500 dark:text-slate-400 ml-1 uppercase tracking-widest">
             Assets
           </span>
         </motion.span>
@@ -124,10 +124,10 @@ const DashboardCardsAdmin = () => {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-xl md:text-2xl font-bold"
+          className="text-[16px] md:text-2xl font-black uppercase tracking-tight"
         >
           {totalTicketUser.toLocaleString()}
-          <span className="text-xs md:text-sm font-normal text-slate-600 dark:text-slate-400 ml-1">
+          <span className="text-[8px] md:text-sm font-bold text-slate-500 dark:text-slate-400 ml-1 uppercase tracking-widest">
             Tickets
           </span>
         </motion.span>
@@ -149,10 +149,10 @@ const DashboardCardsAdmin = () => {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-xl md:text-2xl font-bold"
+          className="text-[16px] md:text-2xl font-black uppercase tracking-tight"
         >
           {openTicketUser.toLocaleString()}
-          <span className="text-xs md:text-sm font-normal text-slate-600 dark:text-slate-400 ml-1">
+          <span className="text-[8px] md:text-sm font-bold text-slate-500 dark:text-slate-400 ml-1 uppercase tracking-widest">
             Pending
           </span>
         </motion.span>
@@ -174,7 +174,7 @@ const DashboardCardsAdmin = () => {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-xl md:text-2xl font-bold"
+          className="text-[14px] md:text-2xl font-black uppercase tracking-tighter"
         >
           {formatCurrency(totalPurchaseCost)}
         </motion.span>
@@ -243,24 +243,24 @@ const DashboardCardsAdmin = () => {
               <BarChart3 className="w-4 h-4 md:w-5 md:h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white">
-                Dashboard Overview
+              <h2 className="text-[10px] md:text-xl font-black text-slate-800 dark:text-white uppercase tracking-widest">
+                Overview
               </h2>
-              <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
-                Key metrics and performance indicators
+              <p className="text-[8px] md:text-sm text-slate-500 dark:text-slate-400 font-bold uppercase tracking-tighter">
+                Key metrics and indicators
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full">
-            <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-blue-500" />
-            <span className="text-xs md:text-sm font-medium text-slate-700 dark:text-slate-300 hidden xs:inline">
-              Real-time
+          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded-full border border-slate-200/50 dark:border-slate-700/50 shadow-inner">
+            <Sparkles className="w-2.5 h-2.5 md:w-4 md:h-4 text-blue-500" />
+            <span className="text-[8px] md:text-sm font-black text-slate-600 dark:text-slate-300 uppercase tracking-tighter">
+              Active
             </span>
           </div>
         </motion.div>
 
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {cardData.map((card, index) => (
             <Tooltip.Root key={index}>
               <Tooltip.Trigger asChild>
@@ -271,7 +271,7 @@ const DashboardCardsAdmin = () => {
                   animate="visible"
                   whileHover="hover"
                   className={`
-                    relative p-4 md:p-6 rounded-xl md:rounded-2xl backdrop-blur-xl border transition-all duration-300 overflow-hidden
+                    relative p-3 md:p-6 rounded-xl md:rounded-2xl backdrop-blur-xl border transition-all duration-300 overflow-hidden
                     bg-white/70 dark:bg-slate-800/70
                     border-white/50 dark:border-slate-700/50
                     shadow-lg md:shadow-2xl shadow-slate-500/5 dark:shadow-black/20
@@ -280,21 +280,23 @@ const DashboardCardsAdmin = () => {
                 >
                   {/* Background Gradient */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-5`} />
-                  
+
                   {/* Animated Border */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 hover:opacity-10 transition-opacity duration-300 rounded-xl md:rounded-2xl`} />
-                  
+
                   {/* Content */}
                   <div className="relative z-10">
                     {/* Header */}
-                    <div className="flex items-center justify-between mb-3 md:mb-4">
+                    <div className="flex items-center justify-between mb-2 md:mb-4">
                       <motion.div
                         variants={iconVariants}
-                        className={`p-2 md:p-3 rounded-lg md:rounded-xl bg-gradient-to-br ${card.gradient} shadow-lg`}
+                        className={`p-1.5 md:p-3 rounded-lg md:rounded-xl bg-gradient-to-br ${card.gradient} shadow-lg shadow-black/10`}
                       >
-                        {card.icon}
+                        <div className="w-3 h-3 md:w-6 md:h-6 text-white flex items-center justify-center">
+                          {card.icon}
+                        </div>
                       </motion.div>
-                      
+
                       {/* Badge */}
                       {card.badge && (
                         <span className={`
@@ -322,11 +324,10 @@ const DashboardCardsAdmin = () => {
                     {/* Trend Indicator */}
                     {card.trend && (
                       <div className="flex items-center gap-1 text-xs">
-                        <TrendingUp className={`w-3 h-3 ${
-                          card.trend.isPositive 
-                            ? 'text-green-500' 
-                            : 'text-red-500 rotate-180'
-                        }`} />
+                        <TrendingUp className={`w-3 h-3 ${card.trend.isPositive
+                          ? 'text-green-500'
+                          : 'text-red-500 rotate-180'
+                          }`} />
                         <span className={`
                           font-medium
                           ${card.trend.isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}
@@ -347,7 +348,7 @@ const DashboardCardsAdmin = () => {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                 </motion.div>
               </Tooltip.Trigger>
-              
+
               {card.tooltip && (
                 <Tooltip.Portal>
                   <Tooltip.Content

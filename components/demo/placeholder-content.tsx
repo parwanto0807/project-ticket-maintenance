@@ -190,12 +190,12 @@ const MobileShortcutMenu = () => {
       className="lg:hidden mb-6"
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 px-1">
-        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-          <div className="w-1 h-4 bg-blue-500 rounded-full"></div>
+      <div className="flex items-center justify-between mb-3 px-1">
+        <h3 className="text-[10px] md:text-sm font-black text-slate-500 dark:text-slate-400 flex items-center gap-2 uppercase tracking-widest">
+          <div className="w-1 h-3 bg-blue-500 rounded-full"></div>
           Quick Access
         </h3>
-        <span className="text-xs text-slate-500 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full">
+        <span className="text-[8px] font-black text-slate-500 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full uppercase tracking-tighter">
           {menuGroups.length} groups
         </span>
       </div>
@@ -229,16 +229,16 @@ const MobileShortcutMenu = () => {
                   group-hover:border-slate-300/60 dark:group-hover:border-slate-600/60
                 `}>
                   <div className={`
-                    w-10 h-10 rounded-lg flex items-center justify-center mb-2
+                    w-9 h-9 rounded-lg flex items-center justify-center mb-1.5
                     bg-gradient-to-br ${group.color} shadow-md
                     group-hover:shadow-lg transition-all duration-200
                   `}>
-                    <group.icon className="w-4 h-4 text-white" />
+                    <group.icon className="w-3.5 h-3.5 text-white" />
                   </div>
-                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300 line-clamp-2">
+                  <span className="text-[9px] font-black text-slate-800 dark:text-slate-200 line-clamp-2 uppercase tracking-tight">
                     {group.label}
                   </span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-500 mt-1">
+                  <span className="text-[8px] font-bold text-slate-500 dark:text-slate-500 mt-0.5 uppercase tracking-tighter">
                     {group.menus.length} menus
                   </span>
                 </div>
@@ -257,15 +257,15 @@ const MobileShortcutMenu = () => {
 
 
             {/* Group Header */}
-            <div className="flex items-center gap-3 p-3 bg-white/50 dark:bg-slate-800/50 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
-              <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${activeGroupData?.color} flex items-center justify-center shadow-sm`}>
+            <div className="flex items-center gap-3 p-2 bg-white/50 dark:bg-slate-800/50 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+              <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${activeGroupData?.color} flex items-center justify-center shadow-sm`}>
                 {activeGroupData?.icon && React.createElement(activeGroupData.icon, { className: "w-3 h-3 text-white" })}
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                <h4 className="text-[10px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-tight">
                   {activeGroupData?.label}
                 </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-500">
+                <p className="text-[8px] font-bold text-slate-500 dark:text-slate-500 uppercase">
                   {activeGroupData?.menus.length} menus available
                 </p>
               </div>
@@ -305,10 +305,10 @@ const MobileShortcutMenu = () => {
 
                       {/* Text */}
                       <div className="relative z-10 flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
+                        <p className="text-[10px] font-black text-slate-800 dark:text-slate-100 truncate uppercase tracking-tight">
                           {menu.label}
                         </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                        <p className="text-[8px] font-bold text-slate-500 dark:text-slate-400 truncate uppercase tracking-tighter">
                           {menu.description}
                         </p>
                       </div>
@@ -451,15 +451,15 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div>
-                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-br from-slate-800 to-slate-600 dark:from-white dark:to-slate-200 bg-clip-text text-transparent">
-                  Welcome back, {user?.name}!
+                <h1 className="text-[14px] md:text-2xl lg:text-3xl font-black bg-gradient-to-br from-slate-800 to-slate-600 dark:from-white dark:to-slate-200 bg-clip-text text-transparent uppercase tracking-tight">
+                  Welcome, {user?.name}!
                 </h1>
-                <p className="text-slate-600 dark:text-slate-400 mt-1 flex items-center gap-2 text-xs md:text-sm">
-                  <Calendar className="h-3 w-3 md:h-4 md:w-4" />
+                <p className="text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-2 text-[9px] md:text-sm font-bold uppercase tracking-widest">
+                  <Calendar className="h-2.5 w-2.5 md:h-4 md:w-4 text-blue-500" />
                   {new Date().toLocaleDateString('en-US', {
-                    weekday: 'long',
+                    weekday: 'short',
                     year: 'numeric',
-                    month: 'long',
+                    month: 'short',
                     day: 'numeric'
                   })}
                 </p>
@@ -468,17 +468,17 @@ export default function DashboardPage() {
 
             {/* Quick Stats */}
             <div className="flex flex-wrap gap-2 md:gap-3">
-              <div className="flex items-center gap-1 md:gap-2 px-2 py-1.5 md:px-3 md:py-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-lg md:rounded-xl border border-slate-200/60 dark:border-slate-700/60">
-                <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-blue-500" />
-                <span className="text-xs md:text-sm font-medium text-slate-700 dark:text-slate-300">Live Data</span>
+              <div className="flex items-center gap-1.5 px-2 py-1 md:px-3 md:py-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-lg border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
+                <TrendingUp className="h-2.5 w-2.5 md:h-4 md:w-4 text-blue-500" />
+                <span className="text-[9px] md:text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-tighter">Live</span>
               </div>
-              <div className="flex items-center gap-1 md:gap-2 px-2 py-1.5 md:px-3 md:py-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-lg md:rounded-xl border border-slate-200/60 dark:border-slate-700/60">
-                <Users className="h-3 w-3 md:h-4 md:w-4 text-green-500" />
-                <span className="text-xs md:text-sm font-medium text-slate-700 dark:text-slate-300">{user?.role || "User"}</span>
+              <div className="flex items-center gap-1.5 px-2 py-1 md:px-3 md:py-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-lg border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
+                <Users className="h-2.5 w-2.5 md:h-4 md:w-4 text-green-500" />
+                <span className="text-[9px] md:text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-tighter">{user?.role || "User"}</span>
               </div>
-              <button className="flex items-center gap-1 md:gap-2 px-2 py-1.5 md:px-3 md:py-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-lg md:rounded-xl border border-slate-200/60 dark:border-slate-700/60 hover:bg-white dark:hover:bg-slate-800 transition-colors">
-                <Bell className="h-3 w-3 md:h-4 md:w-4 text-amber-500" />
-                <span className="text-xs md:text-sm font-medium text-slate-700 dark:text-slate-300">Alerts</span>
+              <button className="flex items-center gap-1.5 px-2 py-1 md:px-3 md:py-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-lg border border-slate-200/60 dark:border-slate-700/60 shadow-sm hover:bg-white dark:hover:bg-slate-800 transition-colors active:scale-95">
+                <Bell className="h-2.5 w-2.5 md:h-4 md:w-4 text-amber-500" />
+                <span className="text-[9px] md:text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-tighter">Alerts</span>
               </button>
             </div>
           </motion.div>
@@ -510,13 +510,13 @@ export default function DashboardPage() {
                     <TabsTrigger
                       key={tab.value}
                       value={tab.value}
-                      className={`flex items-center gap-1 md:gap-2 px-3 py-2 md:px-4 md:py-2.5 rounded-lg md:rounded-xl text-xs md:text-sm font-medium transition-all duration-300 flex-shrink-0 ${activeTab === tab.value
+                      className={`flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2.5 rounded-lg text-[9px] md:text-sm font-black transition-all duration-300 flex-shrink-0 uppercase tracking-widest ${activeTab === tab.value
                         ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
-                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700/50"
+                        : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700/50"
                         }`}
                     >
                       {tab.icon}
-                      <span className="hidden xs:inline">{tab.label}</span>
+                      <span className="inline">{tab.label}</span>
                     </TabsTrigger>
                   ))}
                 </TabsList>

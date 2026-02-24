@@ -32,34 +32,34 @@ const AssetList = async ({
 
   return (
     <ContentLayout title="Asset List">
-      <Breadcrumb>
-        <BreadcrumbList>
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList className="flex-wrap gap-y-1">
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Badge className="items-center justify-center text-center" variant="outline">
-                <Link href="/dashboard">Dashboard</Link>
-              </Badge>
+              <Link href="/dashboard" className="text-[10px] md:text-xs font-black text-slate-500 hover:text-blue-600 transition-colors uppercase tracking-widest">
+                Dashboard
+              </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
+          <BreadcrumbSeparator className="[&>svg]:w-3 [&>svg]:h-3" />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Badge className="items-center justify-center text-center" variant="outline">
-                <Link href="/dashboard">Asset</Link>
-              </Badge>
+              <Link href="/dashboard" className="text-[10px] md:text-xs font-black text-slate-500 hover:text-blue-600 transition-colors uppercase tracking-widest">
+                Asset
+              </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
+          <BreadcrumbSeparator className="[&>svg]:w-3 [&>svg]:h-3" />
           <BreadcrumbItem>
-            <Badge className="items-center justify-center text-center" variant="outline">
-              <BreadcrumbPage>Asset List User</BreadcrumbPage>
-            </Badge>
+            <BreadcrumbPage className="text-[10px] md:text-xs font-black text-blue-600 uppercase tracking-widest">
+              Asset List
+            </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
       <div className="h-full w-full">
-        <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
-          <div className="flex items-center justify-between gap-2">
+        <div className="flex-1 space-y-4 p-0.5 pt-6 md:p-8">
+          <div className="flex items-center justify-between gap-2 scale-95 md:scale-100 origin-left">
             <Search placeholder="Search Asset..." />
           </div>
 

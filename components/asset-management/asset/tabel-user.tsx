@@ -34,8 +34,9 @@ import {
   HiStatusOffline,
 } from "react-icons/hi";
 import ImageDialog from "./imageDialog";
-import { formatCurrencyQtt } from "@/lib/utils";
+import { cn, formatCurrencyQtt } from "@/lib/utils";
 import Pagination from "@/components/ui/pagination";
+import { CardSkeleton, TableSkeleton } from "@/components/skeleton/common-skeleton";
 
 interface AssetData {
   id: string;
@@ -127,8 +128,15 @@ export default function AssetUserTable({ query, currentPage }: DashboardDataProp
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+      <div className="mt-6 space-y-4">
+        <div className="md:hidden space-y-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <CardSkeleton key={i} />
+          ))}
+        </div>
+        <div className="hidden md:block">
+          <TableSkeleton rows={10} />
+        </div>
       </div>
     );
   }
@@ -136,38 +144,35 @@ export default function AssetUserTable({ query, currentPage }: DashboardDataProp
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
-        <div className="rounded-xl p-2 md:pt-4 bg-gradient-to-br from-orange-50 via-white to-orange-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 shadow-lg border border-orange-100 dark:border-slate-700 mx-auto max-w-7xl">
+        <div className="rounded-xl p-0.5 md:pt-4 bg-gradient-to-br from-orange-50 via-white to-orange-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 shadow-lg border border-orange-100 dark:border-slate-700 mx-auto max-w-7xl">
 
           {/* Mobile View: Cards */}
-          <div className="md:hidden grid grid-cols-1 gap-4 p-2">
+          <div className="md:hidden grid grid-cols-1 gap-4 p-0.5">
             {Array.isArray(data) && data.length > 0 ? (
               data.map((item) => (
                 <Card
                   key={item.id}
                   className="mb-2 rounded-xl border-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
-                  <CardHeader className="pb-2">
+                  <CardHeader className="pb-2 px-3 pt-3">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Badge
-                          variant="secondary"
-                          className="font-mono text-xs uppercase h-7 border-orange-500 bg-orange-50 text-orange-700 flex items-center gap-2"
-                        >
-                          <FaArchive className="w-3 h-3" />
-                          {item.assetNumber}
-                        </Badge>
+                      <div className="flex items-center gap-2">
+                        <div className="p-1 px-2 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-700 flex items-center gap-1.5 shadow-sm">
+                          <FaArchive className="w-2.5 h-2.5" />
+                          <span className="font-black text-[9px] uppercase tracking-widest">{item.assetNumber}</span>
+                        </div>
                       </div>
-                      <div className={getStatusBadge(item.status)}>
+                      <div className={cn(getStatusBadge(item.status), "px-2 py-0.5 text-[8px] font-black uppercase tracking-widest")}>
                         {getStatusIcon(item.status)}
-                        <span className="hidden sm:inline">
+                        <span>
                           {item.status.replace("_", " ")}
                         </span>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="pt-2">
-                    <div className="flex gap-4">
-                      <div className="flex-shrink-0 w-16 h-16 overflow-hidden rounded-lg border-2 border-orange-200 dark:border-slate-600">
+                  <CardContent className="pt-2 px-3 pb-3">
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-14 h-14 overflow-hidden rounded-lg border border-orange-200 dark:border-slate-700 shadow-sm">
                         <ImageDialog
                           src={item.assetImage1 || "/noImage.jpg"}
                           alt={`${item.assetNumber} Asset Image`}
@@ -175,36 +180,36 @@ export default function AssetUserTable({ query, currentPage }: DashboardDataProp
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="mb-2">
-                          <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                          <p className="text-[10px] font-black text-slate-800 dark:text-white truncate uppercase tracking-tight">
                             {item.product.part_name}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-[8px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tighter">
                             {item.product.part_number}
                           </p>
                         </div>
 
-                        <div className="space-y-1.5">
-                          <div className="flex items-center gap-2 text-xs">
-                            <FaBox className="w-3 h-3 text-orange-500" />
-                            <span className="text-gray-600 dark:text-gray-300">{item.assetType.name}</span>
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+                          <div className="flex items-center gap-1.5">
+                            <FaBox className="w-2.5 h-2.5 text-orange-500 flex-shrink-0" />
+                            <span className="text-[8px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tighter truncate">{item.assetType.name}</span>
                           </div>
 
-                          <div className="flex items-center gap-2 text-xs">
-                            <FaMapMarkerAlt className="w-3 h-3 text-blue-500" />
-                            <span className="text-gray-600 dark:text-gray-300">{item.location}</span>
+                          <div className="flex items-center gap-1.5">
+                            <FaMapMarkerAlt className="w-2.5 h-2.5 text-blue-500 flex-shrink-0" />
+                            <span className="text-[8px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tighter truncate">{item.location}</span>
                           </div>
 
-                          <div className="flex items-center gap-2 text-xs">
-                            <FaUser className="w-3 h-3 text-green-500" />
-                            <span className="text-gray-600 dark:text-gray-300">
-                              {item.employee?.name || "Unassigned"}
+                          <div className="flex items-center gap-1.5">
+                            <FaUser className="w-2.5 h-2.5 text-green-500 flex-shrink-0" />
+                            <span className="text-[8px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tighter truncate">
+                              {item.employee?.name || "-"}
                             </span>
                           </div>
 
                           {item.department && (
-                            <div className="flex items-center gap-2 text-xs">
-                              <FaBuilding className="w-3 h-3 text-purple-500" />
-                              <span className="text-gray-600 dark:text-gray-300">{item.department.dept_name}</span>
+                            <div className="flex items-center gap-1.5">
+                              <FaBuilding className="w-2.5 h-2.5 text-purple-500 flex-shrink-0" />
+                              <span className="text-[8px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tighter truncate">{item.department.dept_name}</span>
                             </div>
                           )}
                         </div>

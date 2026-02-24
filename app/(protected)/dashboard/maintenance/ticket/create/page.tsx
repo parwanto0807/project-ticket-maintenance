@@ -48,36 +48,45 @@ const RegisterTicket = async () => {
 
     return (
         <ContentLayout title="Register Ticket">
-            <Breadcrumb className="mb-4">
-                <BreadcrumbList>
+            <Breadcrumb className="mb-6 px-1">
+                <BreadcrumbList className="flex-wrap gap-1 md:gap-2">
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Badge className="items-center justify-center text-center" variant="outline">
-                                <Link href="/dashboard">Dashboard</Link>
-                            </Badge>
+                            <Link
+                                href="/dashboard"
+                                className="text-[10px] md:text-xs font-semibold hover:text-orange-600 transition-colors"
+                            >
+                                Dashboard
+                            </Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
-                    <BreadcrumbSeparator />
+                    <BreadcrumbSeparator className="opacity-50" />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Badge className="items-center justify-center text-center" variant="outline">
-                                <Link href="/dashboard">Maintenance</Link>
-                            </Badge>
+                            <Link
+                                href="/dashboard"
+                                className="text-[10px] md:text-xs font-semibold hover:text-orange-600 transition-colors"
+                            >
+                                Maintenance
+                            </Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
-                    <BreadcrumbSeparator />
+                    <BreadcrumbSeparator className="opacity-50" />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Badge className="items-center justify-center text-center" variant="outline">
-                                <Link href="/dashboard/maintenance/ticket">Ticket List</Link>
-                            </Badge>
+                            <Link
+                                href="/dashboard/maintenance/ticket"
+                                className="text-[10px] md:text-xs font-semibold hover:text-orange-600 transition-colors"
+                            >
+                                Ticket List
+                            </Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
-                    <BreadcrumbSeparator />
+                    <BreadcrumbSeparator className="opacity-50" />
                     <BreadcrumbItem>
-                        <Badge className="items-center justify-center text-center" variant="outline">
-                            <BreadcrumbPage>Create</BreadcrumbPage>
-                        </Badge>
+                        <BreadcrumbPage className="text-[10px] md:text-xs font-black text-orange-600">
+                            Create
+                        </BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
