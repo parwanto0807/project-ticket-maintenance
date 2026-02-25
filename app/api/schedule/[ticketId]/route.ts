@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { put } from "@vercel/blob"; // Pastikan modul ini telah terinstal
+import { sendNotificationToAdmins, sendNotificationToUser } from "@/lib/notification";
 
 export async function PUT(req: Request, { params }: { params: { ticketId: string } }) {
   try {
@@ -95,7 +96,49 @@ export async function PUT(req: Request, { params }: { params: { ticketId: string
       where: { id: params.ticketId },
       data: updateData,
     });
-    console.log(updatedTicket);
+
+    // Send notifications
+    try {
+      // 1. Fetch full ticket data with relations for complete notifications
+      const ticketWithDetails = await db.ticketMaintenance.findUnique({
+        where: { id: params.ticketId },
+        include: {
+          employee: true,
+          asset: {
+            include: {
+              product: true
+            }
+          }
+        }
+      });
+
+      if (ticketWithDetails) {
+        const ticketNumber = ticketWithDetails.ticketNumber || "";
+        const employeeId = ticketWithDetails.employeeId;
+        const safeAnalisa = (analisaDescription || "").substring(0, 50);
+
+        // Notify requester (User)
+        if (employeeId) {
+          await sendNotificationToUser(
+            employeeId,
+            "Ticket Progress Updated",
+            `Technician has updated the progress of your ticket (${ticketNumber}). Status: ${status.replace("_", " ")}.`,
+            `/dashboard/maintenance/ticket`
+          );
+        }
+
+        // Notify admins
+        await sendNotificationToAdmins(
+          "Technician Update",
+          `Technician has updated ticket ${ticketNumber}. Analysis: ${safeAnalisa}...`,
+          `/dashboard/technician/assign`
+        );
+      }
+    } catch (notifError) {
+      console.error("Notification delivery failed:", notifError);
+    }
+
+    console.log("Ticket updated successfully:", updatedTicket.id);
 
     return NextResponse.json(updatedTicket);
   } catch (error) {

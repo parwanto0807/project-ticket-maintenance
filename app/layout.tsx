@@ -4,6 +4,7 @@ import "./globals.css";
 import { auth } from "@/auth";
 import FloatingBackButton from "@/components/backToHome";
 import { ThemeProvider } from "@/components/theme-provider"; // Import ThemeProvider
+import FcmTokenManager from "@/components/FcmTokenManager";
 
 export const metadata: Metadata = {
   title: "Asset Management",
@@ -21,12 +22,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
-  
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="relative">
         <ThemeProvider>
           <SessionProvider session={session ?? null}>
+            <FcmTokenManager />
             {children}
             <FloatingBackButton />
           </SessionProvider>

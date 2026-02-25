@@ -13,9 +13,11 @@ import {
 } from "@/components/ui/breadcrumb";
 import DashboardOverviewPage from "@/components/demo/overview-enduser";
 import DashboardTechnicianPage from "@/components/technician-panel/overview-technician";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function DashboardPage() {
   const [role, setRole] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -29,12 +31,12 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <ContentLayout title="Dashboard">
+    <ContentLayout title={t("dashboard")}>
       {role === "ADMIN" ? (
         <Breadcrumb className="ml-6">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbPage>Dashboard</BreadcrumbPage>
+              <BreadcrumbPage>{t("dashboard")}</BreadcrumbPage>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
           </BreadcrumbList>
@@ -50,5 +52,4 @@ export default function DashboardPage() {
       ) : null}
     </ContentLayout>
   );
-
 }

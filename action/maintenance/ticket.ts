@@ -7,6 +7,7 @@ import { CreateTicketMaintenanceOnAssignSchema, CreateTicketMaintenanceSchema, U
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { put, del } from "@vercel/blob";
+import { sendNotificationToAdmins, sendNotificationToTechnician, sendNotificationToUser } from "@/lib/notification";
 
 export const createTicket = async (formData: FormData) => {
   try {
@@ -65,6 +66,13 @@ export const createTicket = async (formData: FormData) => {
     const newTicket = await db.ticketMaintenance.create({
       data: result.data,
     });
+
+    // Send notification to admins
+    await sendNotificationToAdmins(
+      "New Maintenance Ticket",
+      `A new ticket (${ticketNumber}) has been created by ${rawData.troubleUser}.`,
+      `/dashboard/maintenance/ticket`
+    );
 
     revalidatePath("/dashboard/maintenance/ticket");
     return { success: "Ticket created successfully!", data: newTicket };
@@ -189,6 +197,45 @@ export const createTicketAssign = async (formData: FormData) => {
       data: result.data,
     });
 
+    // Send notifications
+    try {
+      // Re-fetch with details to get names
+      const ticketWithDetails = await db.ticketMaintenance.findUnique({
+        where: { id: newTicket.id },
+        include: { technician: true }
+      });
+
+      const techName = ticketWithDetails?.technician?.name || "a technician";
+
+      // Notify admins
+      await sendNotificationToAdmins(
+        "New Assigned Ticket",
+        `A new ticket (${ticketNumber}) has been created and assigned to ${techName}.`
+      );
+
+      // Notify technician
+      if (rawData.technicianId) {
+        await sendNotificationToTechnician(
+          rawData.technicianId,
+          "New Task Assigned",
+          `You have been assigned to maintenance ticket ${ticketNumber}.`,
+          `/dashboard/technician/assign`
+        );
+      }
+
+      // Notify requester (User)
+      if (rawData.employeeId) {
+        await sendNotificationToUser(
+          rawData.employeeId,
+          "Technician Assigned",
+          `Admin has assigned ${techName} to your ticket (${ticketNumber}). Schedule: ${rawData.scheduledDate ? (rawData.scheduledDate as Date).toLocaleDateString('en-GB') : "TBD"}.`,
+          `/dashboard/maintenance/ticket`
+        );
+      }
+    } catch (notifError) {
+      console.error("Notifications failed during ticket creation:", notifError);
+    }
+
     revalidatePath("/dashboard/technician/assign");
     return { success: "Ticket created successfully!", data: newTicket };
   } catch (error) {
@@ -239,6 +286,53 @@ export const updateTicketAssign = async (formData: FormData) => {
       where: { id: ticketId },
       data: result.data,
     });
+
+    // Send notifications
+    try {
+      // Re-fetch ticket details to ensure we have all fields for notifications
+      const ticketWithDetails = await db.ticketMaintenance.findUnique({
+        where: { id: ticketId },
+        include: {
+          employee: true,
+          technician: true
+        }
+      });
+
+      if (ticketWithDetails) {
+        const finalTicketNumber = ticketWithDetails.ticketNumber || "";
+        const finalEmployeeId = ticketWithDetails.employeeId;
+
+        // Notify technician
+        if (rawData.technicianId) {
+          await sendNotificationToTechnician(
+            rawData.technicianId,
+            "Task Updated",
+            `A maintenance task assigned to you has been updated.`,
+            `/dashboard/technician/assign`
+          );
+        }
+
+        // Notify requester (User)
+        if (finalEmployeeId) {
+          const techName = ticketWithDetails?.technician?.name || "a technician";
+          await sendNotificationToUser(
+            finalEmployeeId,
+            "Ticket Assignment Updated",
+            `Admin has updated the assignment for your ticket (${finalTicketNumber}). Assigned to: ${techName}.`,
+            `/dashboard/maintenance/ticket`
+          );
+        }
+
+        // Notify admins
+        await sendNotificationToAdmins(
+          "Ticket Assignment Updated",
+          `Assignment for ticket ${finalTicketNumber} has been updated.`,
+          `/dashboard/technician/assign`
+        );
+      }
+    } catch (notifError) {
+      console.error("Notifications failed during ticket update:", notifError);
+    }
 
     // Revalidasi path agar data di dashboard ter-refresh
     revalidatePath("/dashboard/technician/assign");

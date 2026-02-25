@@ -1,9 +1,10 @@
+"use server";
+
 import { db } from "@/lib/db";
 import { Prisma, AssetStatus } from "@prisma/client";
 import { unstable_noStore as noStore } from "next/cache";
+import { ITEMS_PER_PAGE_ASSET, ITEMS_PER_PAGE_ASSET_ADMIN } from "@/lib/constants";
 
-export const ITEMS_PER_PAGE_ASSET = 5;
-export const ITEMS_PER_PAGE_ASSET_ADMIN = 15;
 
 export async function generateAssetNumber(id: string) {
   try {

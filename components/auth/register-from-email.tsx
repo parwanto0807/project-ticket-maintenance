@@ -6,6 +6,8 @@ import { CardWrapper } from "./card-wrapper"
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RegisterSchemaEmail } from "@/schemas";
+import { useTranslation } from "@/hooks/use-translation";
+import { TranslationKeys } from "@/lib/translations";
 
 
 import {
@@ -23,6 +25,7 @@ import { FormSuccess } from "../../../project-ticket-maintenance/components/form
 import { registerEmail } from "@/action/auth/register";
 
 const RegisterForm = () => {
+    const { t } = useTranslation();
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
     const [isPending, startTransition] = useTransition();
@@ -51,8 +54,8 @@ const RegisterForm = () => {
 
     return (
         <CardWrapper
-            headerLabel="Buat akun baru"
-            backButtonLabel="Kembali ke halaman masuk"
+            headerLabel={t("create_new_account")}
+            backButtonLabel={t("back_to_login")}
             backButtonHref="/auth/login"
         >
             <Form {...form}>
@@ -88,7 +91,7 @@ const RegisterForm = () => {
                         type="submit"
                         className="w-full h-11 sm:h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-blue-500/10 border-0 font-bold text-sm sm:text-base"
                     >
-                        {isPending ? "Memproses..." : "Daftar Akun"}
+                        {isPending ? t("processing") : t("register_account")}
                     </Button>
                 </form>
             </Form>

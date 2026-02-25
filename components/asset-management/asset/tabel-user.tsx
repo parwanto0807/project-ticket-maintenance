@@ -37,6 +37,7 @@ import ImageDialog from "./imageDialog";
 import { cn, formatCurrencyQtt } from "@/lib/utils";
 import Pagination from "@/components/ui/pagination";
 import { CardSkeleton, TableSkeleton } from "@/components/skeleton/common-skeleton";
+import { ITEMS_PER_PAGE_ASSET } from "@/lib/constants";
 
 interface AssetData {
   id: string;
@@ -57,8 +58,6 @@ interface DashboardDataProps {
   query: string;
   currentPage: number;
 }
-
-const ITEMS_PER_PAGE_ASSET = 5;
 
 export default function AssetUserTable({ query, currentPage }: DashboardDataProps) {
   const user = useCurrentUser();

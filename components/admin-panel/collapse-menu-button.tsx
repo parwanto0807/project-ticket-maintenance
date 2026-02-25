@@ -27,6 +27,8 @@ import {
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/hooks/use-translation";
+import { TranslationKeys } from "@/lib/translations";
 
 type Submenu = {
   href: string;
@@ -54,6 +56,7 @@ export function CollapseMenuButton({
   disabled = false, // Default disabled to false if not provided
 
 }: CollapseMenuButtonProps) {
+  const { t } = useTranslation();
   const isSubmenuActive = submenus.some((submenu) => submenu.active);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(isSubmenuActive);
   const router = useRouter();
@@ -110,7 +113,7 @@ export function CollapseMenuButton({
                     : "-translate-x-96 opacity-0"
                 )}
               >
-                {label}
+                {t(label as TranslationKeys)}
               </p>
             </div>
             <div
@@ -157,7 +160,7 @@ export function CollapseMenuButton({
                     : "-translate-x-96 opacity-0"
                 )}
               >
-                {label}
+                {t(label as TranslationKeys)}
               </p>
             </Link>
           </Button>
@@ -197,7 +200,7 @@ export function CollapseMenuButton({
                         isOpen === false ? "opacity-0" : "opacity-100"
                       )}
                     >
-                      {label}
+                      {t(label as TranslationKeys)}
                     </p>
                   </div>
                 </div>
@@ -205,13 +208,13 @@ export function CollapseMenuButton({
             </DropdownMenuTrigger>
           </TooltipTrigger>
           <TooltipContent side="right" align="start" alignOffset={2}>
-            {label}
+            {t(label as TranslationKeys)}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
       <DropdownMenuContent side="right" sideOffset={25} align="start">
         <DropdownMenuLabel className="max-w-[190px] truncate">
-          {label}
+          {t(label as TranslationKeys)}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {submenus.map(({ href, label, disabled }, index) => (
@@ -221,7 +224,7 @@ export function CollapseMenuButton({
                 e.preventDefault(); // Prevent navigation if disabled
               }
             }}>
-              <p className="max-w-[180px] truncate">{label}</p>
+              <p className="max-w-[180px] truncate">{t(label as TranslationKeys)}</p>
             </Link>
           </DropdownMenuItem>
         ))}

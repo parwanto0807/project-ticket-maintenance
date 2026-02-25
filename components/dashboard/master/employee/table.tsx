@@ -1,4 +1,5 @@
-import { getEmployeesFindAll } from "@/data/master/employee";
+"use client";
+
 import { formatDate } from "@/lib/utils";
 import { UpdateEmployee } from "./buttons";
 import DeleteAlert from "./alert-delete";
@@ -18,35 +19,42 @@ import Link from "next/link";
 
 const ITEMS_PER_PAGE_EMPLOYEES = 30;
 
-export default async function EmployeeTable({ query, currentPage }: { query: string; currentPage: number; }) {
-    const employees = await getEmployeesFindAll(query, currentPage);
+export default function EmployeeTable({ employees, loading, currentPage }: { employees: any[]; loading: boolean; currentPage: number; }) {
+    if (loading) {
+        return <div className="py-20 text-center font-medium text-slate-500">Loading employees...</div>;
+    }
+
+    if (!employees || employees.length === 0) {
+        return <div className="py-20 text-center font-medium text-slate-500">No employees found.</div>;
+    }
+
     const offset = (currentPage - 1) * ITEMS_PER_PAGE_EMPLOYEES;
 
-    const groupedEmployees = employees.reduce((acc, employee) => {
+    const groupedEmployees = employees.reduce((acc: Record<string, any[]>, employee: any) => {
         const deptName = employee.department.dept_name;
         if (!acc[deptName]) {
             acc[deptName] = [];
         }
         acc[deptName].push(employee);
         return acc;
-    }, {} as Record<string, typeof employees>);
+    }, {} as Record<string, any[]>);
 
     return (
         <div className="mt-6 flow-root">
             <div className="min-w-full align-middle">
                 {/* Mobile View */}
                 <div className="lg:hidden space-y-4">
-                    {Object.entries(groupedEmployees).map(([deptName, employees]) => (
+                    {Object.entries(groupedEmployees).map(([deptName, deptEmployees]) => (
                         <div key={deptName}>
                             <div className="flex items-center space-x-2 mb-3 px-1">
                                 <div className="w-1.5 h-5 bg-blue-600 dark:bg-blue-500 rounded-full"></div>
                                 <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">{deptName}</h2>
                                 <Badge variant="outline" className="text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700">
-                                    {employees.length}
+                                    {deptEmployees.length}
                                 </Badge>
                             </div>
                             <div className="grid grid-cols-1 gap-4">
-                                {employees.map((employee, index) => (
+                                {deptEmployees.map((employee, index) => (
                                     <Card
                                         key={employee.id}
                                         className="bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm hover:shadow-md transition-all duration-300"
@@ -150,26 +158,26 @@ export default async function EmployeeTable({ query, currentPage }: { query: str
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="bg-transparent">
-                                {Object.entries(groupedEmployees).map(([deptName, employees]) => (
+                                {Object.entries(groupedEmployees).map(([deptName, deptEmployees]) => (
                                     <React.Fragment key={deptName}>
                                         {/* Department Header */}
                                         <TableRow className="bg-zinc-100/30 dark:bg-zinc-900/30 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50">
                                             <TableCell
-                                                colSpan={9}
+                                                colSpan={10}
                                                 className="py-3 px-6 border-b border-zinc-200 dark:border-zinc-800"
                                             >
                                                 <div className="flex items-center space-x-3">
                                                     <div className="w-1.5 h-6 bg-blue-600 dark:bg-blue-500 rounded-full shadow-[0_0_10px_rgba(37,99,235,0.3)]"></div>
                                                     <span className="font-bold text-lg text-zinc-900 dark:text-zinc-100">🏢 {deptName}</span>
                                                     <Badge variant="blue" className="ml-2 font-semibold">
-                                                        {employees.length} Members
+                                                        {deptEmployees.length} Members
                                                     </Badge>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
 
                                         {/* Department Data */}
-                                        {employees.map((employee, index) => (
+                                        {deptEmployees.map((employee, index) => (
                                             <TableRow
                                                 key={employee.id}
                                                 className="group hover:bg-zinc-50/80 dark:hover:bg-zinc-900/30 transition-all duration-300 border-b border-zinc-100 dark:border-zinc-800/50"

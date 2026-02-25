@@ -10,6 +10,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { CollapseMenuButton } from "@/components/admin-panel/collapse-menu-button";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { useSession } from "next-auth/react";
+import { useTranslation } from "@/hooks/use-translation";
+import { TranslationKeys } from "@/lib/translations";
 
 // Menambahkan prop `role` di sini untuk menerima informasi role
 interface MenuProps {
@@ -20,6 +22,7 @@ interface MenuProps {
 export function Menu({ isOpen }: MenuProps) { // Menggunakan role dari props
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { t } = useTranslation();
   const role = session?.user?.role || 'USER';
   // console.log("Role in getMenuList:", role);
 
@@ -34,7 +37,7 @@ export function Menu({ isOpen }: MenuProps) { // Menggunakan role dari props
             <li className={cn("w-full", groupLabel ? "pt-5" : "")} key={index}>
               {(isOpen && groupLabel) || isOpen === undefined ? (
                 <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 px-4 pb-2 max-w-[248px] truncate">
-                  {groupLabel}
+                  {t(groupLabel as TranslationKeys)}
                 </p>
               ) : !isOpen && isOpen !== undefined && groupLabel ? (
                 <TooltipProvider>
@@ -45,7 +48,7 @@ export function Menu({ isOpen }: MenuProps) { // Menggunakan role dari props
                       </div>
                     </TooltipTrigger>
                     <TooltipContent side="right">
-                      <p>{groupLabel}</p>
+                      <p>{t(groupLabel as TranslationKeys)}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -87,14 +90,14 @@ export function Menu({ isOpen }: MenuProps) { // Menggunakan role dari props
                                       : "translate-x-0 opacity-100"
                                   )}
                                 >
-                                  {label}
+                                  {t(label as TranslationKeys)}
                                 </p>
                               </Link>
                             </Button>
                           </TooltipTrigger>
                           {isOpen === false && (
                             <TooltipContent side="right">
-                              {label}
+                              {t(label as TranslationKeys)}
                             </TooltipContent>
                           )}
                         </Tooltip>

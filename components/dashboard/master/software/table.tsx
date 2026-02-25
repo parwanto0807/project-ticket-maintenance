@@ -7,17 +7,15 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
-    Package,
-    Building,
-    Calendar,
-    Globe,
-    FileText,
     Cpu,
     Shield,
     Factory,
     CheckCircle,
     XCircle,
-    Monitor
+    Monitor,
+    Globe,
+    Building,
+    Calendar
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
@@ -47,13 +45,25 @@ const getLicenseTypeBadge = (licenseType: string | null) => {
     }
 };
 
-interface SoftwareTableProps {
-    query: string;
-    currentPage: number;
-    software: any[]; // Using any[] for simplicity as the data is passed from server component
-}
+export default function SoftwareTable({ software, loading }: { software: any[], loading: boolean }) {
+    if (loading) {
+        return <div className="py-20 text-center font-medium text-slate-500">Loading software...</div>;
+    }
 
-export default function SoftwareTable({ software }: { software: any[] }) {
+    if (!software || software.length === 0) {
+        return (
+            <div className="py-20 text-center flex flex-col items-center gap-4 border border-dashed rounded-3xl border-slate-200 dark:border-slate-800">
+                <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-full">
+                    <Monitor className="h-10 w-10 text-slate-300" />
+                </div>
+                <div className="space-y-1">
+                    <p className="text-slate-800 dark:text-white font-black text-lg">No software found</p>
+                    <p className="text-slate-400 font-medium text-sm">Try adjusting your search query</p>
+                </div>
+            </div>
+        );
+    }
+
     // Group software by category
     const groupedSoftware = software.reduce((acc: any, item: any) => {
         const category = item.category || 'Uncategorized';
@@ -268,17 +278,6 @@ export default function SoftwareTable({ software }: { software: any[] }) {
                             </TableBody>
                         </Table>
                     </CardContent>
-                    {software.length === 0 && (
-                        <div className="py-20 text-center flex flex-col items-center gap-4">
-                            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-full">
-                                <Monitor className="h-10 w-10 text-slate-300" />
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-slate-800 dark:text-white font-black text-lg">No software found</p>
-                                <p className="text-slate-400 font-medium text-sm">Try adjusting your search query</p>
-                            </div>
-                        </div>
-                    )}
                 </Card>
             </div>
         </div>

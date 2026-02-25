@@ -25,23 +25,14 @@ import {
     Package,
     ArrowRight
 } from "lucide-react";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { TicketDialog } from "./dialog-ticket-detail";
 import ImageDialogTicket from "../../maintenance/imageDialogTicket";
 import WhatsAppLinkButtonAdmin from "@/components/whatsappButtonTableAdmin";
-import { TicketMaintenance, Employee, Asset, Product, Technician } from "@prisma/client";
-
-interface Ticket extends TicketMaintenance {
-    employee: Employee;
-    asset: Asset & {
-        product: Product;
-    };
-    technician?: Technician | null;
-}
 
 interface TechnicianScheduleTableProps {
-    query: string;
-    currentPage: number;
+    tickets: any[];
+    loading: boolean;
+    error: string | null;
 }
 
 const whatsappNumbers = [
@@ -51,45 +42,10 @@ const whatsappNumbers = [
 ];
 
 export default function TechnicianScheduleTable({
-    query,
-    currentPage,
+    tickets,
+    loading,
+    error,
 }: TechnicianScheduleTableProps) {
-    const user = useCurrentUser();
-    const email = user?.email || "";
-    const role = user?.role || "";
-
-    const [tickets, setTickets] = useState<Ticket[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchTickets = useCallback(async () => {
-        if (!role) return;
-        setLoading(true);
-        try {
-            let apiUrl = "";
-            if (role === "TECHNICIAN") {
-                apiUrl = `/api/schedule/technician?query=${encodeURIComponent(query)}&currentPage=${currentPage}&email=${encodeURIComponent(email)}`;
-            } else if (role === "ADMIN") {
-                apiUrl = `/api/schedule/admin?query=${encodeURIComponent(query)}&currentPage=${currentPage}`;
-            }
-
-            const res = await fetch(apiUrl);
-            if (!res.ok) throw new Error("Failed to fetch");
-            const result = await res.json();
-            setTickets(result);
-        } catch (err) {
-            console.error("Error fetching schedule:", err);
-            setError("Terjadi kesalahan saat mengambil data.");
-        } finally {
-            setLoading(false);
-        }
-    }, [query, currentPage, email, role]);
-
-    useEffect(() => {
-        if (role === "TECHNICIAN" || role === "ADMIN") {
-            fetchTickets();
-        }
-    }, [fetchTickets, role]);
 
     if (loading) return (
         <div className="flex flex-col items-center justify-center h-64 gap-4">
@@ -108,61 +64,66 @@ export default function TechnicianScheduleTable({
     return (
         <div className="mt-0">
             {/* Mobile View */}
-            <div className="md:hidden space-y-4">
+            <div className="md:hidden grid grid-cols-2 gap-3">
                 {Array.isArray(tickets) && tickets.length > 0 ? (
                     tickets.map((item) => {
                         const dynamicMessage = `Saya telah mengerjakan Ticket Number: ${item.ticketNumber} Asset Name: ${item.asset.product.part_name} mohon di cek dan di Closing. Detail: https://solusiit.net/dashboard/technician/assign?ticket=${item.ticketNumber}`;
                         return (
-                            <div key={item.id} className="bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-800 space-y-4">
-                                <div className="flex justify-between items-start">
-                                    <div className="space-y-1">
-                                        <div className="font-mono text-xs font-black text-blue-600 dark:text-blue-400">
-                                            {item.ticketNumber}
-                                        </div>
-                                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold uppercase">
-                                            <Calendar className="w-3 h-3" />
-                                            {new Date(item.createdAt).toLocaleDateString()}
-                                        </div>
-                                    </div>
+                            <div key={item.id} className="relative bg-white dark:bg-slate-900 rounded-3xl p-3 shadow-md border border-gray-100 dark:border-slate-800 flex flex-col h-full ring-1 ring-black/5">
+                                {/* Status Badge - Floating on Top */}
+                                <div className="absolute top-2 right-2 z-10">
                                     <Badge
-                                        className={`text-[10px] font-black uppercase rounded-full px-3 ${item.status === "Pending" ? "bg-red-50 text-red-600 border-red-100" :
-                                            item.status === "Assigned" ? "bg-blue-50 text-blue-600 border-blue-100" :
-                                                item.status === "In_Progress" ? "bg-amber-50 text-amber-600 border-amber-100 animate-pulse" :
-                                                    "bg-emerald-50 text-emerald-600 border-emerald-100"
+                                        className={`text-[8px] font-black uppercase rounded-full px-2 py-0.5 shadow-sm border-0 ${item.status === "Pending" ? "bg-red-50 text-white" :
+                                            item.status === "Assigned" ? "bg-blue-50 text-white" :
+                                                item.status === "In_Progress" ? "bg-amber-50 text-white animate-pulse" :
+                                                    "bg-emerald-50 text-white"
                                             }`}
-                                        variant="outline"
                                     >
                                         {item.status.replace("_", " ")}
                                     </Badge>
                                 </div>
 
-                                <div className="flex gap-3 bg-gray-50/50 dark:bg-slate-800/50 rounded-xl p-3 border border-gray-100/50 dark:border-slate-800">
-                                    <div className="w-14 h-14 relative rounded-lg overflow-hidden border-2 border-white dark:border-slate-700 shadow-sm shrink-0">
-                                        <ImageDialogTicket src={item.asset.assetImage1 || "/noImage.jpg"} alt={item.asset.assetNumber} />
-                                    </div>
-                                    <div className="min-w-0 flex flex-col justify-center">
-                                        <div className="font-black text-[13px] text-gray-800 dark:text-gray-100 truncate leading-tight">
-                                            {item.asset.product.part_name}
+                                {/* Image Section */}
+                                <div className="aspect-square relative rounded-2xl overflow-hidden border border-gray-100 dark:border-slate-800 bg-gray-50 mb-3 shadow-inner">
+                                    <ImageDialogTicket src={item.asset.assetImage1 || "/noImage.jpg"} alt={item.asset.assetNumber} />
+                                </div>
+
+                                {/* Info Section */}
+                                <div className="space-y-2 flex-grow">
+                                    <div className="space-y-0.5">
+                                        <div className="font-mono text-[9px] font-bold text-blue-500/70 tracking-tighter">
+                                            {item.ticketNumber}
                                         </div>
-                                        <div className="flex items-center gap-1 text-[10px] text-blue-600 font-bold uppercase mt-1">
-                                            <MapPin className="w-2.5 h-2.5" />
+                                        <h3 className="font-black text-[12px] text-gray-800 dark:text-gray-100 leading-tight line-clamp-2">
+                                            {item.asset.product.part_name}
+                                        </h3>
+                                    </div>
+
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-1 text-[9px] text-gray-400 font-bold uppercase truncate">
+                                            <MapPin className="w-2.5 h-2.5 shrink-0 text-blue-400" />
                                             {item.asset.location}
                                         </div>
+                                        <div className="flex items-center gap-1 text-[9px] text-gray-400 font-bold uppercase">
+                                            <Calendar className="w-2.5 h-2.5 shrink-0 text-gray-300" />
+                                            {new Date(item.createdAt).toLocaleDateString()}
+                                        </div>
+                                    </div>
+
+                                    <div className="text-[10px] text-gray-500 dark:text-gray-400 line-clamp-2 italic leading-relaxed bg-gray-50/80 dark:bg-slate-800/50 p-2 rounded-xl border-l-2 border-blue-500/20">
+                                        "{item.troubleUser}"
                                     </div>
                                 </div>
 
-                                <div className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 italic border-l-4 border-blue-500/20 pl-3 py-1 bg-slate-50/50 dark:bg-slate-800/30 rounded-r-lg">
-                                    "{item.troubleUser}"
-                                </div>
-
-                                <div className="flex items-center justify-between pt-2">
+                                {/* Actions Section */}
+                                <div className="pt-3 mt-auto space-y-2">
                                     <div className="flex gap-2">
                                         <TicketDialog ticket={item} />
                                         <WhatsAppLinkButtonAdmin numbers={whatsappNumbers} message={dynamicMessage} />
                                     </div>
                                     <TicketMaintenanceUpdateSheet ticket={item} technicians={[]}>
-                                        <Button size="sm" className="h-9 bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-widest px-6 rounded-lg shadow-lg shadow-blue-500/20">
-                                            Update Progress
+                                        <Button size="sm" className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-transform">
+                                            Update
                                         </Button>
                                     </TicketMaintenanceUpdateSheet>
                                 </div>
@@ -170,9 +131,9 @@ export default function TechnicianScheduleTable({
                         );
                     })
                 ) : (
-                    <div className="text-center py-20 bg-gray-50/50 dark:bg-slate-800/30 rounded-3xl border-2 border-dashed border-gray-100 dark:border-slate-800">
-                        <Package className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                        <p className="text-sm font-black text-gray-400 uppercase tracking-widest">No scheduled tickets</p>
+                    <div className="col-span-2 text-center py-20 bg-gray-50/50 dark:bg-slate-800/30 rounded-3xl border-2 border-dashed border-gray-100 dark:border-slate-800">
+                        <Package className="w-16 h-16 text-gray-200 mx-auto mb-4 opacity-50" />
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">No scheduled tickets</p>
                     </div>
                 )}
             </div>

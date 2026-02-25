@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Table,
     TableBody,
@@ -8,13 +10,47 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import DeleteAlertTechnician from "./alert-delete-technician";
-import { getTechnicians } from "@/data/asset/technician";
 import { TechnicianStatus } from "@prisma/client";
 import { Mail, Phone, ShieldCheck, UserCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function TechnicianTable({ query, currentPage }: { query: string; currentPage: number; }) {
-    const data = await getTechnicians(query, currentPage);
+interface Technician {
+    id: string;
+    name: string;
+    phone: string | null;
+    email: string | null;
+    specialization: string | null;
+    status: TechnicianStatus;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+interface TechnicianTableProps {
+    data: Technician[];
+    loading?: boolean;
+}
+
+export default function TechnicianTable({ data, loading }: TechnicianTableProps) {
+    if (loading) {
+        return (
+            <div className="w-full space-y-4">
+                <div className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-800 shadow-sm overflow-hidden p-4">
+                    <div className="space-y-4">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <div key={i} className="flex items-center gap-4">
+                                <Skeleton className="h-12 w-12 rounded-full" />
+                                <div className="space-y-2 flex-1">
+                                    <Skeleton className="h-4 w-[200px]" />
+                                    <Skeleton className="h-3 w-[150px]" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full">

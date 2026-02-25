@@ -24,12 +24,16 @@ import { Eye, EyeOff, Mail, Lock, Key, Wrench } from "lucide-react";
 import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
 
+import { useTranslation } from "@/hooks/use-translation";
+import { TranslationKeys } from "@/lib/translations";
+
 const font = Poppins({
     subsets: ["latin"],
     weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 const LoginForm = () => {
+    const { t } = useTranslation();
     const searchParams = useSearchParams();
     const urlError = searchParams.get("error") === "OAuthAccountNotLinked"
         ? "Email already in use with different provider!"
@@ -74,7 +78,7 @@ const LoginForm = () => {
     return (
         <div className="w-full max-w-[95vw] sm:max-w-md mx-auto flex items-center justify-center min-h-[70vh] sm:min-h-[80vh] py-4 sm:py-8">
             <CardWrapper
-                headerLabel="Selamat datang di AxonService"
+                headerLabel={t("login_welcome")}
                 showSocial
             >
                 {/* Custom Header */}
@@ -92,10 +96,10 @@ const LoginForm = () => {
                             AxonService
                         </h1>
                         <p className="text-slate-600 font-semibold text-xs sm:text-base tracking-tight">
-                            Manajemen Aset & Pemeliharaan
+                            {t("app_subtitle")}
                         </p>
                         <p className="text-slate-400 text-[10px] sm:text-sm font-medium">
-                            Akses aman ke dasbor Anda
+                            {t("login_access_desc")}
                         </p>
                     </div>
                 </div>
@@ -119,7 +123,7 @@ const LoginForm = () => {
                                         render={({ field }) => (
                                             <FormItem className="space-y-1 sm:space-y-2">
                                                 <FormLabel className="text-slate-700 font-semibold text-xs sm:text-base">
-                                                    Kode Otentikasi Dua Faktor
+                                                    {t("two_factor_code")}
                                                 </FormLabel>
                                                 <FormControl>
                                                     <div className="relative">
@@ -137,7 +141,7 @@ const LoginForm = () => {
                                         )}
                                     />
                                     <p className="text-slate-500 text-center font-medium text-[10px] sm:text-sm">
-                                        Masukkan kode verifikasi Anda
+                                        {t("enter_verification")}
                                     </p>
                                 </div>
                             ) : (
@@ -173,7 +177,7 @@ const LoginForm = () => {
                                             <FormItem className="space-y-1 sm:space-y-2">
                                                 <div className="flex items-center justify-between">
                                                     <FormLabel className="text-slate-700 font-semibold text-xs sm:text-base">
-                                                        Kata Sandi
+                                                        {t("password_label")}
                                                     </FormLabel>
                                                 </div>
                                                 <FormControl>
@@ -181,7 +185,7 @@ const LoginForm = () => {
                                                         <Input
                                                             {...field}
                                                             disabled={isPending}
-                                                            placeholder="Masukkan kata sandi Anda"
+                                                            placeholder={t("password_placeholder") as string}
                                                             type={showPassword ? "text" : "password"}
                                                             className="bg-slate-50 border-slate-200 h-10 sm:h-14 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all duration-300 pl-8 sm:pl-10 pr-9 text-sm font-medium rounded-xl shadow-sm"
                                                         />
@@ -217,29 +221,29 @@ const LoginForm = () => {
                             {isPending ? (
                                 <div className="flex items-center space-x-2">
                                     <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                    <span className="text-xs">Memproses...</span>
+                                    <span className="text-xs">{t("processing")}</span>
                                 </div>
                             ) : showTwoFactor ? (
-                                "Verifikasi & Lanjutkan"
+                                t("verify_and_continue")
                             ) : (
-                                "Masuk ke Dasbor"
+                                t("login_to_dashboard")
                             )}
                         </Button>
                         {!showTwoFactor && (
                             <div className="mt-2 text-center text-[10px] sm:text-xs text-slate-500 font-medium">
-                                Belum punya akun?{" "}
+                                {t("no_account")}{" "}
                                 <a
                                     href="/auth/login-admin"
                                     className="text-blue-500 hover:text-blue-400 font-bold transition-colors"
                                 >
-                                    Daftar sekarang
+                                    {t("register_now")}
                                 </a>
                             </div>
                         )}
                         {!showTwoFactor && (
                             <div className="text-center pt-1.5 sm:pt-4">
                                 <p className="text-slate-600 font-bold text-[9px] sm:text-xs uppercase tracking-[0.15em]">
-                                    Akses Dasbor Terenkripsi
+                                    {t("encrypted_access")}
                                 </p>
                             </div>
                         )}

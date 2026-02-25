@@ -367,6 +367,7 @@ model Notification {
   userId    String // ID user yang menerima notifikasi
   title     String // Judul notifikasi
   message   String // Isi pesan notifikasi
+  link      String? // Link tujuan jika di klik
   isRead    Boolean  @default(false) // Status apakah notifikasi sudah dibaca
   createdAt DateTime @default(now()) // Waktu dibuat
 

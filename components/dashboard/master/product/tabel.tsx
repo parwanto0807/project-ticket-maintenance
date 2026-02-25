@@ -1,4 +1,5 @@
-import { fetchProducts } from "@/data/master/products";
+"use client";
+
 import { UpdateProduct } from "./buttons";
 import DeleteAlertProduct from "./alert-delete";
 import {
@@ -23,26 +24,30 @@ const font = Poppins({
     weight: ["400", "500", "600", "700", "800", "900"],
 });
 
-export default async function ProductsTable({ query, currentPage }: { query: string; currentPage: number; }) {
-    const products = await fetchProducts(query, currentPage);
+export default function ProductsTable({ products, loading }: { products: any[]; loading: boolean; }) {
+    if (loading) {
+        return <div className="py-20 text-center font-medium text-slate-500">Loading products...</div>;
+    }
 
-    type ProductType = Awaited<ReturnType<typeof fetchProducts>>[number];
+    if (!products || products.length === 0) {
+        return <div className="py-20 text-center font-medium text-slate-500">No products found.</div>;
+    }
 
-    const groupedProducts = products.reduce((acc: Record<string, ProductType[]>, product: ProductType) => {
-        const categoryName = product.kategoriproduct.name;
+    const groupedProducts = products.reduce((acc: Record<string, any[]>, product: any) => {
+        const categoryName = product.kategoriproduct?.name || "Uncategorized";
         if (!acc[categoryName]) {
             acc[categoryName] = [];
         }
         acc[categoryName].push(product);
         return acc;
-    }, {} as Record<string, ProductType[]>);
+    }, {} as Record<string, any[]>);
 
     return (
         <div className={cn("mt-4 lg:mt-6 flow-root", font.className)}>
             <div className="min-w-full align-middle">
                 {/* Mobile View */}
                 <div className="lg:hidden space-y-4 px-0">
-                    {Object.entries(groupedProducts).map(([categoryName, products]) => (
+                    {Object.entries(groupedProducts).map(([categoryName, categoryProducts]) => (
                         <div key={categoryName} className="space-y-3">
                             <div className="flex items-center gap-2 mb-2 px-1">
                                 <div className="w-1 h-5 bg-blue-600 rounded-full"></div>
@@ -50,11 +55,11 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                                     {categoryName}
                                 </h2>
                                 <Badge variant="outline" className="text-[10px] font-medium border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                                    {products.length} Items
+                                    {categoryProducts.length} Items
                                 </Badge>
                             </div>
                             <div className="space-y-2.5">
-                                {products.map((product, index) => (
+                                {categoryProducts.map((product, index) => (
                                     <Card
                                         key={product.id}
                                         className="bg-white/40 backdrop-blur-md border border-slate-200/50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 dark:bg-slate-900/40 dark:border-slate-800 rounded-2xl overflow-hidden group"
@@ -91,7 +96,7 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                                                         <div>
                                                             <span className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-0">Brand</span>
                                                             <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                                                                {product.brand.name}
+                                                                {product.brand?.name}
                                                             </p>
                                                         </div>
                                                         <div>
@@ -114,7 +119,7 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                                                         <div className="flex items-center gap-1">
                                                             <span className="font-bold text-slate-400 uppercase tracking-tighter">Type:</span>
                                                             <span className="font-semibold text-blue-600 dark:text-blue-400 truncate max-w-[70px]">
-                                                                {product.jenisproduct.name}
+                                                                {product.jenisproduct?.name}
                                                             </span>
                                                         </div>
                                                         <Link
@@ -177,7 +182,7 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {Object.entries(groupedProducts).map(([categoryName, products]) => (
+                                {Object.entries(groupedProducts).map(([categoryName, categoryProducts]) => (
                                     <React.Fragment key={categoryName}>
                                         {/* Category Header */}
                                         <TableRow className="bg-slate-50/30 dark:bg-slate-800/20 backdrop-blur-sm">
@@ -189,14 +194,14 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                                                     <div className="w-1.5 h-6 bg-blue-600 rounded-full shadow-lg shadow-blue-500/50"></div>
                                                     <span>{categoryName}</span>
                                                     <Badge variant="outline" className="ml-3 border-blue-200/50 dark:border-blue-800/50 bg-blue-50/50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 font-medium">
-                                                        {products.length} Products
+                                                        {categoryProducts.length} Products
                                                     </Badge>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
 
                                         {/* Category Data */}
-                                        {products.map((product, index) => (
+                                        {categoryProducts.map((product, index) => (
                                             <TableRow
                                                 key={product.id}
                                                 className="bg-transparent hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors duration-200"
@@ -228,12 +233,12 @@ export default async function ProductsTable({ query, currentPage }: { query: str
                                                 </TableCell>
                                                 <TableCell className="py-4 border-b border-slate-50 dark:border-slate-800/50">
                                                     <Badge variant="outline" className="bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700 font-medium">
-                                                        {product.kategoriproduct.name}
+                                                        {product.kategoriproduct?.name}
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="py-4 border-b border-slate-50 dark:border-slate-800/50">
                                                     <Badge variant="outline" className="bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border-indigo-100 dark:border-indigo-800 font-medium">
-                                                        {product.brand.name}
+                                                        {product.brand?.name}
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="py-4 border-b border-slate-50 dark:border-slate-800/50 text-center">

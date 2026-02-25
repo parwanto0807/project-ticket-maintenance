@@ -23,9 +23,11 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function UserNav() {
-   const user = useCurrentUser();
+  const user = useCurrentUser();
+  const { t } = useTranslation();
 
   return (
     <DropdownMenu>
@@ -46,14 +48,14 @@ export function UserNav() {
               </Button>
             </DropdownMenuTrigger>
           </TooltipTrigger>
-          <TooltipContent side="bottom">Profile</TooltipContent>
+          <TooltipContent side="bottom">{t('profile')}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
 
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-        <p className="text-sm font-medium leading-none">{user?.name} {user?.role} </p>
+            <p className="text-sm font-medium leading-none">{user?.name} {user?.role} </p>
             <p className="text-xs leading-none text-muted-foreground">
               {user?.email}
             </p>
@@ -64,13 +66,13 @@ export function UserNav() {
           <DropdownMenuItem className="hover:cursor-pointer" asChild>
             <Link href="/dashboard" className="flex items-center">
               <LayoutGrid className="w-4 h-4 mr-3 text-muted-foreground" />
-              Dashboard
+              {t('dashboard')}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="hover:cursor-pointer" asChild>
             <Link href="/account" className="flex items-center">
               <User className="w-4 h-4 mr-3 text-muted-foreground" />
-              Account
+              {t('account')}
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -78,7 +80,7 @@ export function UserNav() {
         <LogoutButton>
           <DropdownMenuItem>
             <ExitIcon className="h-4 w-4 mr-2" />
-            Sign out
+            {t('signOut')}
           </DropdownMenuItem>
         </LogoutButton>
       </DropdownMenuContent>

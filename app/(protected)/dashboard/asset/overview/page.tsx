@@ -29,23 +29,17 @@ import {
   type MonthlyHistoryRow,
 } from "@/components/asset-management/asset/overview-monthly-history";
 
-const BULAN_NAMES = [
-  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-  "Juli", "Agustus", "September", "Oktober", "November", "Desember",
-];
-
-function getMonthLabel(year: number, month: number): string {
-  return `${BULAN_NAMES[month - 1]} ${year}`;
-}
+import { LocalizedAssetOverview } from "@/components/asset-management/asset/localized-asset-overview";
 
 export default async function AssetOverviewPage({
   searchParams = {},
 }: {
   searchParams?: { bulan?: string; tahun?: string };
 }) {
+  const params = await searchParams;
   const now = new Date();
-  const bulan = Math.min(12, Math.max(1, parseInt(searchParams.bulan ?? String(now.getMonth() + 1), 10) || now.getMonth() + 1));
-  const tahun = parseInt(searchParams.tahun ?? String(now.getFullYear()), 10) || now.getFullYear();
+  const bulan = Math.min(12, Math.max(1, parseInt(params.bulan ?? String(now.getMonth() + 1), 10) || now.getMonth() + 1));
+  const tahun = parseInt(params.tahun ?? String(now.getFullYear()), 10) || now.getFullYear();
 
   const asOfDate = getEndOfMonth(tahun, bulan);
 
@@ -72,9 +66,9 @@ export default async function AssetOverviewPage({
         usefulLife: asset.usefulLife,
         product: asset.product
           ? {
-              part_name: asset.product.part_name,
-              part_number: asset.product.part_number,
-            }
+            part_name: asset.product.part_name,
+            part_number: asset.product.part_number,
+          }
           : null,
         assetType: asset.assetType ? { name: asset.assetType.name } : null,
         department: asset.department
@@ -129,8 +123,6 @@ export default async function AssetOverviewPage({
     ),
   ].sort();
 
-  const reportDate = `sampai akhir ${getMonthLabel(tahun, bulan)}`;
-
   // 1. Beban depresiasi per bulan (periode terpilih)
   const totalMonthlyExpense = assetsRaw.reduce(
     (sum, asset) =>
@@ -170,7 +162,7 @@ export default async function AssetOverviewPage({
     .sort((a, b) => b.monthlyExpense - a.monthlyExpense);
 
   // 2. Riwayat bulanan: 12 bulan terakhir
-  const historyRows: MonthlyHistoryRow[] = [];
+  const historyRows: any[] = [];
   for (let i = 0; i < 12; i++) {
     const d = new Date(tahun, bulan - 1 - i, 1);
     const y = d.getFullYear();
@@ -199,7 +191,6 @@ export default async function AssetOverviewPage({
       );
     });
     historyRows.push({
-      monthLabel: getMonthLabel(y, m),
       year: y,
       month: m,
       totalBookValue: totalBook,
@@ -209,78 +200,19 @@ export default async function AssetOverviewPage({
   }
   historyRows.reverse();
 
-  const monthLabel = getMonthLabel(tahun, bulan);
-
   return (
-    <ContentLayout title="Asset Overview">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/dashboard">Dashboard</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/dashboard/asset/asset-list">Asset Management</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Asset Overview</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <div className="space-y-6 mt-6">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Asset Overview
-          </h2>
-          <p className="mt-1 text-muted-foreground">
-            Ringkasan aset, nilai buku, dan depresiasi — termasuk detail per bulan.
-          </p>
-        </div>
-
-        <Suspense fallback={<div className="h-10" />}>
-          <OverviewPeriodFilter bulan={bulan} tahun={tahun} />
-        </Suspense>
-
-        <AssetOverviewStatsCards stats={stats} reportDate={reportDate} />
-
-        <OverviewMonthlyExpenseCard
-          monthLabel={monthLabel}
-          totalExpense={totalMonthlyExpense}
+    <ContentLayout title="asset_overview">
+      <div className="p-4 sm:p-6 lg:p-8">
+        <LocalizedAssetOverview
+          bulan={bulan}
+          tahun={tahun}
+          stats={stats}
+          totalMonthlyExpense={totalMonthlyExpense}
+          monthlyReportItems={monthlyReportItems}
+          historyRows={historyRows}
+          assetsWithDepreciation={assetsWithDepreciation}
+          departments={departments}
         />
-
-        <div>
-          <h3 className="text-lg font-semibold mb-3 text-zinc-800 dark:text-zinc-200">
-            Ringkasan Depresiasi Aset ({reportDate})
-          </h3>
-          <OverviewTableSection
-            assets={assetsWithDepreciation}
-            departments={departments}
-          />
-        </div>
-
-        <div>
-          <h3 className="text-lg font-semibold mb-3 text-zinc-800 dark:text-zinc-200">
-            Laporan Depresiasi Bulan Ini
-          </h3>
-          <OverviewDepreciationMonthlyReport
-            monthLabel={monthLabel}
-            items={monthlyReportItems}
-            totalExpense={totalMonthlyExpense}
-          />
-        </div>
-
-        <div>
-          <h3 className="text-lg font-semibold mb-3 text-zinc-800 dark:text-zinc-200">
-            Riwayat Bulanan
-          </h3>
-          <OverviewMonthlyHistory rows={historyRows} />
-        </div>
       </div>
     </ContentLayout>
   );

@@ -1,5 +1,6 @@
-import Link from "next/link";
-import { Suspense } from "react";
+"use client";
+
+import { Suspense, useEffect, useState } from "react";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import Search from "@/components/ui/search";
 import Pagination from "@/components/ui/pagination";
@@ -7,18 +8,13 @@ import { PageAnimate } from "@/components/dashboard/master/product/client-wrappe
 import { Inter, Source_Code_Pro } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from "@/components/ui/breadcrumb";
-import { fetchAssetListPages } from "@/data/asset/asset";
+import { fetchAssetListPages, fetchAssetList, fetchAllAssetsGeneral } from "@/data/asset/asset";
 import AssetTable from "@/components/asset-management/asset/tabel";
 import { CreateAssetButton } from "@/components/asset-management/asset/buttons";
 import { SkeletonAssetTable } from "@/components/asset-management/asset/skeletons";
+import { MasterPageHeader } from "@/components/admin-panel/master-page-header";
+import { List } from "lucide-react";
+import { useTranslation } from "@/hooks/use-translation";
 
 const fontInter = Inter({
   subsets: ["latin"],
@@ -32,35 +28,7 @@ const fontMono = Source_Code_Pro({
   variable: "--font-source-code-pro",
 });
 
-const TableSection = async ({
-  query,
-  currentPage,
-  filters
-}: {
-  query: string;
-  currentPage: number;
-  filters: any
-}) => {
-  const totalPages = await fetchAssetListPages(query || "", filters);
-
-  return (
-    <div className="space-y-6">
-      <div className="w-full">
-        <AssetTable
-          query={query}
-          currentPage={currentPage}
-          {...filters}
-        />
-      </div>
-
-      <div className="flex justify-center mt-6 pb-10">
-        <Pagination totalPages={totalPages} />
-      </div>
-    </div>
-  );
-};
-
-const AssetListPage = async ({
+const AssetListPage = ({
   searchParams
 }: {
   searchParams: {
@@ -74,16 +42,22 @@ const AssetListPage = async ({
     software?: string;
   };
 }) => {
+  const { t } = useTranslation();
+  const [totalPages, setTotalPages] = useState(0);
+  const [assets, setAssets] = useState<any[]>([]);
+  const [assetsGeneral, setAssetsGeneral] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const query = searchParams?.query || "";
+  const page = searchParams?.page || "1";
   const {
-    query = "",
-    page,
     assetType,
     userName,
     department,
     status,
     location,
     software
-  } = searchParams || { query: "", page: "1" };
+  } = searchParams || {};
 
   const currentPage = Number(page) || 1;
 
@@ -96,61 +70,71 @@ const AssetListPage = async ({
     software,
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [pages, assetsData, assetsGeneralData] = await Promise.all([
+          fetchAssetListPages(query || "", filters),
+          fetchAssetList(query, currentPage, filters),
+          fetchAllAssetsGeneral()
+        ]);
+        setTotalPages(pages);
+        setAssets(Array.isArray(assetsData) ? assetsData : []);
+        setAssetsGeneral(Array.isArray(assetsGeneralData) ? assetsGeneralData : []);
+      } catch (error) {
+        console.error("Error fetching asset data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [query, currentPage, JSON.stringify(filters)]);
+
   return (
-    <ContentLayout title="Asset Management">
+    <ContentLayout title="asset_list">
       <div className={cn("flex flex-col min-h-full font-inter", fontInter.variable, fontMono.variable)}>
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-          {/* Breadcrumb */}
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="/dashboard" className="hover:text-blue-600 transition-colors text-sm">Dashboard</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="/dashboard/asset" className="hover:text-blue-600 transition-colors text-sm">Asset</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="font-semibold text-blue-600 dark:text-blue-400 text-sm">Asset List</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-
-          {/* Page title & subtitle */}
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-              Daftar Aset
-            </h1>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              Kelola dan pantau semua aset perusahaan.
-            </p>
-          </div>
+          <MasterPageHeader
+            titleKey="daftar_aset"
+            descKey="asset_list_desc"
+            icon={List}
+            breadcrumbKeys={[
+              { labelKey: "dashboard", href: "/dashboard" },
+              { labelKey: "aset", href: "/dashboard/asset/asset-list" },
+              { labelKey: "asset_overview" }
+            ]}
+          />
 
           <PageAnimate>
             <div className="space-y-6">
               {/* Pencarian */}
               <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm p-4 sm:p-5">
-                <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">Pencarian</h2>
+                <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">{t("pencarian")}</h2>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="w-full sm:max-w-md">
-                    <Search placeholder="Cari nama aset, kode, atau serial..." />
+                    <Search placeholder={t("search_asset_placeholder")} />
                   </div>
                   <CreateAssetButton />
                 </div>
               </section>
 
-              <Suspense fallback={<SkeletonAssetTable />}>
-                <TableSection
-                  query={query}
-                  currentPage={currentPage}
-                  filters={filters}
-                />
-              </Suspense>
+              <div className="space-y-6">
+                <div className="w-full">
+                  <AssetTable
+                    assets={assets}
+                    assetsGeneral={assetsGeneral}
+                    loading={loading}
+                    query={query}
+                    currentPage={currentPage}
+                    {...filters}
+                  />
+                </div>
+
+                <div className="flex justify-center mt-6 pb-10">
+                  <Pagination totalPages={totalPages} />
+                </div>
+              </div>
             </div>
           </PageAnimate>
         </div>

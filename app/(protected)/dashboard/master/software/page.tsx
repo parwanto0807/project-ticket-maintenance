@@ -1,31 +1,25 @@
-import Link from "next/link"
+"use client";
+
+import { useEffect, useState } from "react";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import Search from "@/components/ui/search"
 import Pagination from "@/components/ui/pagination";
 import SoftwareTable from "@/components/dashboard/master/software/table";
 import { CreateSoftware } from "@/components/dashboard/master/software/buttons";
 import { SoftwareStatsCards } from "@/components/dashboard/master/software/stats-cards";
-import { PageAnimate } from "@/components/dashboard/master/product/client-wrapper"; // Reuse existing animator
+import { PageAnimate } from "@/components/dashboard/master/product/client-wrapper";
 import { MonitorSmartphone } from "lucide-react";
 import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
-
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator
-} from "@/components/ui/breadcrumb";
 import { fetchSoftwarePages, fetchSoftwareOverviewStats, fetchFilteredSoftware } from "@/data/asset/software";
+import { MasterPageHeader } from "@/components/admin-panel/master-page-header";
 
 const font = Poppins({
     subsets: ["latin"],
     weight: ["400", "500", "600", "700", "800", "900"],
 });
 
-const SoftwarePage = async ({
+const SoftwarePage = ({
     searchParams
 }: {
     searchParams?: {
@@ -33,54 +27,54 @@ const SoftwarePage = async ({
         page?: string;
     }
 }) => {
-    const { query = "", page } = await searchParams || { query: "", page: "1" };
+    const [totalPages, setTotalPages] = useState<number>(0);
+    const [stats, setStats] = useState<any>(null);
+    const [software, setSoftware] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const query = searchParams?.query || "";
+    const page = searchParams?.page || "1";
     const currentPage = Number(page) || 1;
-    const totalPages = await fetchSoftwarePages(query || "");
-    const stats = await fetchSoftwareOverviewStats();
-    const software = await fetchFilteredSoftware(query, currentPage);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const [pages, overviewStats, filteredSoftware] = await Promise.all([
+                    fetchSoftwarePages(query || ""),
+                    fetchSoftwareOverviewStats(),
+                    fetchFilteredSoftware(query, currentPage)
+                ]);
+                setTotalPages(pages);
+                setStats(overviewStats);
+                setSoftware(filteredSoftware);
+            } catch (error) {
+                console.error("Error fetching software data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [query, currentPage]);
 
     return (
-        <ContentLayout title="Software Management">
+        <ContentLayout title="software_management">
             <div className={cn("flex flex-col gap-4 sm:gap-6 p-3 sm:p-6 md:p-8 min-h-full", font.className)}>
-                {/* Breadcrumb & Title Section */}
-                <div className="flex flex-col gap-1">
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink asChild>
-                                    <Link href="/dashboard" className="hover:text-blue-600 transition-colors">Dashboard</Link>
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbLink asChild>
-                                    <Link href="/dashboard" className="hover:text-blue-600 transition-colors">Master</Link>
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbPage className="font-bold text-blue-600 dark:text-blue-400">Software</BreadcrumbPage>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
-
-                    <div className="mt-2 text-left">
-                        <h1 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2 sm:gap-3">
-                            <div className="p-1.5 sm:p-2 bg-blue-600 rounded-lg sm:rounded-xl shadow-lg shadow-blue-500/30">
-                                <MonitorSmartphone className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                            </div>
-                            Master Software
-                        </h1>
-                        <p className="text-[12px] sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-1 sm:mt-1.5 max-w-2xl line-clamp-2 sm:line-clamp-none">
-                            Centralized repository for your company&apos;s software assets. Track installations, monitor license expirations, and manage vendor details across all hardware assets.
-                        </p>
-                    </div>
-                </div>
+                <MasterPageHeader
+                    titleKey="perangkat_lunak"
+                    descKey="software_description"
+                    icon={MonitorSmartphone}
+                    breadcrumbKeys={[
+                        { labelKey: "dashboard", href: "/dashboard" },
+                        { labelKey: "master", href: "/dashboard" },
+                        { labelKey: "perangkat_lunak" }
+                    ]}
+                />
 
                 <PageAnimate>
                     <div className="space-y-4 sm:space-y-8">
                         {/* Stats Section */}
-                        <SoftwareStatsCards stats={stats} />
+                        {stats && <SoftwareStatsCards stats={stats} />}
 
                         {/* Action Bar & Table Section */}
                         <div className="space-y-4">
@@ -92,7 +86,7 @@ const SoftwarePage = async ({
                             </div>
 
                             <div className="w-full">
-                                <SoftwareTable software={software} />
+                                <SoftwareTable software={software} loading={loading} />
                             </div>
 
                             <div className="flex justify-center mt-6 sm:mt-8 pb-10">

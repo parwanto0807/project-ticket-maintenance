@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { PrintAssetButton, UpdateAssetLink } from "./buttons";
 import DeleteAlertProduct from "./alert-delete";
@@ -15,7 +17,6 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { fetchAllAssetsGeneral, fetchAssetList } from "@/data/asset/asset";
 import { formatCurrencyQtt } from "@/lib/utils";
 import ImageDialog from "./imageDialog";
 import Link from "next/link";
@@ -28,8 +29,12 @@ import { AssetFilters } from "./asset-filters";
 import { calculateAssetDepreciation } from "@/lib/finance";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { MaintenanceHistoryDialog } from "./maintenance-history-dialog";
+import { ITEMS_PER_PAGE_ASSET_ADMIN } from "@/lib/constants";
 
-export default async function AssetTable({
+export default function AssetTable({
+    assets,
+    assetsGeneral,
+    loading,
     query,
     currentPage,
     assetType,
@@ -39,6 +44,9 @@ export default async function AssetTable({
     location,
     software,
 }: {
+    assets: any[];
+    assetsGeneral: any[];
+    loading: boolean;
     query: string;
     currentPage: number;
     assetType?: string;
@@ -48,40 +56,27 @@ export default async function AssetTable({
     location?: string;
     software?: string;
 }) {
-
-    const filters = {
-        assetType,
-        userName,
-        department,
-        status,
-        location,
-        software,
-    };
-    const data = await fetchAssetList(query, currentPage, filters);
-    const dataGeneral = await fetchAllAssetsGeneral();
-
-    if (!Array.isArray(data)) {
-        console.error("Failed to fetch asset list:", data.error);
-        return (
-            <div className="rounded-lg bg-red-50 p-4 text-red-700 dark:bg-red-900/20 dark:text-red-300">
-                Error: {data.error}
-            </div>
-        );
+    if (loading) {
+        return <div className="py-20 text-center font-medium text-slate-500">Loading assets...</div>;
     }
 
-    // Pastikan dataGeneral adalah array
-    const assetsData = Array.isArray(dataGeneral) ? dataGeneral : [];
+    if (!assets || assets.length === 0) {
+        return <div className="py-20 text-center font-medium text-slate-500">No assets found.</div>;
+    }
 
-    // Hitung statistik dari dataGeneral
+    // Pastikan assetsGeneral adalah array
+    const assetsData = Array.isArray(assetsGeneral) ? assetsGeneral : [];
+
+    // Hitung statistik dari assetsGeneral
     const totalAssets = assetsData.length;
-    const totalAssetValue = assetsData.reduce((sum, asset) => sum + Number(asset.purchaseCost || 0), 0);
+    const totalAssetValue = assetsData.reduce((sum: number, asset: any) => sum + Number(asset.purchaseCost || 0), 0);
 
     // Hitung kategori aset unik
     const assetCategories = [...new Set(assetsData.map(asset => asset.assetType?.name).filter(Boolean))];
     const totalCategories = assetCategories.length;
 
     // Hitung status aset
-    const statusCount = assetsData.reduce((acc, asset) => {
+    const statusCount = assetsData.reduce((acc: any, asset: any) => {
         const status = asset.status?.toLowerCase() || 'unknown';
         if (status.includes('active') || status.includes('use')) acc.inUse++;
         else if (status.includes('available') || status.includes('ready')) acc.available++;
@@ -91,25 +86,25 @@ export default async function AssetTable({
     }, { inUse: 0, available: 0, maintenance: 0, other: 0 });
 
     // Hitung total software installations
-    const totalSoftwareInstallations = assetsData.reduce((total, asset) => {
+    const totalSoftwareInstallations = assetsData.reduce((total: number, asset: any) => {
         return total + (asset.softwareInstallations?.length || 0);
     }, 0);
 
     // Hitung software installations untuk data yang difilter (dengan query)
-    const assetsWithSoftwareCount = data.map(asset => ({
+    const assetsWithSoftwareCount = assets.map(asset => ({
         ...asset,
         softwareCount: asset.softwareInstallations?.length || 0
     }));
 
     // Group data by department untuk data yang difilter
-    const groupedData = assetsWithSoftwareCount.reduce((acc, item) => {
+    const groupedData = assetsWithSoftwareCount.reduce((acc: Record<string, any[]>, item: any) => {
         const deptName = item.department?.dept_name || "Unassigned";
         if (!acc[deptName]) {
             acc[deptName] = [];
         }
         acc[deptName].push(item);
         return acc;
-    }, {} as Record<string, typeof assetsWithSoftwareCount>);
+    }, {} as Record<string, any[]>);
 
     // Data untuk dropdown filters - Filter out undefined/null values
     const assetTypes = [...new Set(assetsData.map(asset => asset.assetType?.name).filter(Boolean))] as string[];
@@ -117,7 +112,6 @@ export default async function AssetTable({
     const departments = [...new Set(assetsData.map(asset => asset.department?.dept_name).filter(Boolean))] as string[];
     const statuses = [...new Set(assetsData.map(asset => asset.status).filter(Boolean))] as string[];
     const locations = [...new Set(assetsData.map(asset => asset.location).filter(Boolean))] as string[];
-
 
     // Statistik card data
     const statsCards = [
@@ -515,7 +509,7 @@ export default async function AssetTable({
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {Object.entries(groupedData).map(([deptName, items]) => (
+                                    {Object.entries(groupedData).map(([deptName, items]: [string, any[]]) => (
                                         <React.Fragment key={deptName}>
                                             {/* Department Header */}
                                             <TableRow className="bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 dark:from-blue-900/20 dark:to-blue-800/20 dark:hover:from-blue-800/30 dark:hover:to-blue-700/30">
@@ -530,14 +524,14 @@ export default async function AssetTable({
                                                             {items.length} assets
                                                         </Badge>
                                                         <Badge variant="outline" className="font-inter ml-2 bg-green-500 text-white text-[10px] font-medium">
-                                                            {items.reduce((sum, item) => sum + item.softwareCount, 0)} total software
+                                                            {items.reduce((sum: number, item: any) => sum + item.softwareCount, 0)} total software
                                                         </Badge>
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
 
                                             {/* Department Data */}
-                                            {items.map((data, index) => (
+                                            {items.map((data: any, index: number) => (
                                                 <TableRow
                                                     key={`${deptName}-${data.id}`}
                                                     className="bg-transparent hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-all duration-300"
@@ -571,8 +565,7 @@ export default async function AssetTable({
                                                             <div className="flex items-center gap-1.5">
                                                                 <span
                                                                     className="font-inter text-[12px] font-normal text-slate-900 dark:text-slate-100 truncate max-w-[120px]"
-                                                                    // Menggunakan ?? undefined untuk menangani tipe null
-                                                                    title={data.employee?.name ?? 'Unassigned'}
+                                                                    title={data.employee?.name || 'Unassigned'}
                                                                 >
                                                                     {data.employee?.name || 'Unassigned'}
                                                                 </span>
@@ -580,8 +573,7 @@ export default async function AssetTable({
                                                             <div className="flex items-center gap-1.5 opacity-70">
                                                                 <span
                                                                     className="font-inter text-[11px] font-normal text-slate-500 truncate max-w-[120px]"
-                                                                    // Tambahkan ?? undefined di sini
-                                                                    title={data.location ?? undefined}
+                                                                    title={data.location || ''}
                                                                 >
                                                                     📍 {data.location}
                                                                 </span>

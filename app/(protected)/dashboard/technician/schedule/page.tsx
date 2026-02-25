@@ -1,21 +1,18 @@
-import Link from "next/link";
+"use client";
+
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import Search from "@/components/ui/search";
 import Pagination from "@/components/ui/pagination";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from "@/components/ui/breadcrumb";
-import { fetchTicketListPages } from "@/data/asset/ticket";
-import { Badge } from "@/components/ui/badge";
+import { fetchTicketListPages, fetchTicketListSchedule, fetchTicketListTechnician, fetchTicketAssignStats } from "@/data/asset/ticket";
 import TechnicianScheduleTable from "@/components/asset-management/technician/schedule/tabel-technician";
 import DashboardStats from "@/components/asset-management/technician/assign/stats";
+import { MasterPageHeader } from "@/components/admin-panel/master-page-header";
+import { Calendar } from "lucide-react";
+import { useTranslation } from "@/hooks/use-translation";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import React, { useEffect, useState, useCallback } from "react";
 
-const TicketPage = async ({
+const TicketPage = ({
   searchParams
 }: {
   searchParams?: {
@@ -23,50 +20,74 @@ const TicketPage = async ({
     page?: string;
   }
 }) => {
-  const { query = "", page } = await searchParams || { query: "", page: "1" };
+  const { t } = useTranslation();
+  const user = useCurrentUser();
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [tickets, setTickets] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const query = searchParams?.query || "";
+  const page = searchParams?.page || "1";
   const currentPage = Number(page) || 1;
-  const totalPages = await fetchTicketListPages(query || "");
+
+  const fetchData = useCallback(async () => {
+    if (!user?.role) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const email = user.email || "";
+      const role = user.role;
+
+      const [pages, ticketsData, statsData] = await Promise.all([
+        fetchTicketListPages(query || ""),
+        role === "ADMIN"
+          ? fetchTicketListSchedule(query, currentPage)
+          : fetchTicketListTechnician(query, currentPage, email),
+        fetchTicketAssignStats()
+      ]);
+
+      setTotalPages(pages);
+      setTickets(Array.isArray(ticketsData) ? ticketsData : []);
+      setStats(statsData);
+    } catch (err) {
+      console.error("Error fetching schedule:", err);
+      setError("Terjadi kesalahan saat mengambil data.");
+    } finally {
+      setLoading(false);
+    }
+  }, [query, currentPage, user?.email, user?.role]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   return (
-    <ContentLayout title="Technician Schedule">
+    <ContentLayout title="jadwal_teknisi">
       <div className="flex flex-col gap-6 p-4 md:p-8 pt-6">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Badge className="items-center justify-center text-center bg-white/50 backdrop-blur-sm border-gray-100 hover:bg-white transition-colors" variant="outline">
-                  <Link href="/dashboard">Dashboard</Link>
-                </Badge>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Badge className="items-center justify-center text-center bg-white/50 backdrop-blur-sm border-gray-100 hover:bg-white transition-colors" variant="outline">
-                  <Link href="/dashboard">Technician</Link>
-                </Badge>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <Badge className="items-center justify-center text-center bg-blue-50 text-blue-600 border-blue-100" variant="outline">
-                <BreadcrumbPage className="text-blue-600">Technician Schedule</BreadcrumbPage>
-              </Badge>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        <MasterPageHeader
+          titleKey="jadwal_teknisi"
+          descKey="jadwal_teknisi_desc"
+          icon={Calendar}
+          breadcrumbKeys={[
+            { labelKey: "dashboard", href: "/dashboard" },
+            { labelKey: "teknisi", href: "/dashboard/technician/assign" },
+            { labelKey: "jadwal_teknisi" }
+          ]}
+        />
 
-        <DashboardStats />
+        <DashboardStats stats={stats} loading={loading} />
 
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="w-full md:w-72">
-              <Search placeholder="Search Schedule..." />
+              <Search placeholder={t("search_schedule_placeholder")} />
             </div>
           </div>
 
           <div className="w-full">
-            <TechnicianScheduleTable query={query} currentPage={currentPage} />
+            <TechnicianScheduleTable tickets={tickets} loading={loading} error={error} />
           </div>
 
           <div className="flex justify-center pt-4 border-t border-gray-50 dark:border-slate-800">

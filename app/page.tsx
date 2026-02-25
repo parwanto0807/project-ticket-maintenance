@@ -8,6 +8,8 @@ import { Wrench, Cpu, Shield, TrendingUp, ArrowRight, CheckCircle2 } from "lucid
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/hooks/use-translation";
+import { TranslationKeys } from "@/lib/translations";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -37,6 +39,8 @@ export default function Home() {
     },
   };
 
+  const { t } = useTranslation();
+
   return (
     <main className={cn("min-h-screen bg-[#020617] text-white selection:bg-blue-500/30", font.className)}>
       <Navbar />
@@ -61,16 +65,16 @@ export default function Home() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
               </span>
-              Platform Pemeliharaan Generasi Terbaru
+              {t("platform_subtitle")}
             </motion.div>
 
             <motion.h1
               variants={itemVariants}
               className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1]"
             >
-              Kuasai Aset Anda dengan <br />
+              {t("hero_title").split("dengan")[0]} <br />
               <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                Kecerdasan
+                {t("hero_title").includes("dengan") ? t("hero_title").split("dengan")[1].trim() : t("hero_title")}
               </span>
             </motion.h1>
 
@@ -78,7 +82,7 @@ export default function Home() {
               variants={itemVariants}
               className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed"
             >
-              Sederhanakan alur kerja pemeliharaan, lacak siklus hidup aset, dan optimalkan performa dengan sistem manajemen terintegrasi siap-IoT kami.
+              {t("hero_desc")}
             </motion.p>
 
             <motion.div
@@ -87,7 +91,7 @@ export default function Home() {
             >
               <LoginButton>
                 <Button size="lg" className="h-14 px-8 text-lg bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 w-full sm:w-auto">
-                  Mulai Sekarang
+                  {t("start_now")}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </LoginButton>
@@ -100,15 +104,15 @@ export default function Home() {
               {/* Placeholder for trusted companies or stats */}
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-blue-500" />
-                <span className="font-semibold text-sm">Siap untuk Perusahaan</span>
+                <span className="font-semibold text-sm">{t("enterprise_ready")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-blue-500" />
-                <span className="font-semibold text-sm">Waktu Aktif 99,9%</span>
+                <span className="font-semibold text-sm">{t("uptime_99")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-blue-500" />
-                <span className="font-semibold text-sm">Terintegrasi IoT</span>
+                <span className="font-semibold text-sm">{t("iot_integrated")}</span>
               </div>
             </motion.div>
           </motion.div>
@@ -119,27 +123,27 @@ export default function Home() {
       <section id="features" className="py-24 relative">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <h2 className="text-3xl md:text-4xl font-bold italic-gradient">Fitur Unggulan</h2>
-            <p className="text-slate-400 md:text-lg">Semua yang Anda butuhkan untuk mengelola infrastruktur secara efisien dari satu dasbor.</p>
+            <h2 className="text-3xl md:text-4xl font-bold italic-gradient">{t("featured_features")}</h2>
+            <p className="text-slate-400 md:text-lg">{t("features_desc")}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <FeatureCard
               icon={<Wrench className="w-6 h-6" />}
-              title="Tiket Pemeliharaan"
-              description="Koordinasikan perbaikan dan tugas pencegahan dengan perutean tiket otomatis dan pembaruan status waktu nyata."
+              title={t("ticket_maintenance_title")}
+              description={t("ticket_maintenance_desc")}
               color="blue"
             />
             <FeatureCard
               icon={<Cpu className="w-6 h-6" />}
-              title="Manajemen Aset"
-              description="Kontrol inventaris lengkap dengan pelacakan riwayat, penyimpanan dokumentasi, dan analitik siklus hidup."
+              title={t("asset_management_title")}
+              description={t("asset_management_desc")}
               color="cyan"
             />
             <FeatureCard
               icon={<Shield className="w-6 h-6" />}
-              title="Keamanan & Kepatuhan"
-              description="Kontrol akses berbasis peran dan log audit terperinci memastikan data Anda tetap terlindungi dan patuh."
+              title={t("security_compliance_title")}
+              description={t("security_compliance_desc")}
               color="indigo"
             />
           </div>
@@ -150,10 +154,10 @@ export default function Home() {
       <section className="py-20 bg-slate-900/50 border-y border-white/5">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-            <StatItem label="Pengguna Aktif" value="2,400+" />
-            <StatItem label="Aset Terlacak" value="15k+" />
-            <StatItem label="Tiket Selesai" value="85k" />
-            <StatItem label="Waktu Respon" value="< 2j" />
+            <StatItem label={t("active_users")} value="2,400+" />
+            <StatItem label={t("tracked_assets")} value="15k+" />
+            <StatItem label={t("tickets_completed")} value="85k" />
+            <StatItem label={t("response_time")} value="< 2j" />
           </div>
         </div>
       </section>
@@ -166,12 +170,12 @@ export default function Home() {
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px]" />
 
             <div className="relative z-10 max-w-2xl mx-auto space-y-8">
-              <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight">Siap mentransformasi pemeliharaan Anda?</h2>
-              <p className="text-blue-100/80 md:text-xl">Bergabunglah dengan ratusan perusahaan yang menggunakan AxonService untuk meminimalkan waktu henti dan memaksimalkan produktivitas.</p>
+              <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight">{t("cta_title")}</h2>
+              <p className="text-blue-100/80 md:text-xl">{t("cta_desc")}</p>
               <div className="pt-4">
                 <LoginButton>
                   <Button size="lg" variant="secondary" className="h-14 px-10 text-lg font-semibold bg-white text-blue-600 hover:bg-white/90 rounded-xl transition-all hover:scale-105 active:scale-95">
-                    Mulai Dasbor Anda
+                    {t("start_dashboard")}
                   </Button>
                 </LoginButton>
               </div>

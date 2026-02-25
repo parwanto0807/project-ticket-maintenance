@@ -1,3 +1,5 @@
+"use server";
+
 import { db } from "@/lib/db";
 import { unstable_noStore as no_store } from "next/cache";
 const ITEMS_PER_PAGE_PRICE = 30;
@@ -149,7 +151,7 @@ export async function fetchMtUang() {
             }
         });
         return findMtUang
-    } catch  {
+    } catch {
         console.error('Error Fetching mata uang')
         throw new Error('Filed to Fetching mata uang')
 

@@ -11,7 +11,7 @@ import {
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 import SoftwareUpdateForm from "@/components/dashboard/master/software/edit-software-form";
-import { softwareApi } from "@/data/asset/software";
+import { fetchSoftwareById } from "@/data/asset/software";
 
 interface UpdateSoftwarePageProps {
     params: {
@@ -23,7 +23,7 @@ const UpdateSoftwarePage = async ({ params }: UpdateSoftwarePageProps) => {
     let software;
 
     try {
-        software = await softwareApi.getById(params.id);
+        software = await fetchSoftwareById(params.id);
     } catch {
         notFound();
     }

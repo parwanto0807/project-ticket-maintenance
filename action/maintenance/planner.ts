@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { generateTicketNumber } from "@/data/asset/ticket";
 import { auth } from "@/auth";
+import { sendNotificationToAdmins, sendNotificationToTechnician } from "@/lib/notification";
 
 export async function toggleMaintenanceSchedule(assetId: string, date: string, technicianId?: string) {
     try {
@@ -68,6 +69,23 @@ export async function toggleMaintenanceSchedule(assetId: string, date: string, t
                 updatedAt: new Date(),
             }
         });
+
+        // Send notification to admins
+        await sendNotificationToAdmins(
+            "New Preventive Maintenance",
+            `A new PM ticket (${ticketNumber}) has been scheduled for asset ${asset.assetNumber}.`,
+            `/dashboard/technician/planner`
+        );
+
+        // Send notification to technician if assigned
+        if (technicianId) {
+            await sendNotificationToTechnician(
+                technicianId,
+                "New PM Schedule",
+                `You have been assigned a new PM task (${ticketNumber}) for asset ${asset.assetNumber}.`,
+                `/dashboard/technician/planner`
+            );
+        }
 
         revalidatePath("/dashboard/technician/planner");
         return { success: "Jadwal berhasil dibuat!" };

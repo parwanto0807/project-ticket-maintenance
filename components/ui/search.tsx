@@ -4,12 +4,14 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { useDebouncedCallback } from 'use-debounce';
+import { useTranslation } from "@/hooks/use-translation";
+import { TranslationKeys } from "@/lib/translations";
 
-
-export default function Search({ placeholder }: { placeholder: string }) {
+export default function Search({ placeholder }: { placeholder?: string }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const { t } = useTranslation();
 
   const handleSearch = useDebouncedCallback((term: string) => {
     //console.log(`Searching ....${term})`)
@@ -22,21 +24,23 @@ export default function Search({ placeholder }: { placeholder: string }) {
       params.delete('query');
     }
     replace(`${pathname}?${params.toString()}`);
-  },400);
+  }, 400);
+
+  const displayPlaceholder = placeholder ? (t(placeholder.toLowerCase().replace(/\s+/g, '_') as TranslationKeys) || placeholder) : t("search_placeholder");
 
   return (
     <div className="relative flex flex-1 flex-shrink-0 ">
       <Input
-          type='text'
-          id="search-input"
-          name="search"
-          className="peer block w-full py-[9px] pl-10 text-sm"
-          placeholder={placeholder}
-          onChange={(e) => {
-            handleSearch(e.target.value);
-          }}
-          defaultValue={searchParams.get('query')?.toString()}
-          aria-label="Search"
+        type='text'
+        id="search-input"
+        name="search"
+        className="peer block w-full py-[9px] pl-10 text-sm"
+        placeholder={displayPlaceholder}
+        onChange={(e) => {
+          handleSearch(e.target.value);
+        }}
+        defaultValue={searchParams.get('query')?.toString()}
+        aria-label="Search"
       />
       <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
     </div>

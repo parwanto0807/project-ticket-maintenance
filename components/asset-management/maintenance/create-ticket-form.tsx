@@ -641,7 +641,10 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                         </motion.div>
 
                         {/* Sticky Header-like Footer for Action */}
-                        <div className="fixed bottom-0 left-0 w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200/60 dark:border-slate-800/60 p-4 pb-6 z-50">
+                        <div className={cn(
+                            "fixed bottom-0 left-0 w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200/60 dark:border-slate-800/60 p-4 z-50",
+                            user?.role === "USER" ? "pb-[80px] md:pb-6" : "pb-6"
+                        )}>
                             <div className="max-w-xl mx-auto flex gap-3">
                                 <Button
                                     type="button"

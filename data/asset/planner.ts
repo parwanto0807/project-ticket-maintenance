@@ -1,7 +1,8 @@
+"use server";
+
 import { db } from "@/lib/db";
 import { unstable_noStore as noStore } from "next/cache";
-
-export const ITEMS_PER_PAGE_PLANNER = 10;
+import { ITEMS_PER_PAGE_PLANNER } from "@/lib/constants";
 
 export async function fetchMaintenancePlannerData(year: number, currentPage: number, query: string = "") {
     noStore();
