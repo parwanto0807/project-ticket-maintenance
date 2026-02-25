@@ -97,6 +97,7 @@ export const fetchTicketListAssign = async (
               { analisaDescription: { contains: query, mode: "insensitive" } },
               { troubleUser: { contains: query, mode: "insensitive" } },
               { actionDescription: { contains: query, mode: "insensitive" } },
+              { asset: { assetNumber: { contains: query, mode: "insensitive" } } },
             ],
           },
           {
@@ -142,6 +143,7 @@ export const fetchTicketListSchedule = async (
               { analisaDescription: { contains: query, mode: "insensitive" } },
               { troubleUser: { contains: query, mode: "insensitive" } },
               { actionDescription: { contains: query, mode: "insensitive" } },
+              { asset: { assetNumber: { contains: query, mode: "insensitive" } } },
             ],
           },
           {
@@ -324,6 +326,7 @@ export const fetchTicketListTechnician = async (
               { analisaDescription: { contains: query, mode: "insensitive" } },
               { troubleUser: { contains: query, mode: "insensitive" } },
               { actionDescription: { contains: query, mode: "insensitive" } },
+              { asset: { assetNumber: { contains: query, mode: "insensitive" } } },
             ],
           },
           {

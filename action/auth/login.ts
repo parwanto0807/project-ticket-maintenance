@@ -39,7 +39,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => { //validasi
     // Check if email exists in Master (Employee or Technician)
     const existingEmail = await getEmailMaster(email);
     if (!existingEmail) {
-        return { error: "Email anda belum ter registrasi, silahkan hubungi Admin IT" };
+        return { error: "Email anda belum terdaftar, silahkan Hubungi Admin IT" };
     }
 
     if (!existingUser || !existingUser.email || !existingUser.password) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import Search from "@/components/ui/search";
 import Pagination from "@/components/ui/pagination";
@@ -13,8 +14,9 @@ import AssetTable from "@/components/asset-management/asset/tabel";
 import { CreateAssetButton } from "@/components/asset-management/asset/buttons";
 import { SkeletonAssetTable } from "@/components/asset-management/asset/skeletons";
 import { MasterPageHeader } from "@/components/admin-panel/master-page-header";
-import { List } from "lucide-react";
+import { List, Scan } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
+import { AssetScanner } from "@/components/asset-management/asset/asset-scanner";
 
 const fontInter = Inter({
   subsets: ["latin"],
@@ -115,7 +117,17 @@ const AssetListPage = ({
                   <div className="w-full sm:max-w-md">
                     <Search placeholder={t("search_asset_placeholder")} />
                   </div>
-                  <CreateAssetButton />
+                  <div className="flex items-center gap-2">
+                    <AssetScanner
+                      trigger={
+                        <Button variant="outline" className="h-10 px-4 bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800 transition-all font-semibold italic text-xs uppercase tracking-widest">
+                          <Scan className="w-4 h-4 mr-2" />
+                          Scan Asset
+                        </Button>
+                      }
+                    />
+                    <CreateAssetButton />
+                  </div>
                 </div>
               </section>
 

@@ -37,7 +37,9 @@ const LoginForm = () => {
     const searchParams = useSearchParams();
     const urlError = searchParams.get("error") === "OAuthAccountNotLinked"
         ? "Email already in use with different provider!"
-        : "";
+        : searchParams.get("error") === "NotRegistered"
+            ? "Email anda belum terdaftar, silahkan Hubungi Admin IT"
+            : "";
     const [showTwoFactor, setShowTwoFactor] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | undefined>("");

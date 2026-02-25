@@ -53,7 +53,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: "/auth/error",
     signOut: "/auth/logout",
     verifyRequest: "/auth/verify-request",
-    newUser: "/auth/new-user",
   },
 
   events: {
@@ -75,8 +74,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       const existingEmail = await getEmailMaster(email);
       if (!existingEmail) {
-        console.log("User not found, redirecting to email registration form");
-        return "/auth/login-admin";
+        console.log("User not found, redirecting to login with error");
+        return "/auth/login?error=NotRegistered";
       }
 
       if (!user.id || typeof user.id !== "string") {

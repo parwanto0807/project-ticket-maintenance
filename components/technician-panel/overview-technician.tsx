@@ -24,6 +24,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 import { useTranslation } from "@/hooks/use-translation";
 import { TranslationKeys } from "@/lib/translations";
+import { AssetScanner } from "../asset-management/asset/asset-scanner";
 
 export default function DashboardTechnicianPage() {
   const user = useCurrentUser();
@@ -184,12 +185,16 @@ export default function DashboardTechnicianPage() {
               </div>
               <span className="text-[10px] font-black text-slate-700 uppercase tracking-tighter text-center leading-none">{t("my_schedule")}</span>
             </Link>
-            <Link href="/dashboard/inventory/asset" className="flex flex-col items-center gap-2 p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all active:scale-95 group">
-              <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center group-hover:bg-amber-600 transition-colors duration-300">
-                <Scan className="w-6 h-6 text-amber-600 group-hover:text-white transition-colors duration-300" />
-              </div>
-              <span className="text-[10px] font-black text-slate-700 uppercase tracking-tighter text-center leading-none">{t("scan_asset")}</span>
-            </Link>
+            <AssetScanner
+              trigger={
+                <button className="flex flex-col items-center gap-2 p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all active:scale-95 group w-full">
+                  <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center group-hover:bg-amber-600 transition-colors duration-300">
+                    <Scan className="w-6 h-6 text-amber-600 group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <span className="text-[10px] font-black text-slate-700 uppercase tracking-tighter text-center leading-none">{t("scan_asset")}</span>
+                </button>
+              }
+            />
           </div>
         </div>
 

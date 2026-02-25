@@ -358,3 +358,38 @@ export const updateTicketAssign = async (formData: FormData) => {
   }
 };
 
+
+export const getTicketByAssetNumber = async (assetNumber: string) => {
+  try {
+    const asset = await db.asset.findFirst({
+      where: { assetNumber },
+      include: {
+        tickets: {
+          where: {
+            status: {
+              in: ["Pending", "Assigned", "In_Progress"]
+            }
+          },
+          orderBy: {
+            createdAt: "desc"
+          },
+          take: 1
+        }
+      }
+    });
+
+    if (!asset) {
+      return { error: "Asset not found" };
+    }
+
+    const activeTicket = asset.tickets[0];
+    if (!activeTicket) {
+      return { error: "No active maintenance ticket found for this asset", assetId: asset.id };
+    }
+
+    return { success: true, ticket: activeTicket };
+  } catch (error) {
+    console.error("Error fetching ticket by asset number:", error);
+    return { error: "An error occurred while looking up the asset" };
+  }
+};

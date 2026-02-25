@@ -76,7 +76,7 @@ export const translations = {
 
         // Landing Page
         platform_subtitle: "Platform Pemeliharaan Generasi Terbaru",
-        hero_title: "Kuasai Aset Anda dengan Kecerdasan",
+        hero_title: "Kelola Aset Jadi Lebih Mudah",
         hero_desc: "Sederhanakan alur kerja pemeliharaan, lacak siklus hidup aset, dan optimalkan performa dengan sistem manajemen terintegrasi siap-IoT kami.",
         start_now: "Mulai Sekarang",
         enterprise_ready: "Siap untuk Perusahaan",
@@ -96,7 +96,6 @@ export const translations = {
         response_time: "Waktu Respon",
         cta_title: "Siap mentransformasi pemeliharaan Anda?",
         cta_desc: "Bergabunglah dengan ratusan perusahaan yang menggunakan AxonService untuk meminimalkan waktu henti dan memaksimalkan produktivitas.",
-        start_dashboard: "Mulai Dasbor Anda",
 
         // Login Form
         login_welcome: "Selamat datang di AxonService",
@@ -256,7 +255,7 @@ export const translations = {
 
         // Landing Page
         platform_subtitle: "Next-Generation Maintenance Platform",
-        hero_title: "Master Your Assets with Intelligence",
+        hero_title: "Asset Management Made Simple",
         hero_desc: "Streamline maintenance workflows, track asset lifecycles, and optimize performance with our integrated IoT-ready management system.",
         start_now: "Get Started Now",
         enterprise_ready: "Enterprise Ready",
@@ -276,7 +275,6 @@ export const translations = {
         response_time: "Response Time",
         cta_title: "Ready to transform your maintenance?",
         cta_desc: "Join hundreds of companies using AxonService to minimize downtime and maximize productivity.",
-        start_dashboard: "Start Your Dashboard",
 
         // Login Form
         login_welcome: "Welcome to AxonService",

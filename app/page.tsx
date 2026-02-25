@@ -72,10 +72,18 @@ export default function Home() {
               variants={itemVariants}
               className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1]"
             >
-              {t("hero_title").split("dengan")[0]} <br />
-              <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                {t("hero_title").includes("dengan") ? t("hero_title").split("dengan")[1].trim() : t("hero_title")}
-              </span>
+              {t("hero_title").includes("dengan") ? (
+                <>
+                  {t("hero_title").split("dengan")[0]} <br />
+                  <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                    {t("hero_title").split("dengan")[1].trim()}
+                  </span>
+                </>
+              ) : (
+                <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                  {t("hero_title")}
+                </span>
+              )}
             </motion.h1>
 
             <motion.p
@@ -172,13 +180,6 @@ export default function Home() {
             <div className="relative z-10 max-w-2xl mx-auto space-y-8">
               <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight">{t("cta_title")}</h2>
               <p className="text-blue-100/80 md:text-xl">{t("cta_desc")}</p>
-              <div className="pt-4">
-                <LoginButton>
-                  <Button size="lg" variant="secondary" className="h-14 px-10 text-lg font-semibold bg-white text-blue-600 hover:bg-white/90 rounded-xl transition-all hover:scale-105 active:scale-95">
-                    {t("start_dashboard")}
-                  </Button>
-                </LoginButton>
-              </div>
             </div>
           </div>
         </div>
