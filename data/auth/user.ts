@@ -38,8 +38,26 @@ export const getUserById = async (id: string) => {
 
 export const getEmailMaster = async (email: string) => {
     try {
+        // Check in AccountEmail
         const foundEmail = await db.accountEmail.findFirst({ where: { email: email } });
-        return foundEmail;
+        if (foundEmail) return foundEmail;
+
+        // Check in Employee
+        const employee = await db.employee.findFirst({
+            where: {
+                OR: [
+                    { email: email },
+                    { emailCorporate: email }
+                ]
+            }
+        });
+        if (employee) return employee;
+
+        // Check in Technician
+        const technician = await db.technician.findFirst({ where: { email: email } });
+        if (technician) return technician;
+
+        return null;
     } catch (error) {
         console.error("Error while fetching user by email:", error);
         return null;

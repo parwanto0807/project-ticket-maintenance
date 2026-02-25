@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import FloatingBackButton from "@/components/backToHome";
 import { ThemeProvider } from "@/components/theme-provider"; // Import ThemeProvider
 import FcmTokenManager from "@/components/FcmTokenManager";
+import PWAInstallButton from "@/components/pwa-install-button";
 
 export const metadata: Metadata = {
   title: "Asset Management",
@@ -29,6 +30,7 @@ export default async function RootLayout({
         <ThemeProvider>
           <SessionProvider session={session ?? null}>
             <FcmTokenManager />
+            <PWAInstallButton />
             {children}
             <FloatingBackButton />
           </SessionProvider>

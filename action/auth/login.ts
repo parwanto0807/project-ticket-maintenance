@@ -5,7 +5,7 @@ import { AuthError } from "next-auth";
 import { db } from "@/lib/db";
 import { signIn } from "@/auth";
 import { LoginSchema } from "@/schemas";
-import { getUserByEmail } from "@/data/auth/user";
+import { getUserByEmail, getEmailMaster } from "@/data/auth/user";
 import { getTwoFactorTokenByEmail } from "@/data/auth/two-factor-token";
 import {
     sendVerificationEmail,
@@ -36,6 +36,12 @@ export const login = async (values: z.infer<typeof LoginSchema>) => { //validasi
     // maka pengguna dianggap tidak ada atau informasi yang sesuai tidak ditemukan. 
     // Dalam kasus ini, kode mengembalikan { error: "Email does not exist!" }, 
     // yang menunjukkan bahwa email yang dimasukkan tidak terdaftar dalam sistem.
+    // Check if email exists in Master (Employee or Technician)
+    const existingEmail = await getEmailMaster(email);
+    if (!existingEmail) {
+        return { error: "Email anda belum ter registrasi, silahkan hubungi Admin IT" };
+    }
+
     if (!existingUser || !existingUser.email || !existingUser.password) {
         return { error: "Email does not exist!" }
     };
