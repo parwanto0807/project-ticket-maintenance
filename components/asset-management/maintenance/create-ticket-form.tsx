@@ -305,22 +305,22 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
             <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="max-w-xl mx-auto pb-24"
+                className="max-w-7xl mx-auto pb-24 px-4 sm:px-6 lg:px-8"
             >
                 {/* Visual Header */}
                 <div className="relative px-4 pt-4 pb-6 overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-grid-slate-100/50 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.5))] dark:bg-grid-slate-800/20" />
 
                     <div className="relative flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
-                                <FaTicketAlt className="w-5 h-5 text-white" />
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-xl shadow-orange-500/20">
+                                <FaTicketAlt className="w-6 h-6 md:w-7 md:h-7 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-[14px] md:text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                                <h1 className="text-xl md:text-3xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
                                     Register Ticket
                                 </h1>
-                                <p className="text-[9px] md:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+                                <p className="text-xs md:text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">
                                     Maintenance Management
                                 </p>
                             </div>
@@ -354,8 +354,8 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                         name="ticketNumber"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="flex items-center gap-2 text-[9px] md:text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                                                    <FaTicketAlt className="w-2.5 h-2.5 text-orange-500" />
+                                                <FormLabel className="flex items-center gap-2 text-sm md:text-base font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">
+                                                    <FaTicketAlt className="w-3.5 h-3.5 text-orange-500" />
                                                     Nomor Tiket
                                                 </FormLabel>
                                                 <FormControl>
@@ -364,7 +364,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                                             {...field}
                                                             value={ticketNumber}
                                                             disabled
-                                                            className="text-[10px] md:text-xs font-black h-11 bg-orange-50/30 border-orange-100 dark:bg-orange-500/5 dark:border-orange-500/20 text-orange-700 dark:text-orange-400 tracking-wider shadow-inner"
+                                                            className="text-sm md:text-base font-black h-14 bg-orange-50/30 border-orange-100 dark:bg-orange-500/5 dark:border-orange-500/20 text-orange-700 dark:text-orange-400 tracking-wider shadow-inner rounded-xl"
                                                         />
                                                         {loading && (
                                                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -383,8 +383,8 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                             name="employeeId"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel className="flex items-center gap-2 text-[9px] md:text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                                                        <FaUser className="w-2.5 h-2.5 text-blue-500" />
+                                                    <FormLabel className="flex items-center gap-2 text-sm md:text-base font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">
+                                                        <FaUser className="w-3.5 h-3.5 text-blue-500" />
                                                         Pengguna Aset
                                                     </FormLabel>
                                                     <Select
@@ -396,13 +396,13 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                                         disabled={isPending}
                                                     >
                                                         <FormControl>
-                                                            <SelectTrigger className="h-11 text-[10px] md:text-xs font-bold border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50">
+                                                            <SelectTrigger className="h-14 text-sm md:text-base font-bold border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 rounded-xl">
                                                                 <SelectValue placeholder="Pilih pengguna" />
                                                             </SelectTrigger>
                                                         </FormControl>
                                                         <SelectContent>
                                                             {departmentEmployees?.map((data) => (
-                                                                <SelectItem key={data.id} value={data.id} className="text-[10px] md:text-xs font-medium">
+                                                                <SelectItem key={data.id} value={data.id} className="text-sm md:text-base font-medium py-3">
                                                                     {data.name}
                                                                 </SelectItem>
                                                             ))}
@@ -413,13 +413,13 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                             )}
                                         />
 
-                                        <div className="space-y-1.5">
-                                            <p className="flex items-center gap-2 text-[9px] md:text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                                                <FaBuilding className="w-2.5 h-2.5 text-purple-500" />
+                                        <div className="space-y-2">
+                                            <p className="flex items-center gap-2 text-sm md:text-base font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">
+                                                <FaBuilding className="w-3.5 h-3.5 text-purple-500" />
                                                 Departemen
                                             </p>
-                                            <div className="h-11 flex items-center px-3 bg-slate-50 dark:bg-slate-950 rounded-lg border border-slate-100 dark:border-slate-800">
-                                                <p className="text-[10px] md:text-xs font-black text-slate-700 dark:text-slate-300">
+                                            <div className="h-14 flex items-center px-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800">
+                                                <p className="text-sm md:text-base font-black text-slate-700 dark:text-slate-300">
                                                     {selectedDepartmentName?.dept_name || "---"}
                                                 </p>
                                             </div>
@@ -441,8 +441,8 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                         name="assetId"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="flex items-center gap-2 text-[9px] md:text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                                                    <FaCog className="w-2.5 h-2.5 text-blue-500" />
+                                                <FormLabel className="flex items-center gap-2 text-sm md:text-base font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">
+                                                    <FaCog className="w-3.5 h-3.5 text-blue-500" />
                                                     Nama Aset
                                                 </FormLabel>
                                                 <Select
@@ -451,16 +451,16 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                                     disabled={isPending}
                                                 >
                                                     <FormControl>
-                                                        <SelectTrigger className="h-11 text-[10px] md:text-xs font-bold border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50">
+                                                        <SelectTrigger className="h-14 text-sm md:text-base font-bold border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 rounded-xl">
                                                             <SelectValue placeholder="Pilih perangkat bermasalah" />
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
                                                         {departmentByAsset?.map((data) => (
-                                                            <SelectItem key={data.id} value={data.id} className="text-[10px] md:text-xs py-2">
-                                                                <div className="flex flex-col gap-0.5">
+                                                            <SelectItem key={data.id} value={data.id} className="text-sm md:text-base py-3">
+                                                                <div className="flex flex-col gap-1">
                                                                     <span className="font-black text-slate-800 dark:text-slate-200 uppercase tracking-tight">{data.product?.part_name}</span>
-                                                                    <span className="text-[9px] font-medium text-slate-500 flex items-center gap-1">
+                                                                    <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
                                                                         {data.assetNumber} • {data.location || "No Location"}
                                                                     </span>
                                                                 </div>
@@ -478,8 +478,8 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                         name="troubleUser"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="flex items-center gap-2 text-[9px] md:text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                                                    <FaTools className="w-2.5 h-2.5 text-red-500" />
+                                                <FormLabel className="flex items-center gap-2 text-sm md:text-base font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">
+                                                    <FaTools className="w-3.5 h-3.5 text-red-500" />
                                                     Detail Masalah
                                                 </FormLabel>
                                                 <FormControl>
@@ -487,7 +487,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                                         {...field}
                                                         placeholder="Jelaskan kendala perangkat secara detail..."
                                                         disabled={isPending}
-                                                        className="min-h-[90px] text-[10px] md:text-xs font-medium border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 py-3 leading-relaxed focus-visible:ring-orange-500/30"
+                                                        className="min-h-[120px] text-sm md:text-base font-medium border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 py-4 px-4 rounded-xl leading-relaxed focus-visible:ring-orange-500/30"
                                                     />
                                                 </FormControl>
                                                 <FormMessage className="text-[8px] font-semibold" />
@@ -510,8 +510,8 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                         name="priorityStatus"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="flex items-center gap-2 text-[9px] md:text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                                                    <FaExclamationTriangle className="w-2.5 h-2.5 text-amber-500" />
+                                                <FormLabel className="flex items-center gap-2 text-sm md:text-base font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-3">
+                                                    <FaExclamationTriangle className="w-3.5 h-3.5 text-amber-500" />
                                                     Tingkat Urgensi
                                                 </FormLabel>
                                                 <FormControl>
@@ -531,7 +531,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                                                         : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                                                                 )}
                                                             >
-                                                                {p === "Low" ? "🟢 Low" : p === "Medium" ? "🟡 Med" : p === "High" ? "🟠 High" : "🔴 Crit"}
+                                                                {p === "Low" ? "🟢 Low" : p === "Medium" ? "🟡 Med" : p === "High" ? "🟠 High" : "🔴 Critical"}
                                                             </button>
                                                         ))}
                                                     </div>
@@ -542,28 +542,28 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
 
                                     <div className="pt-2">
                                         <div className="flex items-center justify-between mb-2">
-                                            <p className="flex items-center gap-2 text-[9px] md:text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                                                <FaImage className="w-2.5 h-2.5 text-purple-500" />
+                                            <p className="flex items-center gap-2 text-sm md:text-base font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">
+                                                <FaImage className="w-3.5 h-3.5 text-purple-500" />
                                                 Bukti Foto
                                             </p>
                                             <div className="flex items-center gap-2">
-                                                {isMobile ? <FaMobile className="w-2.5 h-2.5 text-blue-500/50" /> : <FaDesktop className="w-2.5 h-2.5 text-slate-400/50" />}
-                                                <span className="text-[8px] font-bold text-slate-400 uppercase">Native Mode</span>
+                                                {isMobile ? <FaMobile className="w-3.5 h-3.5 text-blue-500/50" /> : <FaDesktop className="w-3.5 h-3.5 text-slate-400/50" />}
+                                                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Native Mode</span>
                                             </div>
                                         </div>
 
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             <label
                                                 htmlFor="ticketImage1"
-                                                className="group relative flex flex-col items-center justify-center h-28 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50 hover:bg-orange-50/50 dark:hover:bg-orange-500/5 transition-all text-center cursor-pointer overflow-hidden p-2"
+                                                className="group relative flex flex-col items-center justify-center h-40 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-950/50 hover:bg-orange-50/50 dark:hover:bg-orange-500/5 transition-all text-center cursor-pointer overflow-hidden p-4"
                                             >
                                                 {!previewImage1 ? (
                                                     <>
-                                                        <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm mb-2 group-hover:scale-110 transition-transform">
-                                                            <FaImage className="w-3.5 h-3.5 text-slate-400 group-hover:text-orange-500" />
+                                                        <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-md mb-3 group-hover:scale-110 transition-transform">
+                                                            <FaImage className="w-5 h-5 text-slate-400 group-hover:text-orange-500" />
                                                         </div>
-                                                        <span className="text-[9px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-tighter">Tap to Upload</span>
-                                                        <span className="text-[7px] font-medium text-slate-400 dark:text-slate-500 mt-0.5 mt-1">PNG, JPG (Max 1MB)</span>
+                                                        <span className="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">Tap to Upload</span>
+                                                        <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 mt-2">PNG, JPG (Max 1MB)</span>
                                                     </>
                                                 ) : (
                                                     <div className="relative w-full h-full">
@@ -574,7 +574,7 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                                             className="object-cover rounded-xl"
                                                         />
                                                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <span className="text-[8px] font-black text-white uppercase tracking-widest bg-orange-600 px-2 py-1 rounded-full shadow-lg">Change</span>
+                                                            <span className="text-xs font-black text-white uppercase tracking-widest bg-orange-600 px-4 py-2 rounded-full shadow-lg">Change Photo</span>
                                                         </div>
                                                     </div>
                                                 )}
@@ -589,14 +589,14 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                             />
 
                                             {previewImage1 && (
-                                                <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-100 dark:border-slate-800">
-                                                    <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 shadow-sm relative shrink-0">
+                                                <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                                    <div className="w-14 h-14 rounded-xl overflow-hidden border border-slate-200 shadow-sm relative shrink-0">
                                                         <Image src={previewImage1} alt="Thumbnail" fill className="object-cover" />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="text-[9px] font-black text-slate-700 dark:text-slate-200 truncate uppercase mt-0.5">Asset_Proof.jpg</p>
-                                                        <p className="text-[8px] font-bold text-green-600 uppercase flex items-center gap-1">
-                                                            <div className="w-1 h-1 bg-green-500 rounded-full" /> Checked
+                                                        <p className="text-xs font-black text-slate-700 dark:text-slate-200 truncate uppercase">Asset_Proof.jpg</p>
+                                                        <p className="text-[10px] font-bold text-green-600 uppercase flex items-center gap-1.5 mt-1">
+                                                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full" /> Verified
                                                         </p>
                                                     </div>
                                                     <button
@@ -650,16 +650,16 @@ const CreateTicketForm = ({ assetFind, employeeDataFind }: { assetFind: Asset[];
                                     type="button"
                                     variant="outline"
                                     onClick={() => router.push("/dashboard/maintenance/ticket")}
-                                    className="flex-1 h-11 border-slate-200 dark:border-slate-800 rounded-xl text-[10px] font-black uppercase tracking-tight hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95"
+                                    className="flex-1 h-14 border-slate-200 dark:border-slate-800 rounded-xl text-xs sm:text-sm font-black uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95"
                                     disabled={loading}
                                 >
-                                    <FaArrowLeft className="w-2.5 h-2.5 mr-2" />
+                                    <FaArrowLeft className="w-3.5 h-3.5 mr-2" />
                                     Back
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={loading || isPending}
-                                    className="flex-[2] h-11 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-orange-500/30 transition-all active:scale-95 disabled:grayscale"
+                                    className="flex-[2] h-14 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs sm:text-sm font-black uppercase tracking-widest shadow-xl shadow-orange-500/30 transition-all active:scale-95 disabled:grayscale"
                                 >
                                     {loading ? (
                                         <div className="flex items-center gap-2">

@@ -67,11 +67,19 @@ export const createTicket = async (formData: FormData) => {
       data: result.data,
     });
 
+    // Fetch employee name for notification
+    const employee = await db.employee.findUnique({
+      where: { id: rawData.employeeId as string },
+      select: { name: true }
+    });
+
+    const requesterName = employee?.name || rawData.troubleUser as string;
+
     // Send notification to admins
     await sendNotificationToAdmins(
       "Tiket Maintenance Baru",
-      `Tiket baru (${ticketNumber}) telah dibuat oleh ${rawData.troubleUser}. Prioritas: ${rawData.priorityStatus}.`,
-      `/dashboard/maintenance/ticket`
+      `Tiket baru (${ticketNumber}) telah dibuat oleh ${requesterName}. Prioritas: ${rawData.priorityStatus}.`,
+      `/dashboard/technician/assign`
     );
 
     revalidatePath("/dashboard/maintenance/ticket");
@@ -202,15 +210,19 @@ export const createTicketAssign = async (formData: FormData) => {
       // Re-fetch with details to get names
       const ticketWithDetails = await db.ticketMaintenance.findUnique({
         where: { id: newTicket.id },
-        include: { technician: true }
+        include: {
+          technician: true,
+          employee: true
+        }
       });
 
       const techName = ticketWithDetails?.technician?.name || "a technician";
+      const requesterName = ticketWithDetails?.employee?.name || rawData.troubleUser;
 
       // Notify admins
       await sendNotificationToAdmins(
         "Tiket Baru Ditugaskan",
-        `Tiket baru (${ticketNumber}) telah dibuat dan ditugaskan ke teknisi ${techName}. Jadwal: ${rawData.scheduledDate ? (rawData.scheduledDate as Date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : "Belum ditentukan"}.`,
+        `Tiket baru (${ticketNumber}) telah dibuat oleh ${requesterName} dan ditugaskan ke teknisi ${techName}. Jadwal: ${rawData.scheduledDate ? (rawData.scheduledDate as Date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : "Belum ditentukan"}.`,
         `/dashboard/technician/assign`
       );
 
@@ -325,9 +337,10 @@ export const updateTicketAssign = async (formData: FormData) => {
         }
 
         // Notify admins
+        const requesterName = ticketWithDetails?.employee?.name || ticketWithDetails?.troubleUser || "-";
         await sendNotificationToAdmins(
           "Penugasan Tiket Diperbarui",
-          `Penugasan untuk tiket ${finalTicketNumber} telah diperbarui. Teknisi: ${ticketWithDetails?.technician?.name || "-"}.`,
+          `Penugasan untuk tiket ${finalTicketNumber} yang diminta oleh ${requesterName} telah diperbarui. Teknisi: ${ticketWithDetails?.technician?.name || "-"}.`,
           `/dashboard/technician/assign`
         );
       }
