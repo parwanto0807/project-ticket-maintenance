@@ -26,12 +26,21 @@ const FcmTokenManager = () => {
                     if (messaging) {
                         const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
                         if (!vapidKey) {
-                            console.error("FCM: NEXT_PUBLIC_FIREBASE_VAPID_KEY is missing! This is required for production notifications. Please check your .env or hosting environment variables.");
+                            console.error("FCM: NEXT_PUBLIC_FIREBASE_VAPID_KEY is missing! This is required for production notifications.");
                         }
 
-                        console.log("FCM: Messaging initialized, fetching token...");
+                        // Register Service Worker explicitly to avoid conflict with next-pwa
+                        // This ensures firebase looks for the right service worker file
+                        console.log("FCM: Registering Service Worker...");
+                        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+                            scope: '/firebase-cloud-messaging-push-scope'
+                        });
+                        console.log("FCM: Service Worker registered with scope:", registration.scope);
+
+                        console.log("FCM: Fetching token with registered SW...");
                         const token = await getToken(messaging, {
                             vapidKey: vapidKey || undefined,
+                            serviceWorkerRegistration: registration,
                         });
 
                         if (token) {
@@ -42,13 +51,13 @@ const FcmTokenManager = () => {
                             console.warn('FCM: No registration token available.');
                         }
                     } else {
-                        console.error("FCM: Messaging object is undefined in FcmTokenManager.");
+                        console.error("FCM: Messaging object is undefined.");
                     }
                 } else {
-                    console.log('FCM: Notification permission denied or not granted.');
+                    console.log('FCM: Notification permission denied.');
                 }
             } catch (error) {
-                console.error('FCM: Error during token retrieval:', error);
+                console.error('FCM: Error during flow:', error);
             }
         };
 
