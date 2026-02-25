@@ -49,7 +49,7 @@ export default function DashboardStats({ stats, loading }: DashboardStatsProps) 
     ];
 
     return (
-        <div className="grid grid-cols-4 gap-2 md:grid-cols-2 lg:grid-cols-4 md:gap-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-2 lg:grid-cols-4 md:gap-4">
             {items.map((item) => (
                 <Card key={item.title} className="overflow-hidden border-none shadow-sm bg-gradient-to-br from-white to-gray-50 dark:from-slate-900 dark:to-slate-800 ring-1 ring-black/5">
                     <CardContent className="p-3 md:p-6">

@@ -7,10 +7,12 @@ import { fetchTicketListPages, fetchTicketListSchedule, fetchTicketListTechnicia
 import TechnicianScheduleTable from "@/components/asset-management/technician/schedule/tabel-technician";
 import DashboardStats from "@/components/asset-management/technician/assign/stats";
 import { MasterPageHeader } from "@/components/admin-panel/master-page-header";
-import { Calendar } from "lucide-react";
+import { Calendar, ArrowLeft } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import React, { useEffect, useState, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const TicketPage = ({
   searchParams
@@ -65,7 +67,15 @@ const TicketPage = ({
 
   return (
     <ContentLayout title="jadwal_teknisi">
-      <div className="flex flex-col gap-6 p-4 md:p-8 pt-6">
+      <div className="flex flex-col gap-6 p-2 md:p-6 pt-6">
+        <Link href="/dashboard" className="w-fit">
+          <Button variant="ghost" size="sm" className="group text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-black uppercase text-[10px] tracking-widest gap-3 p-0 h-auto transition-all">
+            <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100 group-hover:bg-blue-100 group-hover:scale-110 transition-all shadow-sm">
+              <ArrowLeft className="w-4 h-4" />
+            </div>
+            {t("back_to_dashboard")}
+          </Button>
+        </Link>
         <MasterPageHeader
           titleKey="jadwal_teknisi"
           descKey="jadwal_teknisi_desc"
@@ -79,7 +89,7 @@ const TicketPage = ({
 
         <DashboardStats stats={stats} loading={loading} />
 
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-3 md:p-5 shadow-sm border border-gray-100 dark:border-slate-800 space-y-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="w-full md:w-72">
               <Search placeholder={t("search_schedule_placeholder")} />

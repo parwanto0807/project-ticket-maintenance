@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
 import PlaceholderContent from "@/components/demo/placeholder-content";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
+import { Navbar } from "@/components/admin-panel/navbar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -22,13 +23,22 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchRole = async () => {
       const session = await getSession();
-      const userRole = session?.user?.role ?? "USER"; // Default ke USER jika tidak ada role
-      // console.log("User role:", userRole);
+      const userRole = session?.user?.role ?? "USER";
       setRole(userRole);
     };
 
     fetchRole();
   }, []);
+
+  // Technician gets its own full-page layout without the ContentLayout inner padding
+  if (role === "TECHNICIAN") {
+    return (
+      <div className="overflow-x-hidden w-full">
+        <Navbar title={t("dashboard")} />
+        <DashboardTechnicianPage />
+      </div>
+    );
+  }
 
   return (
     <ContentLayout title={t("dashboard")}>
@@ -47,8 +57,6 @@ export default function DashboardPage() {
         <PlaceholderContent />
       ) : role === "USER" ? (
         <DashboardOverviewPage />
-      ) : role === "TECHNICIAN" ? (
-        <DashboardTechnicianPage />
       ) : null}
     </ContentLayout>
   );

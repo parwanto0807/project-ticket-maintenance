@@ -30,7 +30,7 @@ export default function DashboardOverviewPage() {
         <div className="absolute top-0 left-0 w-80 h-80 bg-blue-100/40 dark:bg-blue-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-100/40 dark:bg-purple-500/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
 
-        <header className="relative py-4 sm:py-8 px-2 sm:px-6 lg:px-8">
+        <header className="relative py-4 sm:py-8 px-0 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             {/* Top Bar - Mobile Friendly */}
             <div className="flex items-center justify-between mb-4 lg:mb-8">
@@ -135,7 +135,7 @@ export default function DashboardOverviewPage() {
       </div>
 
       {/* Main Content */}
-      <div className="relative px-2 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <div className="relative px-0 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="max-w-7xl mx-auto">
           {/* Quick Actions & Install Button - Desktop */}
           <div className="hidden lg:flex items-center justify-between mb-8">
@@ -247,7 +247,7 @@ export default function DashboardOverviewPage() {
       {/* Enhanced Background Decorations */}
       <div className="fixed top-1/4 -left-20 w-80 h-80 bg-blue-100/30 dark:bg-blue-500/5 rounded-full blur-3xl" />
       <div className="fixed bottom-1/4 -right-20 w-96 h-96 bg-purple-100/30 dark:bg-purple-500/5 rounded-full blur-3xl" />
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-amber-100/20 dark:bg-amber-500/5 rounded-full blur-3xl" />
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-amber-100/20 dark:bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
     </div>
   );
 }

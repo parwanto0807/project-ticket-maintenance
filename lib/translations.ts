@@ -6,6 +6,7 @@ export const translations = {
         signOut: "Keluar",
         profile: "Profil",
         language: "Bahasa",
+        back_to_dashboard: "Kembali ke Dashboard",
 
         // Sidebar Groups
         layanan_tambahan: "LAYANAN TAMBAHAN",
@@ -185,6 +186,7 @@ export const translations = {
         signOut: "Sign Out",
         profile: "Profile",
         language: "Language",
+        back_to_dashboard: "Back to Dashboard",
 
         // Sidebar Groups
         layanan_tambahan: "ADDITIONAL SERVICES",

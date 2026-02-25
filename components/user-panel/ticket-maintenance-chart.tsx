@@ -112,9 +112,9 @@ export default function DashboardChartSection() {
 
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+    <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
       {/* Card Overview dengan Chart */}
-      <Card className="col-span-2 lg:col-span-4 bg-gradient-to-b from-orange-50 to-orange-100 dark:bg-blend-multiply">
+      <Card className="col-span-1 lg:col-span-4 bg-gradient-to-br from-orange-50/50 via-white to-orange-100/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 border-orange-100/50 dark:border-slate-800 shadow-xl shadow-orange-500/5">
         <CardHeader>
           <CardTitle>Overview</CardTitle>
         </CardHeader>
@@ -155,7 +155,7 @@ export default function DashboardChartSection() {
       </Card>
 
       {/* Card Recent tickets */}
-      <Card className="col-span-2 lg:col-span-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/50 dark:border-gray-700/50 rounded-xl sm:rounded-2xl shadow-lg shadow-blue-500/5">
+      <Card className="col-span-1 lg:col-span-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/50 dark:border-slate-800 rounded-2xl sm:rounded-[2rem] shadow-xl shadow-blue-500/5">
         <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-6">
           <CardTitle className="text-sm sm:text-base font-bold uppercase tracking-widest text-slate-500">Tiket Terbaru</CardTitle>
           <CardDescription className="text-[10px] sm:text-sm font-medium">Monitoring status pemeliharaan terkini</CardDescription>

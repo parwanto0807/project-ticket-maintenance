@@ -14,9 +14,9 @@ export function ContentLayout({ title, children }: ContentLayoutProps) {
   const translatedTitle = t(title.toLowerCase().replace(/\s+/g, '_') as TranslationKeys) || title;
 
   return (
-    <div>
+    <div className="overflow-hidden">
       <Navbar title={translatedTitle} />
-      <div className="max-h-screen pt-4 sm:pt-8 pb-8 px-0 sm:px-6">{children}</div>
+      <div className="pt-4 sm:pt-8 pb-8 px-1 sm:px-4">{children}</div>
     </div>
   );
 }

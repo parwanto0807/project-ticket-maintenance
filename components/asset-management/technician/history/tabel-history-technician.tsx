@@ -245,18 +245,18 @@ export default function HistoryTableTechnician({
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-slate-50/80 dark:bg-slate-800/50 hover:bg-slate-50/80 transition-none border-b-2 border-slate-100 dark:border-slate-800">
-                            <TableHead className="w-[140px] text-[10px] font-black uppercase tracking-widest py-5 px-6">Ticket ID</TableHead>
+                            <TableHead className="w-[140px] text-[10px] font-black uppercase tracking-widest py-5 px-4">Ticket ID</TableHead>
                             <TableHead className="text-[10px] font-black uppercase tracking-widest py-5">Asset & Problem</TableHead>
                             <TableHead className="text-[10px] font-black uppercase tracking-widest py-5">Assignment</TableHead>
                             <TableHead className="text-[10px] font-black uppercase tracking-widest py-5">Status & Priority</TableHead>
-                            <TableHead className="w-[100px] text-[10px] font-black uppercase tracking-widest py-5 text-center px-6">Detail</TableHead>
+                            <TableHead className="w-[100px] text-[10px] font-black uppercase tracking-widest py-5 text-center px-4">Detail</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {filteredData.length > 0 ? (
                             filteredData.map((item) => (
                                 <TableRow key={item.id} className="group hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors border-b border-slate-100 dark:border-slate-800 last:border-0">
-                                    <TableCell className="px-6 py-4">
+                                    <TableCell className="px-4 py-4">
                                         <div className="space-y-1.5">
                                             <div className="font-mono text-xs font-black text-blue-600 dark:text-blue-400">
                                                 {item.ticketNumber}
@@ -324,7 +324,7 @@ export default function HistoryTableTechnician({
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="px-6 py-4 text-center">
+                                    <TableCell className="px-4 py-4 text-center">
                                         <div className="flex justify-center opacity-80 group-hover:opacity-100 transition-opacity">
                                             <TicketDialog ticket={item} />
                                         </div>

@@ -64,66 +64,71 @@ export default function TechnicianScheduleTable({
     return (
         <div className="mt-0">
             {/* Mobile View */}
-            <div className="md:hidden grid grid-cols-2 gap-3">
+            <div className="md:hidden space-y-4">
                 {Array.isArray(tickets) && tickets.length > 0 ? (
                     tickets.map((item) => {
                         const dynamicMessage = `Saya telah mengerjakan Ticket Number: ${item.ticketNumber} Asset Name: ${item.asset.product.part_name} mohon di cek dan di Closing. Detail: https://solusiit.net/dashboard/technician/assign?ticket=${item.ticketNumber}`;
                         return (
-                            <div key={item.id} className="relative bg-white dark:bg-slate-900 rounded-3xl p-3 shadow-md border border-gray-100 dark:border-slate-800 flex flex-col h-full ring-1 ring-black/5">
+                            <div key={item.id} className="relative bg-white dark:bg-slate-900 rounded-[2rem] p-4 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 flex flex-col group overflow-hidden">
                                 {/* Status Badge - Floating on Top */}
-                                <div className="absolute top-2 right-2 z-10">
+                                <div className="absolute top-4 right-4 z-10">
                                     <Badge
-                                        className={`text-[8px] font-black uppercase rounded-full px-2 py-0.5 shadow-sm border-0 ${item.status === "Pending" ? "bg-red-50 text-white" :
+                                        className={`text-[10px] font-black uppercase rounded-full px-3 py-1 shadow-sm border-0 ${item.status === "Pending" ? "bg-red-500 text-white" :
                                             item.status === "Assigned" ? "bg-blue-50 text-white" :
-                                                item.status === "In_Progress" ? "bg-amber-50 text-white animate-pulse" :
-                                                    "bg-emerald-50 text-white"
+                                                item.status === "In_Progress" ? "bg-orange-500 text-white animate-pulse" :
+                                                    "bg-emerald-500 text-white"
                                             }`}
                                     >
                                         {item.status.replace("_", " ")}
                                     </Badge>
                                 </div>
 
-                                {/* Image Section */}
-                                <div className="aspect-square relative rounded-2xl overflow-hidden border border-gray-100 dark:border-slate-800 bg-gray-50 mb-3 shadow-inner">
-                                    <ImageDialogTicket src={item.asset.assetImage1 || "/noImage.jpg"} alt={item.asset.assetNumber} />
-                                </div>
+                                <div className="flex gap-4">
+                                    {/* Image Section */}
+                                    <div className="w-24 h-24 shrink-0 relative rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 bg-slate-50 shadow-inner">
+                                        <ImageDialogTicket src={item.asset.assetImage1 || "/noImage.jpg"} alt={item.asset.assetNumber} />
+                                    </div>
 
-                                {/* Info Section */}
-                                <div className="space-y-2 flex-grow">
-                                    <div className="space-y-0.5">
-                                        <div className="font-mono text-[9px] font-bold text-blue-500/70 tracking-tighter">
-                                            {item.ticketNumber}
+                                    {/* Info Section */}
+                                    <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+                                        <div className="font-mono text-[10px] font-bold text-blue-500 tracking-tighter uppercase opacity-70">
+                                            #{item.ticketNumber}
                                         </div>
-                                        <h3 className="font-black text-[12px] text-gray-800 dark:text-gray-100 leading-tight line-clamp-2">
+                                        <h2 className="font-black text-sm text-slate-800 dark:text-slate-100 leading-tight line-clamp-2">
                                             {item.asset.product.part_name}
-                                        </h3>
-                                    </div>
-
-                                    <div className="flex flex-col gap-1">
-                                        <div className="flex items-center gap-1 text-[9px] text-gray-400 font-bold uppercase truncate">
-                                            <MapPin className="w-2.5 h-2.5 shrink-0 text-blue-400" />
-                                            {item.asset.location}
+                                        </h2>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <div className="flex items-center gap-1 text-[10px] text-slate-400 font-bold uppercase truncate">
+                                                <MapPin className="w-3 h-3 shrink-0 text-blue-400" />
+                                                <span className="truncate max-w-[120px]">{item.asset.location}</span>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center gap-1 text-[9px] text-gray-400 font-bold uppercase">
-                                            <Calendar className="w-2.5 h-2.5 shrink-0 text-gray-300" />
-                                            {new Date(item.createdAt).toLocaleDateString()}
-                                        </div>
-                                    </div>
-
-                                    <div className="text-[10px] text-gray-500 dark:text-gray-400 line-clamp-2 italic leading-relaxed bg-gray-50/80 dark:bg-slate-800/50 p-2 rounded-xl border-l-2 border-blue-500/20">
-                                        "{item.troubleUser}"
                                     </div>
                                 </div>
 
-                                {/* Actions Section */}
-                                <div className="pt-3 mt-auto space-y-2">
+                                <div className="mt-4 p-3 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                                    <p className="text-[11px] text-slate-600 dark:text-slate-400 line-clamp-2 italic leading-relaxed">
+                                        "{item.troubleUser}"
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center justify-between mt-4">
+                                    <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase">
+                                        <Calendar className="w-3 h-3 shrink-0 opacity-50" />
+                                        {new Date(item.createdAt).toLocaleDateString()}
+                                    </div>
                                     <div className="flex gap-2">
                                         <TicketDialog ticket={item} />
                                         <WhatsAppLinkButtonAdmin numbers={whatsappNumbers} message={dynamicMessage} />
                                     </div>
+                                </div>
+
+                                {/* Main Action */}
+                                <div className="mt-4">
                                     <TicketMaintenanceUpdateSheet ticket={item} technicians={[]}>
-                                        <Button size="sm" className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-transform">
-                                            Update
+                                        <Button className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-[0.1em] rounded-2xl shadow-lg shadow-blue-500/30 active:scale-[0.98] transition-all">
+                                            Lakukan Update
+                                            <ArrowRight className="w-4 h-4 ml-2" />
                                         </Button>
                                     </TicketMaintenanceUpdateSheet>
                                 </div>
@@ -131,9 +136,9 @@ export default function TechnicianScheduleTable({
                         );
                     })
                 ) : (
-                    <div className="col-span-2 text-center py-20 bg-gray-50/50 dark:bg-slate-800/30 rounded-3xl border-2 border-dashed border-gray-100 dark:border-slate-800">
-                        <Package className="w-16 h-16 text-gray-200 mx-auto mb-4 opacity-50" />
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">No scheduled tickets</p>
+                    <div className="text-center py-20 bg-slate-50/50 dark:bg-slate-800/30 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-slate-800">
+                        <Package className="w-16 h-16 text-slate-200 mx-auto mb-4 opacity-50" />
+                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No scheduled tickets</p>
                     </div>
                 )}
             </div>
@@ -143,11 +148,11 @@ export default function TechnicianScheduleTable({
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-slate-50/80 dark:bg-slate-800/50 hover:bg-slate-50/80 transition-none border-b-2 border-slate-100 dark:border-slate-800">
-                            <TableHead className="w-[140px] text-[10px] font-black uppercase tracking-widest py-5 px-6">Ticket ID</TableHead>
+                            <TableHead className="w-[140px] text-[10px] font-black uppercase tracking-widest py-5 px-4">Ticket ID</TableHead>
                             <TableHead className="text-[10px] font-black uppercase tracking-widest py-5">Asset & Problem</TableHead>
                             <TableHead className="text-[10px] font-black uppercase tracking-widest py-5">Assignment</TableHead>
                             <TableHead className="text-[10px] font-black uppercase tracking-widest py-5">Timeline</TableHead>
-                            <TableHead className="w-[150px] text-[10px] font-black uppercase tracking-widest py-5 text-center px-6">Actions</TableHead>
+                            <TableHead className="w-[150px] text-[10px] font-black uppercase tracking-widest py-5 text-center px-4">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -156,7 +161,7 @@ export default function TechnicianScheduleTable({
                                 const dynamicMessage = `Saya telah mengerjakan Ticket Number: ${item.ticketNumber} Asset Name: ${item.asset.product.part_name} mohon di cek dan di Closing. Detail: https://solusiit.net/dashboard/technician/assign?ticket=${item.ticketNumber}`;
                                 return (
                                     <TableRow key={item.id} className="group hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors border-b border-slate-100 dark:border-slate-800 last:border-0">
-                                        <TableCell className="px-6 py-4">
+                                        <TableCell className="px-4 py-4">
                                             <div className="space-y-1.5">
                                                 <div className="font-mono text-xs font-black text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform origin-left inline-block">
                                                     {item.ticketNumber}
@@ -225,7 +230,7 @@ export default function TechnicianScheduleTable({
                                                 </div>
                                             </div>
                                         </TableCell>
-                                        <TableCell className="px-6 py-4">
+                                        <TableCell className="px-4 py-4">
                                             <div className="flex items-center justify-center gap-2">
                                                 <TicketDialog ticket={item} />
                                                 <WhatsAppLinkButtonAdmin numbers={whatsappNumbers} message={dynamicMessage} />
@@ -254,4 +259,5 @@ export default function TechnicianScheduleTable({
             </div>
         </div>
     );
+
 }
