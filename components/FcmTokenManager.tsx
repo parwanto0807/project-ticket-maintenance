@@ -30,16 +30,14 @@ const FcmTokenManager = () => {
                         }
 
                         // Register Service Worker explicitly to avoid conflict with next-pwa
-                        // This ensures firebase looks for the right service worker file
+                        // Using the default root scope for maximum compatibility
                         console.log("FCM: Registering Service Worker...");
-                        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
-                            scope: '/firebase-cloud-messaging-push-scope'
-                        });
-                        console.log("FCM: Service Worker registered with scope:", registration.scope);
+                        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                        console.log("FCM: Service Worker registered:", registration);
 
                         console.log("FCM: Fetching token with registered SW...");
                         const token = await getToken(messaging, {
-                            vapidKey: vapidKey || undefined,
+                            vapidKey: vapidKey || "BGyaEUZo9ca8EzDhZnlI-Hf-xbs-ScnaLRSNQrVwFwaO6Pw1s4eDqWwfOtkfAWSGBIQv2O5UdEJscL8k4j2YTHQ", // Fallback VAPID key
                             serviceWorkerRegistration: registration,
                         });
 
