@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Bell } from "lucide-react";
 import {
     DropdownMenu,
@@ -36,9 +36,20 @@ export const NotificationBell = () => {
         setLoading(false);
     };
 
+    // Fetch notifications on mount
     useEffect(() => {
         fetchNotifications();
     }, []);
+
+    // Re-fetch from DB when a new FCM foreground notification arrives
+    // (unreadCount changes from FcmTokenManager's addNotification)
+    const prevUnreadCount = useRef(unreadCount);
+    useEffect(() => {
+        if (unreadCount > prevUnreadCount.current) {
+            fetchNotifications();
+        }
+        prevUnreadCount.current = unreadCount;
+    }, [unreadCount]);
 
     const handleMarkRead = async (id: string, link?: string | null) => {
         await markAsRead(id);

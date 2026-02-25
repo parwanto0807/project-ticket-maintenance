@@ -6,6 +6,7 @@ const withPWA = nextPWA({
   register: true,
   skipWaiting: true,
   cacheOnFrontEndNav: true,
+  buildExcludes: [/firebase-messaging-sw\.js$/], // Jangan cache FCM Service Worker
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/your-api-url\.com\/.*$/, // Sesuaikan dengan API yang ingin dicache

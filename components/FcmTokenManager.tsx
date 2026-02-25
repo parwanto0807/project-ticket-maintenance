@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from 'react';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { getToken, onMessage } from 'firebase/messaging';
 import { messaging } from '@/lib/firebase';
 import { toast } from 'sonner';
 import { saveFcmToken } from '@/action/auth/fcm';
@@ -9,11 +9,12 @@ import { useNotificationStore } from '@/store/use-notification-store';
 
 const FcmTokenManager = () => {
     const { addNotification } = useNotificationStore();
-    const isInitialized = useRef(false);
+    const isTokenFetched = useRef(false);
 
+    // Effect 1: One-time token registration (guarded by ref)
     useEffect(() => {
-        if (isInitialized.current) return;
-        isInitialized.current = true;
+        if (isTokenFetched.current) return;
+        isTokenFetched.current = true;
 
         const requestPermission = async () => {
             console.log("FCM: Starting requestPermission flow...");
@@ -30,18 +31,20 @@ const FcmTokenManager = () => {
                     if (messaging) {
                         const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
                         if (!vapidKey) {
-                            console.error("FCM: NEXT_PUBLIC_FIREBASE_VAPID_KEY is missing! This is required for production notifications.");
+                            console.error("FCM: NEXT_PUBLIC_FIREBASE_VAPID_KEY is missing!");
                         }
 
-                        // Register Service Worker explicitly to avoid conflict with next-pwa
-                        // Using the default root scope for maximum compatibility
+                        // Register FCM Service Worker with a specific scope to avoid PWA conflict
                         console.log("FCM: Registering Service Worker...");
-                        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                        const registration = await navigator.serviceWorker.register(
+                            '/firebase-messaging-sw.js',
+                            { scope: '/firebase-cloud-messaging-push-scope' }
+                        );
                         console.log("FCM: Service Worker registered:", registration);
 
                         console.log("FCM: Fetching token with registered SW...");
                         const token = await getToken(messaging, {
-                            vapidKey: vapidKey || "BGyaEUZo9ca8EzDhZnlI-Hf-xbs-ScnaLRSNQrVwFwaO6Pw1s4eDqWwfOtkfAWSGBIQv2O5UdEJscL8k4j2YTHQ", // Fallback VAPID key
+                            vapidKey: vapidKey || "BGyaEUZo9ca8EzDhZnlI-Hf-xbs-ScnaLRSNQrVwFwaO6Pw1s4eDqWwfOtkfAWSGBIQv2O5UdEJscL8k4j2YTHQ",
                             serviceWorkerRegistration: registration,
                         });
 
@@ -64,33 +67,38 @@ const FcmTokenManager = () => {
         };
 
         requestPermission();
+    }, []);
 
-        if (messaging) {
-            console.log("FCM: Setting up foreground message listener...");
-            const unsubscribe = onMessage(messaging, (payload) => {
-                console.log('FCM: Foreground message received!', payload);
+    // Effect 2: Foreground message listener (always active, properly cleaned up)
+    useEffect(() => {
+        if (!messaging) {
+            console.warn("FCM: Cannot set up onMessage listener because messaging is undefined.");
+            return;
+        }
 
-                // Add to local store for real-time bell update
-                addNotification({
-                    id: payload.messageId || Math.random().toString(),
-                    title: payload.notification?.title || 'New Notification',
-                    message: payload.notification?.body || '',
-                    isRead: false,
-                    createdAt: new Date(),
-                });
+        console.log("FCM: Setting up foreground message listener...");
+        const unsubscribe = onMessage(messaging, (payload) => {
+            console.log('FCM: Foreground message received!', payload);
 
-                toast(payload.notification?.title || 'New Notification', {
-                    description: payload.notification?.body,
-                });
+            // Add to local store for real-time bell update
+            addNotification({
+                id: payload.messageId || Math.random().toString(),
+                title: payload.notification?.title || 'New Notification',
+                message: payload.notification?.body || '',
+                link: payload.data?.link || null,
+                isRead: false,
+                createdAt: new Date(),
             });
 
-            return () => {
-                console.log("FCM: Unsubscribing from foreground message listener.");
-                unsubscribe();
-            };
-        } else {
-            console.warn("FCM: Cannot set up onMessage listener because messaging is undefined.");
-        }
+            toast(payload.notification?.title || 'New Notification', {
+                description: payload.notification?.body,
+            });
+        });
+
+        return () => {
+            console.log("FCM: Unsubscribing from foreground message listener.");
+            unsubscribe();
+        };
     }, [addNotification]);
 
     return null;
