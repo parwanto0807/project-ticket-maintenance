@@ -71,7 +71,7 @@ export default function DashboardTechnicianPage() {
     <ScrollArea className="h-full w-full bg-[#F8FAFC]">
       <div className="pb-24">
         {/* Header Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-blue-800 p-6 pb-16 pt-10">
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-blue-800 p-4 sm:p-6 pb-16 pt-10">
           <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl"></div>
 
@@ -108,7 +108,7 @@ export default function DashboardTechnicianPage() {
         </div>
 
         {/* Floating Stats Area */}
-        <div className="px-6 -mt-12 mb-8 relative z-10">
+        <div className="px-3 sm:px-6 -mt-12 mb-8 relative z-10">
           <div className="grid grid-cols-2 gap-4">
             <Card className="border-none shadow-xl shadow-blue-900/5 overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
               <CardContent className="p-4 bg-white">
@@ -166,12 +166,12 @@ export default function DashboardTechnicianPage() {
         </div>
 
         {/* Quick Actions Grid */}
-        <div className="px-6 mb-8">
+        <div className="px-4 sm:px-6 mb-8">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest italic">{t("quick_navigation")}</h3>
             <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase">{t("shortcut")}</span>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 xs:grid-cols-3 gap-3">
             <Link href="/dashboard/technician/schedule" className="flex flex-col items-center gap-2 p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all active:scale-95 group">
               <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center group-hover:bg-indigo-600 transition-colors duration-300">
                 <ClipboardList className="w-6 h-6 text-indigo-600 group-hover:text-white transition-colors duration-300" />
@@ -194,7 +194,7 @@ export default function DashboardTechnicianPage() {
         </div>
 
         {/* Recent Tasks Section */}
-        <div className="px-6 space-y-4">
+        <div className="px-4 sm:px-6 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest italic">{t("recent_activities")}</h3>
             <Link href="/dashboard/technician/schedule" className="text-[10px] font-black text-blue-600 hover:underline uppercase">{t("view_all")}</Link>
@@ -257,7 +257,7 @@ export default function DashboardTechnicianPage() {
         </div>
 
         {/* Bottom Spacing & PWA Link */}
-        <div className="px-6 mt-10 space-y-6">
+        <div className="px-4 sm:px-6 mt-10 space-y-6">
           <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-none shadow-2xl shadow-slate-900/40 rounded-3xl group overflow-hidden relative">
             <div className="absolute top-0 right-0 -mr-8 -mt-8 w-24 h-24 bg-white/5 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
             <CardContent className="p-6 relative">

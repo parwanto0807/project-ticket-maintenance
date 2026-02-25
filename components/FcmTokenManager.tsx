@@ -12,41 +12,52 @@ const FcmTokenManager = () => {
 
     useEffect(() => {
         const requestPermission = async () => {
+            console.log("FCM: Starting requestPermission flow...");
             if (typeof window === 'undefined' || !('Notification' in window)) {
-                console.log('This browser does not support notifications.');
+                console.log('FCM: This browser does not support notifications.');
                 return;
             }
 
             try {
                 const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    console.log('Notification permission granted.');
+                console.log("FCM: Permission status:", permission);
 
+                if (permission === 'granted') {
                     if (messaging) {
+                        const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
+                        if (!vapidKey) {
+                            console.error("FCM: NEXT_PUBLIC_FIREBASE_VAPID_KEY is missing! This is required for production notifications. Please check your .env or hosting environment variables.");
+                        }
+
+                        console.log("FCM: Messaging initialized, fetching token...");
                         const token = await getToken(messaging, {
-                            vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY, // We'll need this from the user eventually
+                            vapidKey: vapidKey || undefined,
                         });
 
                         if (token) {
-                            console.log('FCM Token:', token);
+                            console.log('FCM: Token generated:', token);
                             await saveFcmToken(token);
+                            console.log("FCM: Token successfully saved to server.");
                         } else {
-                            console.log('No registration token available. Request permission to generate one.');
+                            console.warn('FCM: No registration token available.');
                         }
+                    } else {
+                        console.error("FCM: Messaging object is undefined in FcmTokenManager.");
                     }
                 } else {
-                    console.log('Unable to get permission to notify.');
+                    console.log('FCM: Notification permission denied or not granted.');
                 }
             } catch (error) {
-                console.error('An error occurred while retrieving token:', error);
+                console.error('FCM: Error during token retrieval:', error);
             }
         };
 
         requestPermission();
 
         if (messaging) {
+            console.log("FCM: Setting up foreground message listener...");
             const unsubscribe = onMessage(messaging, (payload) => {
-                console.log('Foreground message received:', payload);
+                console.log('FCM: Foreground message received!', payload);
 
                 // Add to local store for real-time bell update
                 addNotification({
@@ -62,7 +73,12 @@ const FcmTokenManager = () => {
                 });
             });
 
-            return () => unsubscribe();
+            return () => {
+                console.log("FCM: Unsubscribing from foreground message listener.");
+                unsubscribe();
+            };
+        } else {
+            console.warn("FCM: Cannot set up onMessage listener because messaging is undefined.");
         }
     }, [addNotification]);
 

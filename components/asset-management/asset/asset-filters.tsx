@@ -36,7 +36,7 @@ export function AssetFilters({
 }: AssetFiltersProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
 
     const [filters, setFilters] = useState({
         assetType: searchParams.get('assetType') || 'all',
@@ -84,7 +84,7 @@ export function AssetFilters({
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between px-3 py-4 border-b border-slate-200 dark:border-slate-800">
                 <CollapsibleTrigger asChild>
                     <button
                         type="button"
@@ -120,7 +120,7 @@ export function AssetFilters({
                 </div>
             </div>
             <CollapsibleContent>
-                <div className="p-5 pt-0">
+                <div className="p-3 pt-0">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                         <div className="space-y-1.5">
                             <label className="text-xs font-medium text-slate-600 dark:text-slate-400">Tipe Aset</label>

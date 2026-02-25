@@ -43,61 +43,70 @@ export default function EmployeeTable({ employees, loading, currentPage }: { emp
         <div className="mt-6 flow-root">
             <div className="min-w-full align-middle">
                 {/* Mobile View */}
-                <div className="lg:hidden space-y-4">
+                <div className="lg:hidden space-y-6">
                     {Object.entries(groupedEmployees).map(([deptName, deptEmployees]) => (
-                        <div key={deptName}>
-                            <div className="flex items-center space-x-2 mb-3 px-1">
-                                <div className="w-1.5 h-5 bg-blue-600 dark:bg-blue-500 rounded-full"></div>
-                                <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide">{deptName}</h2>
-                                <Badge variant="outline" className="text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700">
+                        <div key={deptName} className="px-2">
+                            <div className="flex items-center space-x-2 mb-4 px-1">
+                                <div className="w-1.5 h-6 bg-blue-600 dark:bg-blue-500 rounded-full shadow-[0_0_10px_rgba(37,99,235,0.3)]"></div>
+                                <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-widest">{deptName}</h2>
+                                <Badge variant="outline" className="text-[10px] font-bold bg-white dark:bg-zinc-900 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-900 shadow-sm">
                                     {deptEmployees.length}
                                 </Badge>
                             </div>
-                            <div className="grid grid-cols-1 gap-4">
+                            <div className="grid grid-cols-2 gap-3 sm:gap-4">
                                 {deptEmployees.map((employee, index) => (
                                     <Card
                                         key={employee.id}
-                                        className="bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm hover:shadow-md transition-all duration-300"
+                                        className="group bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col"
                                     >
-                                        <CardContent className="p-4">
-                                            <div className="flex items-start gap-4">
-                                                <div className="w-16 h-16 overflow-hidden rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm shrink-0">
+                                        <CardContent className="p-0 flex-1 flex flex-col">
+                                            {/* Header Section: Avatar & Basic Info */}
+                                            <div className="pt-5 pb-3 flex flex-col items-center gap-2.5 relative">
+                                                <div className="absolute top-2 right-2 flex items-center justify-center w-5 h-5 rounded-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800">
+                                                    <span className="text-[9px] font-black text-zinc-400">{(offset + index + 1).toString().padStart(2, '0')}</span>
+                                                </div>
+                                                <div className="w-16 h-16 sm:w-20 sm:h-20 overflow-hidden rounded-full border-2 border-blue-100 dark:border-blue-900/50 group-hover:border-blue-500 transition-colors duration-300 shadow-sm bg-zinc-50 dark:bg-zinc-900">
                                                     <ImageDialogEmployee
                                                         src={employee.picture || "/noImage.jpg"}
                                                         alt={`${employee.name} Employee Image`}
                                                     />
                                                 </div>
-                                                <div className="flex-1 min-w-0 space-y-1">
-                                                    <div className="flex items-center justify-between gap-2">
-                                                        <h3 className="font-bold text-zinc-900 dark:text-zinc-50 truncate">
-                                                            {employee.name}
-                                                        </h3>
-                                                        <span className="text-[10px] font-bold text-zinc-400">#{offset + index + 1}</span>
-                                                    </div>
-                                                    <Badge variant="blue" className="text-[9px] h-4 py-0">
-                                                        {employee.department.dept_name}
-                                                    </Badge>
-                                                    <div className="pt-2 space-y-1.5">
-                                                        <div className="flex items-center justify-between gap-2">
-                                                            <div className="font-semibold text-blue-600 dark:text-blue-400 truncate max-w-[150px] text-xs">
-                                                                {employee.emailCorporate || employee.email}
-                                                            </div>
-                                                            <Link
-                                                                href={`/dashboard/asset/asset-list?userName=${encodeURIComponent(employee.name)}`}
-                                                                className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-bold text-[10px] border border-blue-100 dark:border-blue-800"
-                                                            >
-                                                                Assets: {employee._count?.asset || 0}
-                                                            </Link>
-                                                        </div>
-                                                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-1 italic">
-                                                            {employee.address}
-                                                        </p>
+                                                <div className="text-center px-3 w-full">
+                                                    <h3 className="font-bold text-[13px] sm:text-sm text-zinc-900 dark:text-zinc-50 leading-tight line-clamp-2 min-h-[32px] flex items-center justify-center tracking-tight">
+                                                        {employee.name}
+                                                    </h3>
+                                                    <div className="mt-1 flex items-center justify-center gap-1">
+                                                        <Badge variant="blue" className="text-[8px] h-4 py-0 px-1.5 leading-none uppercase tracking-tighter bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800">
+                                                            {employee.department.dept_name}
+                                                        </Badge>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800/50">
-                                                <UpdateEmployee id={employee.id} />
-                                                <DeleteAlert id={employee.id} />
+
+                                            {/* Info Section */}
+                                            <div className="px-3 pb-4 flex-grow space-y-3">
+                                                <div className="pt-2 border-t border-zinc-100 dark:border-zinc-900 space-y-2">
+                                                    <div className="flex flex-col items-center">
+                                                        <div className="font-semibold text-blue-600 dark:text-blue-400 text-[10px] break-all text-center leading-none">
+                                                            {employee.emailCorporate || employee.email}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex justify-center">
+                                                        <Link
+                                                            href={`/dashboard/asset/asset-list?userName=${encodeURIComponent(employee.name)}`}
+                                                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-black text-[10px] border border-indigo-100 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
+                                                        >
+                                                            <span className="opacity-70 uppercase tracking-tighter">Assets</span>
+                                                            <span className="text-xs">{employee._count?.asset || 0}</span>
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Actions footer */}
+                                            <div className="grid grid-cols-2 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/20">
+                                                <UpdateEmployee id={employee.id} className="rounded-none border-0 border-r border-zinc-100 dark:border-zinc-800 h-10 bg-transparent dark:bg-transparent" />
+                                                <DeleteAlert id={employee.id} className="rounded-none border-0 h-10 bg-transparent dark:bg-transparent" />
                                             </div>
                                         </CardContent>
                                     </Card>

@@ -433,7 +433,7 @@ export default function DashboardPage() {
       <div className="fixed bottom-0 right-0 w-48 h-48 md:w-96 md:h-96 bg-purple-200/20 dark:bg-purple-500/5 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
 
       <ScrollArea className="h-screen w-full">
-        <div className="flex-1 space-y-4 md:space-y-6 p-4 md:p-6 lg:p-8">
+        <div className="flex-1 space-y-4 md:space-y-6 p-3 sm:p-4 md:p-6 lg:p-8">
           {/* Header Section */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -499,8 +499,8 @@ export default function DashboardPage() {
               onValueChange={setActiveTab}
             >
               {/* Tabs List */}
-              <motion.div variants={itemVariants}>
-                <TabsList className="flex w-full bg-white/50 dark:bg-slate-800/50 backdrop-blur-md rounded-xl md:rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-1 shadow-lg overflow-x-auto">
+              <motion.div variants={itemVariants} className="w-full max-w-full overflow-hidden">
+                <TabsList className="relative flex w-full items-center justify-start md:justify-center bg-white/50 dark:bg-slate-800/50 backdrop-blur-md rounded-xl md:rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-1 shadow-lg overflow-x-auto no-scrollbar scroll-smooth">
                   {[
                     { value: "overview", label: "Overview", icon: <Sparkles className="h-3 w-3 md:h-4 md:w-4" /> },
                     { value: "analytics1", label: "Analytics 1", icon: <BarChart3 className="h-3 w-3 md:h-4 md:w-4" /> },
@@ -510,13 +510,15 @@ export default function DashboardPage() {
                     <TabsTrigger
                       key={tab.value}
                       value={tab.value}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2.5 rounded-lg text-[9px] md:text-sm font-black transition-all duration-300 flex-shrink-0 uppercase tracking-widest ${activeTab === tab.value
+                      className={`flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2.5 rounded-lg text-[9px] md:text-sm font-black transition-all duration-300 flex-shrink-0 uppercase tracking-widest min-w-max ${activeTab === tab.value
                         ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
                         : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700/50"
                         }`}
                     >
-                      {tab.icon}
-                      <span className="inline">{tab.label}</span>
+                      <div className="hidden md:flex items-center justify-center">
+                        {tab.icon}
+                      </div>
+                      <span className="inline-block">{tab.label}</span>
                     </TabsTrigger>
                   ))}
                 </TabsList>

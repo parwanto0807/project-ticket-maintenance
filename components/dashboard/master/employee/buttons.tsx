@@ -13,13 +13,13 @@ export function CreateEmployee() {
   );
 }
 
-export function UpdateEmployee({ id }: { id: string }) {
+export function UpdateEmployee({ id, className }: { id: string; className?: string }) {
   return (
     <Link
       href={`/dashboard/master/employees/edit/${id}`}
-      className=" text-blue-600 rounded-md border p-2 hover:bg-gray-800"
+      className={`inline-flex items-center justify-center rounded-lg border border-blue-200 bg-blue-50/50 p-2 text-blue-600 transition-all duration-200 hover:bg-blue-600 hover:text-white dark:border-blue-900/30 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white ${className}`}
     >
-      <PencilIcon className="w-5" />
+      <PencilIcon className="w-4 h-4" />
     </Link>
   );
 }

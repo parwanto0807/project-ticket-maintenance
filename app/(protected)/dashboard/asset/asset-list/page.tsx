@@ -94,7 +94,7 @@ const AssetListPage = ({
   return (
     <ContentLayout title="asset_list">
       <div className={cn("flex flex-col min-h-full font-inter", fontInter.variable, fontMono.variable)}>
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <div className="w-full mx-auto px-0 sm:px-6 lg:px-8 py-6 space-y-6">
           <MasterPageHeader
             titleKey="daftar_aset"
             descKey="asset_list_desc"
@@ -109,7 +109,7 @@ const AssetListPage = ({
           <PageAnimate>
             <div className="space-y-6">
               {/* Pencarian */}
-              <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm p-4 sm:p-5">
+              <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm p-3 sm:p-5">
                 <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">{t("pencarian")}</h2>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="w-full sm:max-w-md">

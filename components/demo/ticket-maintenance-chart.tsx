@@ -20,11 +20,11 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { motion } from "framer-motion";
-import { 
-  TrendingUp, 
-  Clock, 
-  AlertCircle, 
-  CheckCircle, 
+import {
+  TrendingUp,
+  Clock,
+  AlertCircle,
+  CheckCircle,
   XCircle,
   PlayCircle,
   Ticket,
@@ -99,28 +99,28 @@ const TicketSkeleton = () => (
 
 const StatusBadge = ({ status }: { status: string }) => {
   const statusConfig = {
-    Pending: { 
-      icon: Clock, 
+    Pending: {
+      icon: Clock,
       color: "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/30",
       gradient: "from-red-500 to-orange-500"
     },
-    Assigned: { 
-      icon: AlertCircle, 
+    Assigned: {
+      icon: AlertCircle,
       color: "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800/30",
       gradient: "from-blue-500 to-cyan-500"
     },
-    In_Progress: { 
-      icon: PlayCircle, 
+    In_Progress: {
+      icon: PlayCircle,
       color: "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800/30",
       gradient: "from-orange-500 to-amber-500"
     },
-    Completed: { 
-      icon: CheckCircle, 
+    Completed: {
+      icon: CheckCircle,
       color: "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800/30",
       gradient: "from-green-500 to-emerald-500"
     },
-    Canceled: { 
-      icon: XCircle, 
+    Canceled: {
+      icon: XCircle,
       color: "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/30 dark:text-gray-300 dark:border-gray-800/30",
       gradient: "from-gray-500 to-slate-500"
     },
@@ -157,7 +157,7 @@ export default function DashboardChartSectionAdmin() {
         const response = await fetch(`/api/dashboard-admin/chart`);
         const data = await response.json();
         setOverviewChartData(data);
-        
+
         // Calculate total tickets from chart data
         const total = data.reduce((sum: number, item: { total: number }) => sum + item.total, 0);
         setTotalTickets(total);
@@ -207,8 +207,8 @@ export default function DashboardChartSectionAdmin() {
 
   const chartVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: { duration: 0.6, ease: "easeOut" }
     }
@@ -216,8 +216,8 @@ export default function DashboardChartSectionAdmin() {
 
   const cardVariants = {
     hidden: { opacity: 0, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       scale: 1,
       transition: { duration: 0.4, ease: "easeOut" }
     }
@@ -284,7 +284,7 @@ export default function DashboardChartSectionAdmin() {
         </div>
       </motion.div>
 
-      <div className="grid gap-4 md:gap-6 lg:grid-cols-7">
+      <div className="grid gap-4 md:gap-6 lg:grid-cols-7 overflow-hidden">
         {/* Chart Card */}
         <motion.div
           variants={cardVariants}
@@ -294,8 +294,8 @@ export default function DashboardChartSectionAdmin() {
         >
           <Card className={`
             bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-xl md:rounded-2xl border transition-all duration-300 h-full
-            ${hoveredChart 
-              ? 'border-orange-300/50 dark:border-orange-600/50 shadow-xl md:shadow-2xl shadow-orange-500/10' 
+            ${hoveredChart
+              ? 'border-orange-300/50 dark:border-orange-600/50 shadow-xl md:shadow-2xl shadow-orange-500/10'
               : 'border-white/50 dark:border-slate-700/50 shadow-lg md:shadow-2xl shadow-orange-500/5 dark:shadow-black/20'
             }
           `}>
@@ -353,9 +353,9 @@ export default function DashboardChartSectionAdmin() {
                           <stop offset="100%" stopColor="#F97316" stopOpacity={0.7} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid 
-                        strokeDasharray="3 3" 
-                        stroke="#E2E8F0" 
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="#E2E8F0"
                         strokeOpacity={0.3}
                         vertical={false}
                       />
@@ -375,9 +375,9 @@ export default function DashboardChartSectionAdmin() {
                         allowDecimals={false}
                         width={30}
                       />
-                      <Tooltip 
-                        content={<CustomTooltip />} 
-                        cursor={{ 
+                      <Tooltip
+                        content={<CustomTooltip />}
+                        cursor={{
                           fill: "rgba(251, 146, 60, 0.1)",
                           stroke: "#FB923C",
                           strokeWidth: 1,
@@ -428,7 +428,7 @@ export default function DashboardChartSectionAdmin() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-3 md:p-6">
               <div className="space-y-4 md:space-y-6 max-h-[350px] md:max-h-[400px] overflow-y-auto pr-1 md:pr-2">
                 {isLoading ? (
                   <TicketSkeleton />
@@ -447,7 +447,7 @@ export default function DashboardChartSectionAdmin() {
                           {initials(ticket.name)}
                         </AvatarFallback>
                       </Avatar>
-                      
+
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">
                           {ticket.name}
@@ -459,7 +459,7 @@ export default function DashboardChartSectionAdmin() {
                           {ticket.assetName}
                         </p>
                       </div>
-                      
+
                       <StatusBadge status={ticket.status} />
                     </motion.div>
                   ))

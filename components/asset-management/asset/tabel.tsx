@@ -202,7 +202,7 @@ export default function AssetTable({
             {/* Statistik lengkap — accordion */}
             <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="asset-overview" className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm overflow-hidden">
-                    <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                    <AccordionTrigger className="px-3 py-4 hover:no-underline hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
                         <span className="font-inter text-sm font-semibold text-slate-800 dark:text-slate-200">
                             Statistik lengkap
                         </span>
@@ -210,7 +210,7 @@ export default function AssetTable({
                             Semua metrik
                         </Badge>
                     </AccordionTrigger>
-                    <AccordionContent className="px-5 pb-5 pt-0">
+                    <AccordionContent className="px-3 pb-5 pt-0">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {statsCards.map((card, index) => (
                                 <Card
@@ -327,7 +327,7 @@ export default function AssetTable({
 
             {/* Daftar Aset — Tabel */}
             <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm overflow-hidden">
-                <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="px-3 py-4 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <h2 className="font-inter text-sm font-semibold text-slate-800 dark:text-slate-200">
                         Daftar Aset
                     </h2>
@@ -338,11 +338,11 @@ export default function AssetTable({
                 <div className="w-full">
                     <TooltipProvider delayDuration={0}>
                         {/* Mobile View */}
-                        <div className="lg:hidden p-4 space-y-4">
+                        <div className="lg:hidden p-2 space-y-4">
                             {assetsWithSoftwareCount.map((data) => (
                                 <Card key={data.id} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 shadow-sm overflow-hidden">
                                     <CardContent className="p-0">
-                                        <div className="p-4 space-y-4">
+                                        <div className="p-3 space-y-4">
                                             {/* Baris 1: No. Aset (utama) + Status */}
                                             <div className="flex items-start justify-between gap-3">
                                                 <div className="flex items-center gap-3 min-w-0">
@@ -412,11 +412,11 @@ export default function AssetTable({
                                                         assetNumber={data.assetNumber}
                                                     />
                                                 </div>
-                                                <div className="flex items-center gap-1">
+                                                <div className="grid grid-cols-3 gap-1 child:w-full">
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
-                                                            <div>
-                                                                <AssetDetailSheet asset={data} />
+                                                            <div className="w-full">
+                                                                <AssetDetailSheet asset={data} className="w-full" />
                                                             </div>
                                                         </TooltipTrigger>
                                                         <TooltipContent>Lihat Detail Aset</TooltipContent>
@@ -424,11 +424,11 @@ export default function AssetTable({
 
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
-                                                            <Link href={`/dashboard/asset/asset-software/create/${data.id}`}>
+                                                            <Link href={`/dashboard/asset/asset-software/create/${data.id}`} className="w-full">
                                                                 <Button
                                                                     variant="outline"
                                                                     size="sm"
-                                                                    className="w-8 h-8 bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800 dark:hover:bg-indigo-600 transition-all duration-200 group p-0"
+                                                                    className="w-full h-8 bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800 dark:hover:bg-indigo-600 transition-all duration-200 group p-0"
                                                                 >
                                                                     <PlusIcon className="w-4 h-4 group-hover:scale-110 transition-transform duration-200 text-indigo-600 dark:text-indigo-400 group-hover:text-white" />
                                                                 </Button>
@@ -439,8 +439,8 @@ export default function AssetTable({
 
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
-                                                            <div>
-                                                                <UpdateAssetLink id={data.id} />
+                                                            <div className="w-full">
+                                                                <UpdateAssetLink id={data.id} className="w-full" />
                                                             </div>
                                                         </TooltipTrigger>
                                                         <TooltipContent>Ubah Aset</TooltipContent>
@@ -448,8 +448,8 @@ export default function AssetTable({
 
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
-                                                            <div>
-                                                                <DeleteAlertProduct id={data.id} />
+                                                            <div className="w-full">
+                                                                <DeleteAlertProduct id={data.id} className="w-full" />
                                                             </div>
                                                         </TooltipTrigger>
                                                         <TooltipContent>Hapus Aset</TooltipContent>
@@ -457,11 +457,11 @@ export default function AssetTable({
 
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
-                                                            <Link href={`/dashboard/asset/generate-pdf/${data.id}`}>
+                                                            <Link href={`/dashboard/asset/generate-pdf/${data.id}`} className="w-full">
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="icon"
-                                                                    className="w-8 h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
+                                                                    className="w-full h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
                                                                 >
                                                                     <PrinterIcon className="w-4 h-4" />
                                                                 </Button>

@@ -18,6 +18,7 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export function CreateAssetButton() {
   return (
@@ -39,7 +40,7 @@ export function CreateAssetButton() {
   );
 }
 
-export function UpdateAssetLink({ id, searchParams }: { id: string; searchParams?: any }) {
+export function UpdateAssetLink({ id, searchParams, className }: { id: string; searchParams?: any; className?: string }) {
   const router = useRouter();
 
   const handleClick = () => {
@@ -61,7 +62,10 @@ export function UpdateAssetLink({ id, searchParams }: { id: string; searchParams
             onClick={handleClick}
             variant="outline"
             size="sm"
-            className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-600 hover:text-white hover:border-amber-600 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800 dark:hover:bg-amber-600 dark:hover:text-white transition-all duration-200 group"
+            className={cn(
+              "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-600 hover:text-white hover:border-amber-600 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800 dark:hover:bg-amber-600 dark:hover:text-white transition-all duration-200 group",
+              className
+            )}
           >
             <PencilIcon className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
           </Button>

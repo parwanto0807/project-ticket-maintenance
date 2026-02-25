@@ -51,7 +51,7 @@ const EmployeesPage = ({
 
   return (
     <ContentLayout title="employee_management">
-      <div className="flex flex-col gap-6 p-4 pt-6 md:p-8">
+      <div className="flex flex-col gap-6 px-0 sm:px-6 py-6">
         <MasterPageHeader
           titleKey="karyawan"
           descKey="employee_description"
@@ -66,7 +66,7 @@ const EmployeesPage = ({
         <div className="space-y-6">
           {stats && <EmployeeStats stats={stats} />}
 
-          <div className="bg-white/50 dark:bg-zinc-950/50 backdrop-blur-sm p-4 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm transition-all duration-300">
+          <div className="bg-white/50 dark:bg-zinc-950/50 backdrop-blur-sm p-3 sm:p-4 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm transition-all duration-300 mx-2 sm:mx-0">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="w-full sm:w-72">
                 <Search placeholder="Search Employee..." />

@@ -36,6 +36,7 @@ import { Package, TrendingDown, Info, ShieldCheck } from "lucide-react";
 import { calculateAssetDepreciation } from "@/lib/finance";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 interface AssetDetailSheetProps {
     asset: {
@@ -107,7 +108,7 @@ interface AssetDetailSheetProps {
     };
 }
 
-export function AssetDetailSheet({ asset }: AssetDetailSheetProps) {
+export function AssetDetailSheet({ asset, className }: { asset: AssetDetailSheetProps["asset"]; className?: string }) {
     //   const getStatusVariant = (status: string) => {
     //     switch (status?.toLowerCase()) {
     //       case 'active': return 'default';
@@ -164,7 +165,10 @@ export function AssetDetailSheet({ asset }: AssetDetailSheetProps) {
                 <Button
                     variant="outline"
                     size="sm"
-                    className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800 dark:hover:bg-emerald-600 dark:hover:text-white transition-all duration-200 group"
+                    className={cn(
+                        "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800 dark:hover:bg-emerald-600 dark:hover:text-white transition-all duration-200 group",
+                        className
+                    )}
                 >
                     <EyeIcon className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                 </Button>

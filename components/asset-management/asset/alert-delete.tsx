@@ -15,8 +15,9 @@ import { Button } from "@/components/ui/button"
 import { TrashIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { toast } from "sonner";
 import { deleteAssetById } from "@/action/asset/asset";
+import { cn } from "@/lib/utils";
 
-export default function DeleteAlertAsset({ id }: { id: string }) {
+export default function DeleteAlertAsset({ id, className }: { id: string; className?: string }) {
   const handleDelete = async () => {
     try {
       const response = await deleteAssetById(id);
@@ -46,7 +47,10 @@ export default function DeleteAlertAsset({ id }: { id: string }) {
         <Button
           variant="outline"
           size="sm"
-          className="bg-red-50 text-red-700 border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-600 dark:hover:text-white transition-all duration-200 group shadow-sm hover:shadow-md"
+          className={cn(
+            "bg-red-50 text-red-700 border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-600 dark:hover:text-white transition-all duration-200 group shadow-sm hover:shadow-md",
+            className
+          )}
         >
           <TrashIcon className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
         </Button>
@@ -62,13 +66,13 @@ export default function DeleteAlertAsset({ id }: { id: string }) {
             </AlertDialogTitle>
           </div>
           <AlertDialogDescription className="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
-            Anda akan menghapus asset permanen dari sistem. 
+            Anda akan menghapus asset permanen dari sistem.
             <span className="block mt-2 font-semibold text-red-500 dark:text-red-400">
               Tindakan ini tidak dapat dibatalkan!
             </span>
             <span className="block mt-2 text-sm">
-              • Data asset akan dihapus secara permanen<br/>
-              • Riwayat terkait asset akan hilang<br/>
+              • Data asset akan dihapus secara permanen<br />
+              • Riwayat terkait asset akan hilang<br />
               • Software installations akan terhapus
             </span>
           </AlertDialogDescription>
@@ -77,7 +81,7 @@ export default function DeleteAlertAsset({ id }: { id: string }) {
           <AlertDialogCancel className="bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 dark:hover:bg-slate-700 transition-all duration-200 shadow-sm">
             Batalkan
           </AlertDialogCancel>
-          <AlertDialogAction 
+          <AlertDialogAction
             onClick={handleDelete}
             className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-red-600 shadow-lg hover:shadow-xl transition-all duration-200 font-semibold"
           >

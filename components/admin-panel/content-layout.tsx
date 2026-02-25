@@ -16,7 +16,7 @@ export function ContentLayout({ title, children }: ContentLayoutProps) {
   return (
     <div>
       <Navbar title={translatedTitle} />
-      <div className="max-h-screen pt-4 sm:pt-8 pb-8 px-1 sm:px-6">{children}</div>
+      <div className="max-h-screen pt-4 sm:pt-8 pb-8 px-0 sm:px-6">{children}</div>
     </div>
   );
 }

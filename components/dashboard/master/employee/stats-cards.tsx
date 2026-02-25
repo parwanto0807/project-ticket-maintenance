@@ -41,7 +41,7 @@ export default function EmployeeStats({ stats }: StatsCardsProps) {
     ];
 
     return (
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 px-2 sm:px-0">
             {items.map((item, index) => (
                 <Card key={index} className="overflow-hidden border-0 shadow-md bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
