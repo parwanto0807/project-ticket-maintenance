@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { messaging } from '@/lib/firebase';
 import { toast } from 'sonner';
@@ -9,8 +9,12 @@ import { useNotificationStore } from '@/store/use-notification-store';
 
 const FcmTokenManager = () => {
     const { addNotification } = useNotificationStore();
+    const isInitialized = useRef(false);
 
     useEffect(() => {
+        if (isInitialized.current) return;
+        isInitialized.current = true;
+
         const requestPermission = async () => {
             console.log("FCM: Starting requestPermission flow...");
             if (typeof window === 'undefined' || !('Notification' in window)) {
