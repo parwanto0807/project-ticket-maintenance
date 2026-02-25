@@ -115,22 +115,25 @@ export async function PUT(req: Request, { params }: { params: { ticketId: string
       if (ticketWithDetails) {
         const ticketNumber = ticketWithDetails.ticketNumber || "";
         const employeeId = ticketWithDetails.employeeId;
-        const safeAnalisa = (analisaDescription || "").substring(0, 50);
+        const assetName = ticketWithDetails.asset?.product?.part_name || ticketWithDetails.asset?.assetNumber || "";
+        const safeAnalisa = (analisaDescription || "").substring(0, 80);
+        const safeAction = (actionDescription || "").substring(0, 80);
+        const statusText = status.replace("_", " ");
 
         // Notify requester (User)
         if (employeeId) {
           await sendNotificationToUser(
             employeeId,
-            "Ticket Progress Updated",
-            `Technician has updated the progress of your ticket (${ticketNumber}). Status: ${status.replace("_", " ")}.`,
+            "Progres Tiket Diperbarui",
+            `Teknisi telah memperbarui tiket Anda (${ticketNumber}) untuk aset ${assetName}. Status: ${statusText}.${safeAnalisa ? ` Analisa: ${safeAnalisa}.` : ""}`,
             `/dashboard/maintenance/ticket`
           );
         }
 
         // Notify admins
         await sendNotificationToAdmins(
-          "Technician Update",
-          `Technician has updated ticket ${ticketNumber}. Analysis: ${safeAnalisa}...`,
+          "Update dari Teknisi",
+          `Teknisi telah memperbarui tiket ${ticketNumber} (Aset: ${assetName}). Status: ${statusText}.${safeAnalisa ? ` Analisa: ${safeAnalisa}.` : ""}${safeAction ? ` Tindakan: ${safeAction}.` : ""}`,
           `/dashboard/technician/assign`
         );
       }

@@ -24,8 +24,8 @@ export async function POST(req: Request) {
         await db.notification.create({
             data: {
                 userId: session.user.id,
-                title: "🔔 Test Notification",
-                message: `Halo ${user.name || "User"}! Ini adalah notifikasi test FCM realtime.`,
+                title: "🔔 Tes Notifikasi",
+                message: `Halo ${user.name || "User"}! Ini adalah notifikasi tes FCM. Notifikasi berjalan dengan baik.`,
                 link: "/dashboard",
             },
         });
@@ -34,8 +34,8 @@ export async function POST(req: Request) {
         const result = await adminMessaging.send({
             token: user.fcmToken,
             notification: {
-                title: "🔔 Test Notification",
-                body: `Halo ${user.name || "User"}! Ini adalah notifikasi test FCM realtime.`,
+                title: "🔔 Tes Notifikasi",
+                body: `Halo ${user.name || "User"}! Ini adalah notifikasi tes FCM. Notifikasi berjalan dengan baik.`,
             },
             data: {
                 link: "/dashboard",

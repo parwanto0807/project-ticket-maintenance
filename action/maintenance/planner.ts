@@ -72,8 +72,8 @@ export async function toggleMaintenanceSchedule(assetId: string, date: string, t
 
         // Send notification to admins
         await sendNotificationToAdmins(
-            "New Preventive Maintenance",
-            `A new PM ticket (${ticketNumber}) has been scheduled for asset ${asset.assetNumber}.`,
+            "Jadwal Preventive Maintenance Baru",
+            `Tiket PM baru (${ticketNumber}) telah dijadwalkan untuk aset ${asset.assetNumber} pada tanggal ${scheduledDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}.`,
             `/dashboard/technician/planner`
         );
 
@@ -81,8 +81,8 @@ export async function toggleMaintenanceSchedule(assetId: string, date: string, t
         if (technicianId) {
             await sendNotificationToTechnician(
                 technicianId,
-                "New PM Schedule",
-                `You have been assigned a new PM task (${ticketNumber}) for asset ${asset.assetNumber}.`,
+                "Jadwal PM Baru",
+                `Anda ditugaskan untuk PM baru (${ticketNumber}) pada aset ${asset.assetNumber}. Jadwal: ${scheduledDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}.`,
                 `/dashboard/technician/planner`
             );
         }

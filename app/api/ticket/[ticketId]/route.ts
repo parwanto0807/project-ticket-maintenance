@@ -47,8 +47,8 @@ export async function PUT(req: Request, { params }: { params: { ticketId: string
         if (ticketWithDetails.technicianId) {
           await sendNotificationToTechnician(
             ticketWithDetails.technicianId,
-            "New Task Assigned",
-            `You have been assigned to maintenance ticket ${ticketNumber}.`,
+            "Tugas Baru Ditugaskan",
+            `Anda telah ditugaskan untuk tiket maintenance ${ticketNumber}. Jadwal: ${new Date(scheduledDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}.`,
             `/dashboard/technician/assign`
           );
         }
@@ -57,16 +57,16 @@ export async function PUT(req: Request, { params }: { params: { ticketId: string
         if (employeeId) {
           await sendNotificationToUser(
             employeeId,
-            "Technician Assigned",
-            `Admin has assigned ${techName} to your ticket (${ticketNumber}). Schedule: ${new Date(scheduledDate).toLocaleDateString('en-GB')}.`,
+            "Teknisi Ditugaskan",
+            `Admin telah menugaskan teknisi ${techName} untuk tiket Anda (${ticketNumber}). Jadwal: ${new Date(scheduledDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}.`,
             `/dashboard/maintenance/ticket`
           );
         }
 
         // Notify admins
         await sendNotificationToAdmins(
-          "Ticket Assigned",
-          `Ticket ${ticketNumber} has been assigned to ${techName}.`,
+          "Tiket Ditugaskan",
+          `Tiket ${ticketNumber} telah ditugaskan ke teknisi ${techName}. Jadwal: ${new Date(scheduledDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}.`,
           `/dashboard/technician/assign`
         );
       }

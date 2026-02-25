@@ -1,6 +1,22 @@
 import { db } from "./db";
 import { adminMessaging } from "./firebase-admin";
 
+// Helper: build webpush config for background browser notification
+const buildWebPushConfig = (title: string, body: string, link?: string) => ({
+    webpush: {
+        notification: {
+            title,
+            body,
+            icon: '/icons/icon-192x192.png',
+            badge: '/icons/icon-192x192.png',
+            requireInteraction: true,
+        },
+        fcmOptions: {
+            link: link || '/dashboard',
+        },
+    },
+});
+
 export const sendNotificationToAdmins = async (title: string, message: string, link?: string) => {
     try {
         // Get all admins with FCM tokens
@@ -12,14 +28,6 @@ export const sendNotificationToAdmins = async (title: string, message: string, l
         });
 
         const tokens = admins.map((admin) => admin.fcmToken as string).filter(Boolean);
-
-        const payload = {
-            notification: {
-                title,
-                body: message,
-            },
-            data: link ? { link } : {},
-        };
 
         // 1. Save notifications to the database for each admin
         await db.notification.createMany({
@@ -34,11 +42,15 @@ export const sendNotificationToAdmins = async (title: string, message: string, l
         // 2. Send push notifications if tokens exist
         if (tokens.length > 0) {
             const dataPayload: { [key: string]: string } = link ? { link } : {};
+            const webPushConfig = buildWebPushConfig(title, message, link);
+
             await adminMessaging.sendEachForMulticast({
                 tokens,
-                notification: payload.notification,
+                notification: { title, body: message },
                 data: dataPayload,
+                ...webPushConfig,
             });
+            console.log(`Push notifications sent to ${tokens.length} admin(s)`);
         }
     } catch (error) {
         console.error("Error sending notification to admins:", error);
@@ -75,13 +87,14 @@ export const sendNotificationToTechnician = async (technicianId: string, title: 
 
         // 4. Send push notification if token exists
         if (user.fcmToken) {
+            const dataPayload: { [key: string]: string } = link ? { link } : {};
+            const webPushConfig = buildWebPushConfig(title, message, link);
+
             await adminMessaging.send({
                 token: user.fcmToken,
-                notification: {
-                    title,
-                    body: message,
-                },
-                data: link ? { link } : {},
+                notification: { title, body: message },
+                data: dataPayload,
+                ...webPushConfig,
             });
             console.log(`Notification sent to technician: ${technician.email}`);
         }
@@ -145,13 +158,13 @@ export const sendNotificationToUser = async (employeeId: string, title: string, 
         // 4. Send push notification if token exists
         if (user.fcmToken) {
             const dataPayload: { [key: string]: string } = link ? { link } : {};
+            const webPushConfig = buildWebPushConfig(title, message, link);
+
             await adminMessaging.send({
                 token: user.fcmToken,
-                notification: {
-                    title,
-                    body: message,
-                },
+                notification: { title, body: message },
                 data: dataPayload,
+                ...webPushConfig,
             });
             console.log(`Push notification sent to user: ${user.id}`);
         } else {

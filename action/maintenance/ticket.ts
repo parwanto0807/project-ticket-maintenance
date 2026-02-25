@@ -69,8 +69,8 @@ export const createTicket = async (formData: FormData) => {
 
     // Send notification to admins
     await sendNotificationToAdmins(
-      "New Maintenance Ticket",
-      `A new ticket (${ticketNumber}) has been created by ${rawData.troubleUser}.`,
+      "Tiket Maintenance Baru",
+      `Tiket baru (${ticketNumber}) telah dibuat oleh ${rawData.troubleUser}. Prioritas: ${rawData.priorityStatus}.`,
       `/dashboard/maintenance/ticket`
     );
 
@@ -209,16 +209,17 @@ export const createTicketAssign = async (formData: FormData) => {
 
       // Notify admins
       await sendNotificationToAdmins(
-        "New Assigned Ticket",
-        `A new ticket (${ticketNumber}) has been created and assigned to ${techName}.`
+        "Tiket Baru Ditugaskan",
+        `Tiket baru (${ticketNumber}) telah dibuat dan ditugaskan ke teknisi ${techName}. Jadwal: ${rawData.scheduledDate ? (rawData.scheduledDate as Date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : "Belum ditentukan"}.`,
+        `/dashboard/technician/assign`
       );
 
       // Notify technician
       if (rawData.technicianId) {
         await sendNotificationToTechnician(
           rawData.technicianId,
-          "New Task Assigned",
-          `You have been assigned to maintenance ticket ${ticketNumber}.`,
+          "Tugas Baru Ditugaskan",
+          `Anda telah ditugaskan untuk tiket maintenance ${ticketNumber}. Jadwal: ${rawData.scheduledDate ? (rawData.scheduledDate as Date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : "Belum ditentukan"}.`,
           `/dashboard/technician/assign`
         );
       }
@@ -227,8 +228,8 @@ export const createTicketAssign = async (formData: FormData) => {
       if (rawData.employeeId) {
         await sendNotificationToUser(
           rawData.employeeId,
-          "Technician Assigned",
-          `Admin has assigned ${techName} to your ticket (${ticketNumber}). Schedule: ${rawData.scheduledDate ? (rawData.scheduledDate as Date).toLocaleDateString('en-GB') : "TBD"}.`,
+          "Teknisi Ditugaskan",
+          `Admin telah menugaskan teknisi ${techName} untuk tiket Anda (${ticketNumber}). Jadwal: ${rawData.scheduledDate ? (rawData.scheduledDate as Date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : "Belum ditentukan"}.`,
           `/dashboard/maintenance/ticket`
         );
       }
@@ -306,8 +307,8 @@ export const updateTicketAssign = async (formData: FormData) => {
         if (rawData.technicianId) {
           await sendNotificationToTechnician(
             rawData.technicianId,
-            "Task Updated",
-            `A maintenance task assigned to you has been updated.`,
+            "Tugas Diperbarui",
+            `Tugas maintenance yang ditugaskan kepada Anda (${finalTicketNumber}) telah diperbarui oleh Admin. Status: Assigned.`,
             `/dashboard/technician/assign`
           );
         }
@@ -317,16 +318,16 @@ export const updateTicketAssign = async (formData: FormData) => {
           const techName = ticketWithDetails?.technician?.name || "a technician";
           await sendNotificationToUser(
             finalEmployeeId,
-            "Ticket Assignment Updated",
-            `Admin has updated the assignment for your ticket (${finalTicketNumber}). Assigned to: ${techName}.`,
+            "Penugasan Tiket Diperbarui",
+            `Admin telah memperbarui penugasan tiket Anda (${finalTicketNumber}). Ditugaskan ke teknisi: ${techName}.`,
             `/dashboard/maintenance/ticket`
           );
         }
 
         // Notify admins
         await sendNotificationToAdmins(
-          "Ticket Assignment Updated",
-          `Assignment for ticket ${finalTicketNumber} has been updated.`,
+          "Penugasan Tiket Diperbarui",
+          `Penugasan untuk tiket ${finalTicketNumber} telah diperbarui. Teknisi: ${ticketWithDetails?.technician?.name || "-"}.`,
           `/dashboard/technician/assign`
         );
       }
